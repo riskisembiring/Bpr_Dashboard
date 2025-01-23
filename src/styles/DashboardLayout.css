@@ -1,0 +1,130 @@
+/* DashboardLayout.css */
+
+/* General Layout */
+.layout-container {
+  min-height: 100vh;
+}
+
+.sider {
+  width: 250px;
+  background: #001529;
+  padding-top: 60px;
+}
+
+.menu {
+  height: 100%;
+}
+
+.logout-btn {
+  width: 100%;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.header {
+  background: #001529;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-logo {
+  flex: 1;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.content {
+  margin: 20px;
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.footer {
+  text-align: center;
+  background: #f0f2f5;
+  padding: 12px 0;
+  color: #888;
+  font-size: 14px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .mobile-navbar {
+    display: block !important; /* Show navbar on mobile */
+  }
+
+  .sider {
+    display: none; /* Hide sidebar on mobile */
+  }
+
+  .header {
+    padding: 0 15px;
+  }
+
+  .header-logo img {
+    height: 30px;
+  }
+
+  .header-user {
+    font-size: 16px;
+  }
+
+  /* Make the Logout button more compact */
+  .logout-btn {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* Adjust content margin and padding for mobile */
+  .content {
+    margin: 10px;
+    padding: 16px;
+  }
+
+  /* Adjust footer padding for mobile */
+  .footer {
+    padding: 8px 0;
+  }
+}
+
+/* Mobile-first approach: If screen size is smaller than 480px */
+@media (max-width: 480px) {
+  .header {
+    padding: 0 10px;
+  }
+
+  .header-logo img {
+    height: 25px;
+  }
+
+  .header-user {
+    font-size: 14px;
+  }
+
+  /* Adjust content padding for smaller screens */
+  .content {
+    padding: 12px;
+  }
+
+  .footer {
+    font-size: 12px;
+    padding: 6px 0;
+  }
+}

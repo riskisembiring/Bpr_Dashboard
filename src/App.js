@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Login";
+import Register from "./components/Register";
 import DashboardLayout from "./components/Dashboard";
 import Profile from "./components/Profile";
 import Collection from "./components/Collection";
@@ -29,6 +30,9 @@ const App = () => {
           }
         />
 
+        {/* Route Register */}
+        <Route path="/register" element={<Register />} />
+
         {/* Route Dashboard Layout */}
         <Route
           path="/dashboard/*"
@@ -45,8 +49,8 @@ const App = () => {
         >
           {/* Halaman dalam Dashboard */}
           <Route path="profile" element={<Profile />} />
-          <Route path="maintenance/collection" element={<Collection userRole={userRole} />} />
-          <Route path="maintenance/efiling" element={<EFiling />} />
+          <Route path="menu/collection" element={<Collection userRole={userRole} />} />
+          <Route path="menu/efiling" element={<EFiling />} />
           <Route path="about-us" element={<AboutUs />} />
         </Route>
 

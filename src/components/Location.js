@@ -11,18 +11,13 @@ const Location = forwardRef(({ updateLocation }, ref) => {
         (position) => {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
-          console.log("Latitude:", latitude);
-          console.log("Longitude:", longitude);
-
           const geocodingUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
-
           fetch(geocodingUrl)
             .then((response) => response.json())
             .then((data) => {
-              if (data && data.display_name) {
-                setDisplayName(data.display_name);
-                updateLocation(data.display_name);
-                console.log("Location Name:", data.display_name);
+              if (data && data.lat) {
+                setDisplayName(data.lat + ' ' + data.lon);
+                updateLocation(data.lat + ' ' + data.lon);
               } else {
                 console.error("No results found.");
               }
@@ -46,22 +41,29 @@ const Location = forwardRef(({ updateLocation }, ref) => {
     updateLocation(null); // Mengirimkan null ke parent jika lokasi di-reset
   };
 
-  // Ekspos fungsi resetLocation ke parent menggunakan ref
+  // Tambahkan fungsi getLocation
+  const getLocation = () => {
+    return displayName; // Mengembalikan lokasi saat ini
+  };
+
+  // Ekspos fungsi getLocation dan resetLocation ke parent menggunakan ref
   useImperativeHandle(ref, () => ({
     resetLocation,
+    getLocation, // Menambahkan getLocation
   }));
 
   return (
     <Form.Item label="Lokasi" name="location">
       <Button type="primary" onClick={getCurrentLocation}>
-        Lihat Lokasi
+        Lihat Koordinat
       </Button>
       <TextArea
         disabled={true}
         value={displayName}
         style={{
+          fontSize: "12px",
           width: "400px",
-          height: "100px",
+          height: "50px",
           overflowY: "auto",
           color: "black",
         }}

@@ -1,7 +1,8 @@
 import React from "react";
 import { Layout, Menu, Button } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
-import { UserOutlined } from "@ant-design/icons";  // Import icon user
+import { UserOutlined } from "@ant-design/icons";
+import "../styles/DashboardLayout.css"; 
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -10,7 +11,7 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    navigate("/");  // Logout and redirect to login page
+    navigate("/"); // Logout and redirect to login page
   };
 
   const menuItems = [
@@ -21,17 +22,17 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
     },
     {
       key: "2",
-      label: "Maintenance",
+      label: "Menu",
       children: [
         {
           key: "2-1",
           label: "Collection",
-          onClick: () => navigate("/dashboard/maintenance/collection"),
+          onClick: () => navigate("/dashboard/menu/collection"),
         },
         {
           key: "2-2",
           label: "E-Filing",
-          onClick: () => navigate("/dashboard/maintenance/efiling"),
+          onClick: () => navigate("/dashboard/menu/efiling"),
         },
       ],
     },
@@ -43,80 +44,61 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
   ];
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sider>
+    <Layout className="layout-container">
+      {/* Sidebar for larger screens */}
+      <Sider className="sider" breakpoint="lg" collapsedWidth="0">
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["1"]}  // Default to Profile menu after login
-          style={{
-            paddingTop: "60px",
-            height: "calc(100% - 60px)",
-          }}
-          items={menuItems.map((item) =>
-            item.key !== "4"
-              ? { ...item, style: { marginBottom: "12px", ...item.style } }
-              : item
-          )}
+          defaultSelectedKeys={["1"]}
+          className="menu"
+          items={menuItems}
         />
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            width: "100%",
-            padding: "10px",
-            background: "#001529",
-          }}
-        >
+        <div style={{ position: "absolute", bottom: 0, width: "100%", padding: "10px" }}>
           <Button
             onClick={handleLogout}
             danger
-            style={{
-              width: "100%",
-            }}
+            className="logout-btn"
+            icon={<UserOutlined />}
           >
             Logout
           </Button>
         </div>
       </Sider>
+
       <Layout>
-        <Header
-          style={{
-            background: "#001529",
-            padding: "0 20px",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <div style={{ flex: 1 }}>
+        {/* Header */}
+        <Header className="header">
+          <div className="header-logo">
             <img
               src="/images/logo.png"
               alt="Logo"
               style={{ height: "40px", objectFit: "contain", marginTop: "20px" }}
             />
           </div>
-          <div
-            style={{ display: "flex", alignItems: "center", color: "#fff" }}
-          >
+          <div className="header-user">
             <UserOutlined style={{ fontSize: "24px", marginRight: "8px" }} />
-            <h2
-              style={{ margin: 0, cursor: "pointer" }}
-              onClick={() => navigate("/dashboard/profile")}
-            >
-              {userRole}
-            </h2>
+            <h2 onClick={() => navigate("/dashboard/profile")}>{userRole}</h2>
           </div>
         </Header>
-        <Content
-          style={{
-            margin: "0px",
-            background: "#fff",
-            padding: "20px",
-          }}
-        >
+
+        {/* Mobile Navbar (below header) */}
+        <Menu
+          className="mobile-navbar"
+          theme="dark"
+          mode="horizontal"
+          defaultSelectedKeys={["1"]}
+          items={menuItems}
+          style={{ display: "none" }} // Default hidden on larger screens
+        />
+
+        {/* Content */}
+        <Content className="content">
           <Outlet />
         </Content>
-        <Footer style={{ textAlign: "center" }}>
+
+        {/* Footer */}
+        <Footer className="footer">
           ©2025 Created by Riski Sembiring
         </Footer>
       </Layout>

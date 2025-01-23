@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Table, Button, Modal, Input, Form, Select } from "antd";
+import React, { useState, useEffect, useRef } from "react";
+import { Table, Button, Modal, Input, Form, Select, Radio } from "antd";
 import ExportToExcel from "./ExportToExcel";
 import CameraCapture from "./CameraCapture";
 import Location from "./Location";
+import "../styles/Collection.css";
 
 const { Option } = Select;
 
@@ -14,6 +15,7 @@ const Collection = ({ userRole }) => {
   const [form] = Form.useForm();
   const locationRef = useRef(null);
   const [searchText, setSearchText] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
 
   const keteranganOptions = [
     "Pembayaran cicilan per bulan.",
@@ -22,18 +24,27 @@ const Collection = ({ userRole }) => {
     "Penjadwalan ulang pembayaran.",
   ];
 
-  useEffect(() => {
-    const storedData = localStorage.getItem("collectionData");
-    if (storedData) {
-      setData(JSON.parse(storedData));
-    }
-  }, []);
+  const aktifitasOptions = [
+    "Bertemu Debitur",
+    "Tidak bertemu debitur",
+    "Debitur melakukan pembayaran",
+    "Debitur membuat janji bayar",
+    "Debitur melakukan perlawanan",
+  ];
 
+  // Fetch data from API on component mount
   useEffect(() => {
-    if (data.length > 0) {
-      localStorage.setItem("collectionData", JSON.stringify(data));
-    }
-  }, [data]);
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/data");
+        const result = await response.json();
+        setData(result); // Menyimpan data dari API ke state
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleNew = () => {
     form.resetFields();
@@ -45,44 +56,146 @@ const Collection = ({ userRole }) => {
   const handleEdit = (record) => {
     setIsEditing(true);
     setIsModalVisible(true);
-    setCurrentRecord(record);
+    setCurrentRecord(null);
+    // setCurrentRecord(record);
     form.setFieldsValue(record);
   };
 
-  const handleSave = (values) => {
+  const handleSave = async (values) => {
     const updatedLocation = currentRecord?.location ?? locationRef.current?.getLocation() ?? "Unknown Location";
     const updatedFoto = currentRecord?.foto || "";
-
-    const currentDate = new Date().toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
+  
+    const currentDate = new Date().toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
     });
+  
+    try {
+      if (isEditing && currentRecord) {
+        // Update data di Firestore (dengan menyertakan ID di URL)
+        const response = await fetch(`http://localhost:5000/api/data/${selectedId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...currentRecord,
+            ...values,
+            location: updatedLocation,
+            foto: updatedFoto,
+            tanggal: currentDate,
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Gagal memperbarui data di server");
+        }
+      } else {
+        // Data baru untuk ditambahkan
+        const newRecord = {
+          key: `${data.length + 1}`,
+          ...values,
+          location: updatedLocation,
+          foto: updatedFoto,
+          tanggal: currentDate,
+        };
+  
+        // Tambahkan data baru ke Firestore
+        const response = await fetch("http://localhost:5000/api/data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newRecord),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Gagal menambahkan data baru ke server");
+        }
+      }
+  
+      // Setelah berhasil, panggil API untuk mendapatkan data terbaru
+      const fetchDataResponse = await fetch("http://localhost:5000/api/data");
+      if (!fetchDataResponse.ok) {
+        throw new Error("Gagal mendapatkan data dari server");
+      }
+      const updatedData = await fetchDataResponse.json();
+  
+      // Perbarui state lokal dengan data terbaru
+      setData(updatedData);
+  
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error("Error:", error.message);
+      alert("Terjadi kesalahan. Silakan coba lagi.");
+    }
+  };
+  
 
-    if (isEditing && currentRecord) {
+  const handleStatusChange = async (value, record) => {
+    try {
+      // Update data lokal
       const updatedData = data.map((item) =>
-        item.key === currentRecord.key
-          ? { ...currentRecord, ...values, location: updatedLocation, foto: updatedFoto, tanggal: currentDate }
+        item.key === record.key
+          ? { ...item, status: value === "" ? "Belum di cek" : value }
           : item
       );
       setData(updatedData);
-    } else {
-      const newRecord = {
-        key: `${data.length + 1}`,
-        ...values,
-        location: updatedLocation,
-        foto: updatedFoto,
-        tanggal: currentDate, // Tambahkan tanggal saat membuat data baru
-      };
-      setData([...data, newRecord]);
+  
+      // Kirim perubahan ke server menggunakan API
+      await fetch(`http://localhost:5000/api/data/${selectedId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...record,
+          status: value === "" ? "Belum di cek" : value,
+        }),
+      }); 
+      console.log("Status updated successfully on the server");
+    } catch (error) {
+      console.error("Error updating status:", error);
     }
-
-    setIsModalVisible(false);
   };
+
+  const handleFileChange = (foto) => {
+    setCurrentRecord((prev) => ({ ...prev, foto }));
+  };
+
+  const handleCatatanChange = async (value, record) => {
+    try {
+      const updatedData = data.map((item) =>
+        item.key === record.key ? { ...item, catatan: value } : item
+      );
+      setData(updatedData);
+
+    await fetch(`http://localhost:5000/api/data/${selectedId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...record,
+        catatan: record.catatan
+      }),
+    });
+    console.log("Catatan updated successfully on the server");
+  } catch (error) {
+    console.error("Error updating catatan:", error);
+  }
+};
 
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
+    locationRef.current?.resetLocation();
+    handleFileChange(null);
+  };
+
+  const handleSearch = (e) => {
+    setSearchText(e.target.value);
   };
 
   const updateLocation = (location) => {
@@ -96,34 +209,19 @@ const Collection = ({ userRole }) => {
     }
   };
 
-  const handleFileChange = (foto) => {
-    setCurrentRecord((prev) => ({ ...prev, foto }));
-  };
-
-  const handleStatusChange = (value, record) => {
-    const updatedData = data.map((item) =>
-      item.key === record.key
-        ? { ...item, status: value === "" ? "Belum di cek" : value }
-        : item
+  const filteredData = userRole === 'direksi'
+  ? data.filter((item) =>
+      searchText === "" || 
+      (item.status && item.status.toLowerCase().includes(searchText.toLowerCase()))
+    )
+  : data.filter((item) =>
+      item.namaDebitur?.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.aktifitas?.toLowerCase().includes(searchText.toLowerCase())
     );
-    setData(updatedData);
-  };
 
-  const handleCatatanChange = (value, record) => {
-    const updatedData = data.map((item) =>
-      item.key === record.key ? { ...item, catatan: value } : item
-    );
-    setData(updatedData);
-  };
-
-  const handleSearch = (e) => {
-    setSearchText(e.target.value);
-  };
-
-  const filteredData = data.filter((item) =>
-    item.namaDebitur.toLowerCase().includes(searchText.toLowerCase()) ||
-    item.aktifitas.toLowerCase().includes(searchText.toLowerCase())
-  );
+    const handleSelectId = (id) => {
+      setSelectedId(id);
+    };
 
   const columns = [
     {
@@ -156,7 +254,6 @@ const Collection = ({ userRole }) => {
       dataIndex: "keterangan",
       key: "keterangan",
       sorter: (a, b) => new Date(a.keterangan) - new Date(b.keterangan),
-
     },
     {
       title: "Foto",
@@ -169,7 +266,6 @@ const Collection = ({ userRole }) => {
       dataIndex: "location",
       key: "location",
       sorter: (a, b) => new Date(a.location) - new Date(b.location),
-
     },
     {
       title: "Actions",
@@ -190,7 +286,7 @@ const Collection = ({ userRole }) => {
       render: (_, record) => (
         <div>
           <Select
-            value={record.status || "Belum di cek"}
+            value={record.status || "Belum di cek"} // pastikan ada nilai default
             style={{ width: 120, marginRight: "10px" }}
             onChange={(value) => handleStatusChange(value, record)}
             disabled={userRole !== "verifikator"}
@@ -200,26 +296,26 @@ const Collection = ({ userRole }) => {
             <Option value="reject">Reject</Option>
           </Select>
           <Input
-            value={record.catatan || ""}
+            value={record.catatan || ""} // pastikan ada nilai default
             placeholder="Catatan"
-            style={{ width: 200 }}
+            style={{ width: 122 }}
             disabled={userRole !== "verifikator"}
             onChange={(e) => handleCatatanChange(e.target.value, record)}
           />
         </div>
       ),
-    },
+    }
   ];
 
   return (
-    <div>
+<div>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
         {/* Search Input */}
         <Input
-          placeholder="Search by Nama Debitur or Aktifitas"
+          placeholder={userRole === "direksi" ? "Search by Status (Approve/Reject/Belum di cek)" : "Search by Nama Debitur or Aktifitas"}
           value={searchText}
           onChange={handleSearch}
-          style={{ width: 300 }}
+          style={{ width: 320 }}
         />
 
         <div>
@@ -233,10 +329,16 @@ const Collection = ({ userRole }) => {
       </div>
 
       <Table
-        columns={columns.filter(column => !column.hidden)} // Sembunyikan kolom jika hidden = true
+        columns={columns.filter((column) => !column.hidden)}
         dataSource={filteredData}
         rowKey="key"
-        scroll={{ x: 1200, y: 400 }} // Lebar maksimum 1200px dan tinggi maksimum 400px
+        onRow={(record) => ({
+          onClick: () => handleSelectId(record.id),
+          style: {
+            backgroundColor: selectedId === record.id ? "#e6f7ff" : "", // Menandai baris yang dipilih
+          },
+        })}
+        scroll={{ x: 1200, y: 400 }}
         pagination={{ pageSize: 10 }}
       />
 
@@ -291,23 +393,19 @@ const Collection = ({ userRole }) => {
             <Form.Item
               label="Aktifitas"
               name="aktifitas"
-              rules={[{ required: true, message: "Please input Aktifitas!" }]}
+              rules={[{ required: true, message: "Please select Aktifitas!" }]}
             >
-              <Input />
+              <Radio.Group>
+                {aktifitasOptions.map((option, index) => (
+                  <Radio key={index} value={option}>
+                    {option}
+                  </Radio>
+                ))}
+              </Radio.Group>
             </Form.Item>
 
-            {/* Input Hasil */}
-            <Form.Item
-              label="Hasil"
-              name="hasil"
-              rules={[{ required: true, message: "Please input Hasil!" }]}
-            >
-              <Input />
-            </Form.Item>
-
-            {/* Input Keterangan */}
-            <Form.Item label="Keterangan" name="keterangan">
-              <Select rules={[{ required: true, message: "Please input Keterangan!" }]}>
+            <Form.Item label="Hasil" name="hasil" rules={[{ required: true, message: "Please select Hasil!" }]}>
+              <Select>
                 {keteranganOptions.map((option, index) => (
                   <Option key={index} value={option}>
                     {option}
@@ -316,15 +414,24 @@ const Collection = ({ userRole }) => {
               </Select>
             </Form.Item>
 
-            {/* Komponen Kamera */}
+            {/* Input Keterangan */}
+            <Form.Item label="Keterangan" name="keterangan"
+              rules={[{ required: true, message: "Please input keterangan!" }]}>
+              <Input />
+            </Form.Item>
+
+            {/* Camera Component */}
             <CameraCapture handleFileChange={handleFileChange} />
 
-            {/* Komponen Lokasi */}
+            {/* Location Component */}
             <Location ref={locationRef} updateLocation={updateLocation} />
 
-            <Form.Item wrapperCol={{ span: 16, offset: 6 }}>
+            <Form.Item>
               <Button type="primary" htmlType="submit">
-                {isEditing ? "Save Changes" : "Create New"}
+                {isEditing ? "Update" : "Create"}
+              </Button>
+              <Button onClick={handleCancel} style={{ marginLeft: "10px" }}>
+                Cancel
               </Button>
             </Form.Item>
           </Form>

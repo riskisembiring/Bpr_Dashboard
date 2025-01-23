@@ -1,53 +1,66 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Card, message } from "antd";
-import { useNavigate } from "react-router-dom";  // Import useNavigate
+import { Form, Input, Button, Card, message, Typography } from "antd";
+import { useNavigate } from "react-router-dom";
+import "../styles/Login.css";
+
+const { Link } = Typography;
 
 const Login = ({ setIsAuthenticated, setUserRole }) => {
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();  // Initialize navigate
+  const navigate = useNavigate();
 
-  const onFinish = (values) => {
-    setLoading(true);
-    if (values.username === "collector" && values.password === "12345") {
-      message.success("Login berhasil!");
+const onFinish = async (values) => {
+  console.log("Form values:", values); // Memeriksa nilai yang dikirim ke backend
+  setLoading(true);
+  try {
+    const response = await fetch("http://localhost:5000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    });
+
+    const data = await response.json();
+    console.log("Backend response:", data); // Memeriksa respons dari backend
+    if (response.ok) {
+      message.success(data.message);
       setIsAuthenticated(true);
-      setUserRole("collector");
-      navigate("/dashboard/profile");  // Redirect to profile after login
-    } else if (values.username === "verifikator" && values.password === "verifikator123") {
-      message.success("Login berhasil!");
-      setIsAuthenticated(true);
-      setUserRole("verifikator");
-      navigate("/dashboard/profile");  // Redirect to profile after login
-    } else if (values.username === "direksi" && values.password === "direksi123") {
-      message.success("Login berhasil!");
-      setIsAuthenticated(true);
-      setUserRole("direksi");
-      navigate("/dashboard/profile");  // Redirect to profile after login
+      setUserRole(data.role);
+      navigate("/dashboard/profile");
     } else {
-      message.error("Username atau password salah!");
+      message.error(data.message);
     }
-    setLoading(false);
-  };
+  } catch (error) {
+    message.error("Terjadi kesalahan. Coba lagi.");
+  }
+  setLoading(false);
+};
 
-  return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <Card title="Login" style={{ width: 300 }}>
-        <Form name="login" onFinish={onFinish} layout="vertical">
-          <Form.Item label="Username" name="username" rules={[{ required: true, message: "Masukkan username Anda!" }]}>
-            <Input placeholder="Username" />
-          </Form.Item>
-          <Form.Item label="Password" name="password" rules={[{ required: true, message: "Masukkan password Anda!" }]}>
-            <Input.Password placeholder="Password" />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block loading={loading}>
-              Login
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
-    </div>
-  );
+return (
+  <div className="login-container">
+    <Card className="login-card" title="Login">
+      <Form name="login" onFinish={onFinish} layout="vertical">
+        <Form.Item label="Username" name="username" rules={[{ required: true, message: "Masukkan username Anda!" }]}>
+          <Input placeholder="Username" />
+        </Form.Item>
+        <Form.Item label="Password" name="password" rules={[{ required: true, message: "Masukkan password Anda!" }]}>
+          <Input.Password placeholder="Password" />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" block loading={loading}>
+            Login
+          </Button>
+        </Form.Item>
+      </Form>
+      <div className="register-link">
+        <Typography.Text>
+          Belum punya akun? <Link onClick={() => navigate("/register")}>Daftar di sini</Link>
+        </Typography.Text>
+      </div>
+    </Card>
+  </div>
+);
 };
 
 export default Login;

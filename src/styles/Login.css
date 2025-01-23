@@ -1,0 +1,49 @@
+/* Soft blue background styling */
+.login-container {
+    background: linear-gradient(to right, #d3e9f7, #a9cbe7); /* Soft gradient from light blue to soft blue */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Styling for the login card */
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.9); /* Slight transparency for card */
+  }
+  
+  /* Styling for the "Daftar di sini" link */
+  .register-link {
+    text-align: center;
+    margin-top: 15px;
+  }
+  
+  /* Add some modern button effects */
+  .ant-btn-primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .ant-btn-primary:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+    transform: translateY(-2px); /* Add hover effect */
+  }
+  
+  /* Form input styling */
+  .ant-input, .ant-input-password {
+    border-radius: 5px;
+    padding: 10px;
+  }
+  
+  /* Additional form spacing */
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+  
