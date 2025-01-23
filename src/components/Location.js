@@ -21,13 +21,27 @@ const Location = forwardRef(({ updateLocation }, ref) => {
           console.log("Koordinat:", newCoordinates);
         },
         (error) => {
-          console.error("Error getting location:", error);
+          // Handle error
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              alert("Izin lokasi ditolak. Harap aktifkan izin lokasi di browser Anda.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              alert("Lokasi tidak tersedia. Coba lagi nanti.");
+              break;
+            case error.TIMEOUT:
+              alert("Permintaan lokasi timeout. Harap coba lagi.");
+              break;
+            default:
+              alert("Terjadi kesalahan. Tidak bisa mengakses lokasi.");
+          }
         }
       );
     } else {
-      console.error("Geolocation is not supported by this browser.");
+      alert("Geolocation tidak didukung oleh browser Anda.");
     }
   }
+  
 
   // Fungsi untuk mereset lokasi
   const resetLocation = () => {
@@ -52,7 +66,7 @@ const Location = forwardRef(({ updateLocation }, ref) => {
           value={coordinates ? `${coordinates.lat}, ${coordinates.lng}` : ""}
           style={{
             fontSize: "12px",
-            width: "400px",
+            width: "100%", // Ganti dengan responsif
             height: "50px",
             overflowY: "auto",
             color: "black",
@@ -63,14 +77,12 @@ const Location = forwardRef(({ updateLocation }, ref) => {
       {/* Peta Leaflet */}
       {coordinates && (
         <MapContainer
-          center={coordinates} // Set center peta dengan koordinat terbaru
+          center={coordinates}
           zoom={15}
           style={{ height: "400px", width: "100%" }}
-          whenCreated={(map) => map.invalidateSize()} // Untuk merender ulang peta setelah di-load
+          whenCreated={(map) => map.invalidateSize()} // Memastikan render ulang
         >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <Marker position={coordinates}>
             <Popup>
               Lokasi Anda: {coordinates.lat}, {coordinates.lng}
