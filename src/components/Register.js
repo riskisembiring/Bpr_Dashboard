@@ -15,7 +15,7 @@ const Register = () => {
     setLoading(true);
     try {
       // Kirim data ke backend melalui API endpoint
-      const response = await axios.post("http://localhost:5000/add-user", {
+      const response = await axios.post("https://api-nasnus.vercel.app/api/add-user", {
         username: values.username,
         email: values.email,
         userRole: values.role,

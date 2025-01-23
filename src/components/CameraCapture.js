@@ -30,17 +30,24 @@ const CameraCapture = forwardRef(({ handleFileChange }, ref) => {
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
     const dataUrl = canvas.toDataURL('image/png');
     setImage(dataUrl);
-    setFileName(`CapturedImage_${new Date().getTime()}.png`);
-    handleFileChange(`CapturedImage_${new Date().getTime()}.png`); // Kirim foto yang diambil ke parent
+    const newFileName = `CapturedImage_${new Date().getTime()}.png`; // Nama file baru
+    setFileName(newFileName);
+    
+    // Kirim foto dan nama file ke parent
+    handleFileChange(dataUrl, newFileName);
   };
 
   // Stop kamera
   const stopCamera = () => {
-    const stream = videoRef.current.srcObject;
-    const tracks = stream.getTracks();
-    tracks.forEach(track => track.stop());
-    videoRef.current.srcObject = null;
-    setIsCameraActive(false);
+    const stream = videoRef.current?.srcObject;
+    if (stream) {
+      const tracks = stream.getTracks();
+      tracks.forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+      setIsCameraActive(false);
+    } else {
+      console.warn("Stream is already null or undefined.");
+    }
   };
 
   // Expose stopCamera method to parent component
@@ -60,7 +67,6 @@ const CameraCapture = forwardRef(({ handleFileChange }, ref) => {
         </Button>
       </Form.Item>
 
-      {/* Video Feed */}
       <Form.Item>
         <video
           ref={videoRef}
@@ -99,7 +105,6 @@ const CameraCapture = forwardRef(({ handleFileChange }, ref) => {
         </Form.Item>
       )}
 
-      {/* Canvas Tersembunyi untuk Snapshot */}
       <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
     </div>
   );

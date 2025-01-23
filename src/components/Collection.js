@@ -14,6 +14,7 @@ const Collection = ({ userRole }) => {
   const [currentRecord, setCurrentRecord] = useState(null);
   const [form] = Form.useForm();
   const locationRef = useRef(null);
+  const cameraRef = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
@@ -36,7 +37,7 @@ const Collection = ({ userRole }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/data");
+        const response = await fetch("https://api-nasnus.vercel.app/api/data");
         const result = await response.json();
         setData(result); // Menyimpan data dari API ke state
       } catch (error) {
@@ -74,7 +75,7 @@ const Collection = ({ userRole }) => {
     try {
       if (isEditing && currentRecord) {
         // Update data di Firestore (dengan menyertakan ID di URL)
-        const response = await fetch(`http://localhost:5000/api/data/${selectedId}`, {
+        const response = await fetch(`https://api-nasnus.vercel.app/api/data/${selectedId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -102,7 +103,7 @@ const Collection = ({ userRole }) => {
         };
   
         // Tambahkan data baru ke Firestore
-        const response = await fetch("http://localhost:5000/api/data", {
+        const response = await fetch("https://api-nasnus.vercel.app/api/data", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -116,7 +117,7 @@ const Collection = ({ userRole }) => {
       }
   
       // Setelah berhasil, panggil API untuk mendapatkan data terbaru
-      const fetchDataResponse = await fetch("http://localhost:5000/api/data");
+      const fetchDataResponse = await fetch("https://api-nasnus.vercel.app/api/data");
       if (!fetchDataResponse.ok) {
         throw new Error("Gagal mendapatkan data dari server");
       }
@@ -124,7 +125,10 @@ const Collection = ({ userRole }) => {
   
       // Perbarui state lokal dengan data terbaru
       setData(updatedData);
-  
+      if (cameraRef.current) {
+        cameraRef.current.stopCamera(); // Panggil stopCamera di CameraCapture
+      }
+      locationRef.current?.resetLocation();
       setIsModalVisible(false);
     } catch (error) {
       console.error("Error:", error.message);
@@ -144,7 +148,7 @@ const Collection = ({ userRole }) => {
       setData(updatedData);
   
       // Kirim perubahan ke server menggunakan API
-      await fetch(`http://localhost:5000/api/data/${selectedId}`, {
+      await fetch(`https://api-nasnus.vercel.app/api/data/${selectedId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -171,7 +175,7 @@ const Collection = ({ userRole }) => {
       );
       setData(updatedData);
 
-    await fetch(`http://localhost:5000/api/data/${selectedId}`, {
+    await fetch(`https://api-nasnus.vercel.app/api/data/${selectedId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -192,6 +196,9 @@ const Collection = ({ userRole }) => {
     form.resetFields();
     locationRef.current?.resetLocation();
     handleFileChange(null);
+    if (cameraRef.current) {
+      cameraRef.current.stopCamera();
+    }
   };
 
   const handleSearch = (e) => {
@@ -421,7 +428,7 @@ const Collection = ({ userRole }) => {
             </Form.Item>
 
             {/* Camera Component */}
-            <CameraCapture handleFileChange={handleFileChange} />
+            <CameraCapture ref={cameraRef} handleFileChange={handleFileChange} />
 
             {/* Location Component */}
             <Location ref={locationRef} updateLocation={updateLocation} />
