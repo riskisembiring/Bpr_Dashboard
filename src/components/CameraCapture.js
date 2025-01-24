@@ -3,7 +3,7 @@ import { Button, Form, Typography, message } from 'antd';
 
 const { Title } = Typography;
 
-const CameraCapture = forwardRef(({ handleFileChange }, ref) => {
+const CameraCapture = forwardRef(({ handleFileChange, handleCancel }, ref) => {
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState('CapturedImage.png');
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -30,11 +30,8 @@ const CameraCapture = forwardRef(({ handleFileChange }, ref) => {
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
     const dataUrl = canvas.toDataURL('image/png');
     setImage(dataUrl);
-    const newFileName = `CapturedImage_${new Date().getTime()}.png`; // Nama file baru
-    setFileName(newFileName);
-    
-    // Kirim foto dan nama file ke parent
-    handleFileChange(dataUrl, newFileName);
+    setFileName(`CapturedImage_${new Date().getTime()}.png`);
+    handleFileChange(`CapturedImage_${new Date().getTime()}.png`); // Kirim foto yang diambil ke parent
   };
 
   // Stop kamera
@@ -54,6 +51,13 @@ const CameraCapture = forwardRef(({ handleFileChange }, ref) => {
   useImperativeHandle(ref, () => ({
     stopCamera,
   }));
+
+  // Fungsi untuk reset preview gambar
+  const resetImage = () => {
+    setImage(null);
+    setFileName('CapturedImage.png');
+    handleCancel(); // Memanggil fungsi handleCancel yang diteruskan dari komponen induk
+  };
 
   return (
     <div>
@@ -102,6 +106,15 @@ const CameraCapture = forwardRef(({ handleFileChange }, ref) => {
           <Title level={5}>Preview Gambar</Title>
           <img src={image} alt="Captured" style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain' }} />
           <div>{fileName}</div>
+
+          {/* Tombol Cancel */}
+          <Button
+            type="default"
+            onClick={resetImage}
+            style={{ marginTop: '10px' }}
+          >
+            Cancel
+          </Button>
         </Form.Item>
       )}
 

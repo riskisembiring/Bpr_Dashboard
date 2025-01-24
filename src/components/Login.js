@@ -10,7 +10,6 @@ const Login = ({ setIsAuthenticated, setUserRole }) => {
   const navigate = useNavigate();
 
 const onFinish = async (values) => {
-  console.log("Form values:", values); // Memeriksa nilai yang dikirim ke backend
   setLoading(true);
   try {
     const response = await fetch("https://api-nasnus.vercel.app/api/login", {
@@ -24,10 +23,10 @@ const onFinish = async (values) => {
     const data = await response.json();
     console.log("Backend response:", data); // Memeriksa respons dari backend
     if (response.ok) {
-      message.success(data.message);
-      setIsAuthenticated(true);
-      setUserRole(data.role);
-      navigate("/dashboard/profile");
+      message.success(data.message).then(() => {
+        setIsAuthenticated(true);
+        setUserRole(data.role);
+        navigate("/dashboard/profile");});
     } else {
       message.error(data.message);
     }

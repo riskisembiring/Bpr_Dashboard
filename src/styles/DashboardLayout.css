@@ -1,6 +1,3 @@
-/* DashboardLayout.css */
-
-/* General Layout */
 .layout-container {
   min-height: 100vh;
 }
@@ -64,67 +61,40 @@
   font-size: 14px;
 }
 
-/* Mobile Responsiveness */
+/* Mobile responsiveness */
 @media (max-width: 768px) {
+  /* Sembunyikan sidebar pada layar kecil */
+  .sider {
+    display: none;
+  }
+
   .mobile-navbar {
     display: block !important; /* Show navbar on mobile */
   }
 
-  .sider {
-    display: none; /* Hide sidebar on mobile */
+  /* Gaya konten untuk mobile */
+  .content {
+    padding: 10px;
   }
 
   .header {
-    padding: 0 15px;
+    justify-content: space-between;
   }
 
-  .header-logo img {
-    height: 30px;
-  }
-
-  .header-user {
-    font-size: 16px;
-  }
-
-  /* Make the Logout button more compact */
-  .logout-btn {
-    padding: 10px;
-    font-size: 14px;
-  }
-
-  /* Adjust content margin and padding for mobile */
-  .content {
-    margin: 10px;
-    padding: 16px;
-  }
-
-  /* Adjust footer padding for mobile */
-  .footer {
-    padding: 8px 0;
+  .header-logo {
+    flex-grow: 0;
+    margin-left: 0px;
   }
 }
 
-/* Mobile-first approach: If screen size is smaller than 480px */
-@media (max-width: 480px) {
-  .header {
-    padding: 0 10px;
-  }
-
-  .header-logo img {
-    height: 25px;
-  }
-
+/* Responsif untuk ukuran layar lebih kecil */
+@media (max-width: 390px) {
   .header-user {
-    font-size: 14px;
-  }
-
-  /* Adjust content padding for smaller screens */
-  .content {
-    padding: 12px;
+    font-size: 1px;
   }
 
   .footer {
     font-size: 12px;
-    padding: 6px 0;
+    padding: 10px;
   }
 }

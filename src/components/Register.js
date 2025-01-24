@@ -23,8 +23,9 @@ const Register = () => {
       });
 
       // Tampilkan pesan sukses dan redirect ke halaman login
-      message.success(response.data.message || "Pendaftaran berhasil!");
-      navigate("/");
+      message.success(response.data.message || "Pendaftaran berhasil!").then(() => {
+        navigate("/");
+      })
     } catch (error) {
       // Tampilkan pesan error jika terjadi kegagalan
       message.error(

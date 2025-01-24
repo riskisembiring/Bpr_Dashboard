@@ -1,4 +1,29 @@
 General styles for the table
+.container {
+  display: flex;
+  flex-direction: column; /* Tumpuk elemen secara vertikal */
+  margin-bottom: 20px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end; /* Posisi tombol di sebelah kanan */
+  gap: 10px;
+  margin-bottom: 10px; /* Beri jarak antara tombol dan input */
+}
+
+.search-input {
+  width: 320px;
+  margin: 0 auto; /* Posisi input di tengah */
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end; /* Posisi tombol di sebelah kanan */
+  width: 100%;
+}
+
 .ant-table {
     width: 100%;
     overflow-x: auto;
@@ -6,6 +31,21 @@ General styles for the table
   
   /* Media query for mobile devices */
   @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .search-input {
+      width: 100%;
+    }
+  
+    .button-group {
+      justify-content: flex-end; /* Tetap di kanan untuk layar kecil */
+      width: 100%;
+      margin-top: 10px;
+    }
+    
     .ant-table {
       font-size: 12px; /* Reduce font size for mobile */
       table-layout: auto; /* Adjust table layout */

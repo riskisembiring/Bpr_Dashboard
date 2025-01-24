@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Table, Button, Modal, Input, Form, Select, Radio } from "antd";
+import { Table, Button, Modal, Input, Form, Select, Radio, message } from "antd";
 import ExportToExcel from "./ExportToExcel";
 import CameraCapture from "./CameraCapture";
 import Location from "./Location";
@@ -72,6 +72,9 @@ const Collection = ({ userRole }) => {
       year: "numeric",
     });
   
+    // Tampilkan pesan loading
+    const hideLoading = message.loading("Menyimpan data...", 0);
+  
     try {
       if (isEditing && currentRecord) {
         // Update data di Firestore (dengan menyertakan ID di URL)
@@ -92,6 +95,12 @@ const Collection = ({ userRole }) => {
         if (!response.ok) {
           throw new Error("Gagal memperbarui data di server");
         }
+  
+        // Tutup pesan loading
+        hideLoading();
+  
+        // Tampilkan pesan sukses untuk update data
+        message.success("Data berhasil diubah.");
       } else {
         // Data baru untuk ditambahkan
         const newRecord = {
@@ -114,6 +123,12 @@ const Collection = ({ userRole }) => {
         if (!response.ok) {
           throw new Error("Gagal menambahkan data baru ke server");
         }
+  
+        // Tutup pesan loading
+        hideLoading();
+  
+        // Tampilkan pesan sukses untuk data baru
+        message.success("Data berhasil disimpan.");
       }
   
       // Setelah berhasil, panggil API untuk mendapatkan data terbaru
@@ -121,21 +136,22 @@ const Collection = ({ userRole }) => {
       if (!fetchDataResponse.ok) {
         throw new Error("Gagal mendapatkan data dari server");
       }
+  
       const updatedData = await fetchDataResponse.json();
   
-      // Perbarui state lokal dengan data terbaru
+      // Reset lokasi dan kamera
+      locationRef.current?.resetLocation();
       setData(updatedData);
       if (cameraRef.current) {
-        cameraRef.current.stopCamera(); // Panggil stopCamera di CameraCapture
+        cameraRef.current.stopCamera();
       }
-      locationRef.current?.resetLocation();
       setIsModalVisible(false);
     } catch (error) {
-      console.error("Error:", error.message);
-      alert("Terjadi kesalahan. Silakan coba lagi.");
+      // Tutup pesan loading dan tampilkan pesan error
+      hideLoading();
+      message.error(error.message || "Terjadi kesalahan.");
     }
-  };
-  
+  };  
 
   const handleStatusChange = async (value, record) => {
     try {
@@ -316,24 +332,32 @@ const Collection = ({ userRole }) => {
 
   return (
 <div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-        {/* Search Input */}
-        <Input
-          placeholder={userRole === "direksi" ? "Search by Status (Approve/Reject/Belum di cek)" : "Search by Nama Debitur or Aktifitas"}
-          value={searchText}
-          onChange={handleSearch}
-          style={{ width: 320 }}
-        />
+<div className="container">
+      {/* Search Input */}
+      <Input
+        placeholder={
+          userRole === "direksi"
+            ? "Search by Status (Approve/Reject/Belum di cek)"
+            : "Search by Nama Debitur or Aktifitas"
+        }
+        value={searchText}
+        onChange={handleSearch}
+        className="search-input"
+      />
 
-        <div>
-          <Button onClick={handleNew} type="primary" style={{ marginRight: "20px" }} disabled={userRole !== "collector"}>
-            New
-          </Button>
+      <div className="button-group">
+        <Button
+          onClick={handleNew}
+          type="primary"
+          disabled={userRole !== "collector"}
+        >
+          New
+        </Button>
 
-          {/* Button Export to Excel */}
-          <ExportToExcel data={data} disabled={userRole === "collector"} />
-        </div>
+        {/* Button Export to Excel */}
+        <ExportToExcel data={data} disabled={userRole === "collector"} />
       </div>
+    </div>
 
       <Table
         columns={columns.filter((column) => !column.hidden)}

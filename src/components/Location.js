@@ -1,96 +1,97 @@
 import React, { useState, useImperativeHandle, forwardRef } from "react";
-import { Form, Button } from "antd";
+import { Form, Button, Input } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+// Custom icon for the map marker
+const customIcon = new L.Icon({
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
 
 const Location = forwardRef(({ updateLocation }, ref) => {
-  const [coordinates, setCoordinates] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [displayName, setDisplayName] = useState(null);
 
-  // Fungsi untuk mendapatkan lokasi pengguna
   function getCurrentLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          const newCoordinates = { lat: latitude, lng: longitude };
-          setCoordinates(newCoordinates);
-          updateLocation(`${latitude}, ${longitude}`);
-          console.log("Koordinat:", newCoordinates);
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const geocodingUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+          fetch(geocodingUrl)
+            .then((response) => response.json())
+            .then((data) => {
+              if (data && data.lat) {
+                setLatitude(lat);
+                setLongitude(lon);
+                setDisplayName(data.lat + ' ' + data.lon);
+                updateLocation(data.lat + ' ' + data.lon);
+              } else {
+                console.error("No results found.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching geolocation data:", error);
+            });
         },
         (error) => {
-          // Handle error
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              alert("Izin lokasi ditolak. Harap aktifkan izin lokasi di browser Anda.");
-              break;
-            case error.POSITION_UNAVAILABLE:
-              alert("Lokasi tidak tersedia. Coba lagi nanti.");
-              break;
-            case error.TIMEOUT:
-              alert("Permintaan lokasi timeout. Harap coba lagi.");
-              break;
-            default:
-              alert("Terjadi kesalahan. Tidak bisa mengakses lokasi.");
-          }
+          console.error("Error getting location:", error);
         }
       );
     } else {
-      alert("Geolocation tidak didukung oleh browser Anda.");
+      console.error("Geolocation is not supported by this browser.");
     }
   }
-  
 
-  // Fungsi untuk mereset lokasi
   const resetLocation = () => {
-    setCoordinates(null);
+    setLatitude(null);
+    setLongitude(null);
+    setDisplayName(null);
     updateLocation(null);
   };
 
-  // Mengekspos fungsi resetLocation ke parent
   useImperativeHandle(ref, () => ({
     resetLocation,
+    getLocation: () => `${latitude}, ${longitude}`,
   }));
 
   return (
-    <div>
-      {/* Form untuk lokasi */}
-      <Form.Item label="Lokasi" name="location">
-        <Button type="primary" onClick={getCurrentLocation}>
-          Lihat Koordinat
-        </Button>
-        <TextArea
-          disabled
-          value={coordinates ? `${coordinates.lat}, ${coordinates.lng}` : ""}
-          style={{
-            fontSize: "12px",
-            width: "100%", // Ganti dengan responsif
-            height: "50px",
-            overflowY: "auto",
-            color: "black",
-          }}
-        />
-      </Form.Item>
-
-      {/* Peta Leaflet */}
-      {coordinates && (
+    <Form.Item label="Lokasi" name="location">
+      <Button type="primary" onClick={getCurrentLocation} style={{ marginBottom: "10px" }}>
+        Lihat Koordinat
+      </Button>
+      <TextArea
+        disabled={true}
+        value={displayName}
+        style={{
+          fontSize: "12px",
+          width: "400px",
+          height: "50px",
+          overflowY: "auto",
+          color: "black",
+        }}
+      />
+      {latitude && longitude && (
         <MapContainer
-          center={coordinates}
-          zoom={15}
-          style={{ height: "400px", width: "100%" }}
-          whenCreated={(map) => map.invalidateSize()} // Memastikan render ulang
+          center={[latitude, longitude]}
+          zoom={13}
+          className="leaflet-container"
+          style={{ height: "300px", width: "100%" }}
         >
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          <Marker position={coordinates}>
-            <Popup>
-              Lokasi Anda: {coordinates.lat}, {coordinates.lng}
-            </Popup>
-          </Marker>
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          <Marker position={[latitude, longitude]} icon={customIcon}></Marker>
         </MapContainer>
       )}
-    </div>
+    </Form.Item>
   );
 });
 

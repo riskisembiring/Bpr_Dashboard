@@ -1,8 +1,8 @@
 import React from "react";
-import { Layout, Menu, Button } from "antd";
+import { Layout, Menu, Button, Dropdown } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
-import { UserOutlined } from "@ant-design/icons";
-import "../styles/DashboardLayout.css"; 
+import { UserOutlined, DownOutlined } from "@ant-design/icons";
+import "../styles/DashboardLayout.css";
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -43,6 +43,18 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
     },
   ];
 
+  // Menu for user actions (Profile, Logout)
+  const userMenu = (
+    <Menu>
+      <Menu.Item key="profile" onClick={() => navigate("/dashboard/profile")}>
+        Profile
+      </Menu.Item>
+      <Menu.Item key="logout" onClick={handleLogout} danger>
+        Logout
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <Layout className="layout-container">
       {/* Sidebar for larger screens */}
@@ -54,16 +66,6 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
           className="menu"
           items={menuItems}
         />
-        <div style={{ position: "absolute", bottom: 0, width: "100%", padding: "10px" }}>
-          <Button
-            onClick={handleLogout}
-            danger
-            className="logout-btn"
-            icon={<UserOutlined />}
-          >
-            Logout
-          </Button>
-        </div>
       </Sider>
 
       <Layout>
@@ -73,13 +75,26 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
             <img
               src="/images/logo.png"
               alt="Logo"
-              style={{ height: "40px", objectFit: "contain", marginTop: "20px" }}
+              style={{ height: "25px", objectFit: "contain", marginTop: "20px", marginRight: "20px" }}
             />
           </div>
           <div className="header-user">
-            <UserOutlined style={{ fontSize: "24px", marginRight: "8px" }} />
-            <h2 onClick={() => navigate("/dashboard/profile")}>{userRole}</h2>
-          </div>
+          <Dropdown overlay={userMenu} trigger={['click']}>
+            <div className="header-user-container">
+              <UserOutlined style={{ fontSize: "18px", marginRight: "8px", cursor: "pointer" }} />
+              <h2
+                style={{
+                  display: "inline",
+                  margin: 0,
+                  fontSize: "14px",
+                  cursor: "pointer",
+                }}
+              >
+           {userRole === "collector" ? "C" : userRole === "direksi" ? "D" : "V"}
+      </h2>
+    </div>
+  </Dropdown>
+</div>
         </Header>
 
         {/* Mobile Navbar (below header) */}
