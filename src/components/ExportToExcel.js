@@ -1,50 +1,84 @@
 import React from "react";
 import { Button } from "antd";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 
 const ExportToExcel = ({ data, disabled }) => {
-  const exportToExcel = (data, fileName) => {
-    // Membuat worksheet kosong untuk menambahkan header
-    const worksheet = XLSX.utils.json_to_sheet([], { origin: 'A3' });
+  const exportToExcel = async (data, fileName) => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Sheet1");
 
-    // Menambahkan "Report Data" di sel A1
-    worksheet['F1'] = { t: 's', v: 'Report Data', s: { alignment: { horizontal: 'center' } } };
+    // Menambahkan judul di E1
+    worksheet.mergeCells("E1");
+    const titleCell = worksheet.getCell("E1");
+    titleCell.value = "Data Collections Report";
+    titleCell.alignment = { horizontal: "center", vertical: "middle" };
+    titleCell.font = { size: 14, bold: true };
 
-    // Menambahkan data mulai dari A3
-    const dataWorksheet = XLSX.utils.json_to_sheet(data, { origin: 'A3' });
+    const headers = [
+      "tanggal",
+      "nameUser",
+      "namaDebitur",
+      "aktifitas",
+      "hasil",
+      "keterangan",
+      "fotoBase64", // Tetap menggunakan 'fotoBase64' di kode
+      "location",
+      "status",
+      "catatan",
+    ];
 
-    // Menambahkan data ke worksheet
-    Object.keys(dataWorksheet).forEach(key => {
-      worksheet[key] = dataWorksheet[key];
+    // Menambahkan header mulai dari baris ke-3 (A3)
+    worksheet.addRow([]); // Baris kosong agar header berada di baris ke-3
+    const modifiedHeaders = headers.map((header) =>
+      header === "fotoBase64" ? "Foto" : header
+    );
+    worksheet.addRow(modifiedHeaders); // Menambahkan header yang sudah diubah
+
+    // Menambahkan data dan gambar
+    data.forEach((row) => {
+      const rowData = modifiedHeaders.map((header) => {
+        if (header === "Foto" && row["fotoBase64"]) {
+          const imageId = workbook.addImage({
+            base64: row["fotoBase64"],
+            extension: "png",
+          });
+
+          worksheet.addImage(imageId, {
+            tl: { col: 6, row: worksheet.lastRow.number - 0.1 },
+            ext: { width: 45, height: 20 },
+          });
+
+          return "-";
+        } else {
+          return row[header] || "-";
+        }
+      });
+      worksheet.addRow(rowData);
     });
 
     // Menyesuaikan lebar kolom berdasarkan panjang data terpanjang
-    const columnWidths = data.reduce((acc, row) => {
-      Object.keys(row).forEach((key, index) => {
-        const cellValue = String(row[key]);
-        if (!acc[index] || cellValue.length > acc[index]) {
-          acc[index] = cellValue.length;
-        }
-      });
-      return acc;
-    }, []);
+    modifiedHeaders.forEach((header, index) => {
+      const maxLength = Math.max(
+        header.length,
+        ...data.map((row) => String(row[header] || "").length)
+      );
+      worksheet.getColumn(index + 1).width = maxLength + 2;
+    });
 
-    worksheet['!cols'] = columnWidths.map(width => ({ wch: width }));
-
-    // Membuat workbook dan menambahkan worksheet
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-    // Mengekspor file Excel
-    XLSX.writeFile(workbook, `${fileName}.xlsx`);
+    // Menulis dan mengunduh file Excel
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${fileName}.xlsx`;
+    link.click();
   };
 
   const handleExport = () => {
-    // Hapus properti 'key' dari setiap objek dalam data
-    const cleanedData = data.map(({ key, ...rest }) => rest);
-
-    // Lakukan ekspor dengan data yang sudah dibersihkan
-    exportToExcel(cleanedData, "ExportedData");
+    const cleanedData = data.map(({ key, id, ...rest }) => rest);
+    exportToExcel(cleanedData, "CollectionData");
   };
 
   return (

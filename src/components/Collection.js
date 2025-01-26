@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Table, Button, Modal, Input, Form, Select, Radio, message } from "antd";
+import { Table, Button, Modal, Input, Form, Select, Radio, message, Spin } from "antd";
 import ExportToExcel from "./ExportToExcel";
 import CameraCapture from "./CameraCapture";
 import Location from "./Location";
@@ -17,6 +17,8 @@ const Collection = ({ userRole }) => {
   const cameraRef = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
 
   const keteranganOptions = [
     "Pembayaran cicilan per bulan.",
@@ -35,6 +37,8 @@ const Collection = ({ userRole }) => {
 
   // Fetch data from API on component mount
   useEffect(() => {
+    const username = localStorage.getItem("username");
+    setUserData({ username });
     const fetchData = async () => {
       try {
         const response = await fetch("https://api-nasnus.vercel.app/api/data");
@@ -42,8 +46,11 @@ const Collection = ({ userRole }) => {
         setData(result); // Menyimpan data dari API ke state
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false); // Set loading ke false setelah data di-fetch
       }
     };
+    
     fetchData();
   }, []);
 
@@ -65,6 +72,7 @@ const Collection = ({ userRole }) => {
   const handleSave = async (values) => {
     const updatedLocation = currentRecord?.location ?? locationRef.current?.getLocation() ?? "Unknown Location";
     const updatedFoto = currentRecord?.foto || "";
+    const updatedBase64 = currentRecord?.fotoBase64 || "";
   
     const currentDate = new Date().toLocaleDateString("id-ID", {
       day: "2-digit",
@@ -89,6 +97,8 @@ const Collection = ({ userRole }) => {
             location: updatedLocation,
             foto: updatedFoto,
             tanggal: currentDate,
+            nameUser: userData?.username,
+            fotoBase64: updatedBase64,
           }),
         });
   
@@ -109,6 +119,9 @@ const Collection = ({ userRole }) => {
           location: updatedLocation,
           foto: updatedFoto,
           tanggal: currentDate,
+          nameUser: userData?.username,
+          fotoBase64: updatedBase64,
+          status: "Belum di cek",
         };
   
         // Tambahkan data baru ke Firestore
@@ -160,7 +173,7 @@ const Collection = ({ userRole }) => {
         item.key === record.key
           ? { ...item, status: value === "" ? "Belum di cek" : value }
           : item
-      );
+      );  
       setData(updatedData);
   
       // Kirim perubahan ke server menggunakan API
@@ -182,6 +195,10 @@ const Collection = ({ userRole }) => {
 
   const handleFileChange = (foto) => {
     setCurrentRecord((prev) => ({ ...prev, foto }));
+  };
+
+  const handleBase64 = (fotoBase64) => {
+    setCurrentRecord((prev) => ({ ...prev, fotoBase64 }));
   };
 
   const handleCatatanChange = async (value, record) => {
@@ -232,6 +249,15 @@ const Collection = ({ userRole }) => {
     }
   };
 
+  const handleCreateOrUpdate = () => {
+    if (cameraRef.current && !cameraRef.current.validatePhoto()) {
+      return; // Jika validasi gagal, hentikan eksekusi
+    }
+
+    // Lanjutkan dengan proses create/update
+    message.success('Proses berhasil dilanjutkan!');
+  };
+
   const filteredData = userRole === 'direksi'
   ? data.filter((item) =>
       searchText === "" || 
@@ -248,47 +274,74 @@ const Collection = ({ userRole }) => {
 
   const columns = [
     {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      hidden: true
+    },
+    {
       title: "Tanggal",
       dataIndex: "tanggal",
       key: "tanggal",
       hidden: userRole === 'direksi' ? false : true,
-      sorter: (a, b) => new Date(a.tanggal) - new Date(b.tanggal),
+      sorter: (a, b) => a.tanggal.localeCompare(b.tanggal),
+      sortDirections: ["ascend", "descend"],
+    },
+    {
+      title: "Nama User",
+      dataIndex: "nameUser",
+      key: "nameUser",
+      // hidden: userRole === 'direksi' ? false : true,
+      sorter: (a, b) => a.nameUser.localeCompare(b.nameUser),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Nama Debitur",
       dataIndex: "namaDebitur",
       key: "namaDebitur",
       sorter: (a, b) => a.namaDebitur.localeCompare(b.namaDebitur),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Aktifitas",
       dataIndex: "aktifitas",
       key: "aktifitas",
       sorter: (a, b) => a.aktifitas.localeCompare(b.aktifitas),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Hasil",
       dataIndex: "hasil",
       key: "hasil",
-      sorter: (a, b) => new Date(a.hasil) - new Date(b.hasil),
+      sorter: (a, b) => a.hasil.localeCompare(b.hasil),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Keterangan",
       dataIndex: "keterangan",
       key: "keterangan",
-      sorter: (a, b) => new Date(a.keterangan) - new Date(b.keterangan),
+      sorter: (a, b) => a.keterangan.localeCompare(b.keterangan),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Foto",
       dataIndex: "foto",
       key: "foto",
-      sorter: (a, b) => new Date(a.foto) - new Date(b.foto),
+      sorter: (a, b) => a.foto.localeCompare(b.foto),
+      sortDirections: ["ascend", "descend"],
+    },
+    {
+      title: "FotoBase64",
+      dataIndex: "fotoBase64",
+      key: "fotoBase64",
+      hidden: true
     },
     {
       title: "Location",
       dataIndex: "location",
       key: "location",
-      sorter: (a, b) => new Date(a.location) - new Date(b.location),
+      sorter: (a, b) => a.location.localeCompare(b.location),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Actions",
@@ -313,8 +366,9 @@ const Collection = ({ userRole }) => {
             style={{ width: 120, marginRight: "10px" }}
             onChange={(value) => handleStatusChange(value, record)}
             disabled={userRole !== "verifikator"}
+            placeholder="Pilih Status"
           >
-            <Option value='Belum di cek'>Pilih Status</Option>
+            {/* <Option value='Belum di cek'>Pilih Status</Option> */}
             <Option value="approve">Approve</Option>
             <Option value="reject">Reject</Option>
           </Select>
@@ -332,6 +386,12 @@ const Collection = ({ userRole }) => {
 
   return (
 <div>
+      {loading ? (
+        <Spin tip="Loading..."> {/* Menampilkan indikator loading */}
+          <div style={{ height: 200 }} /> {/* Area untuk memastikan Spinner tampil dengan baik */}
+        </Spin>
+      ) : (
+        <div>
 <div className="container">
       {/* Search Input */}
       <Input
@@ -362,7 +422,7 @@ const Collection = ({ userRole }) => {
       <Table
         columns={columns.filter((column) => !column.hidden)}
         dataSource={filteredData}
-        rowKey="key"
+        rowKey="id"
         onRow={(record) => ({
           onClick: () => handleSelectId(record.id),
           style: {
@@ -452,13 +512,13 @@ const Collection = ({ userRole }) => {
             </Form.Item>
 
             {/* Camera Component */}
-            <CameraCapture ref={cameraRef} handleFileChange={handleFileChange} />
+            <CameraCapture ref={cameraRef} handleFileChange={handleFileChange} handleBase64={handleBase64}/>
 
             {/* Location Component */}
             <Location ref={locationRef} updateLocation={updateLocation} />
 
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" onClick={handleCreateOrUpdate}>
                 {isEditing ? "Update" : "Create"}
               </Button>
               <Button onClick={handleCancel} style={{ marginLeft: "10px" }}>
@@ -468,6 +528,8 @@ const Collection = ({ userRole }) => {
           </Form>
         </div>
       </Modal>
+    </div>
+      )}
     </div>
   );
 };

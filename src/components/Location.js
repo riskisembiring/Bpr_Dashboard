@@ -1,5 +1,5 @@
 import React, { useState, useImperativeHandle, forwardRef } from "react";
-import { Form, Button, Input } from "antd";
+import { Form, Button, Input, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -16,8 +16,11 @@ const Location = forwardRef(({ updateLocation }, ref) => {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [displayName, setDisplayName] = useState(null);
+  const [loading, setLoading] = useState(false); // State untuk loading
 
   function getCurrentLocation() {
+    setLoading(true); // Set loading ke true saat mengambil lokasi
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -38,14 +41,17 @@ const Location = forwardRef(({ updateLocation }, ref) => {
             })
             .catch((error) => {
               console.error("Error fetching geolocation data:", error);
-            });
+            })
+            .finally(() => setLoading(false)); // Set loading ke false setelah data diambil
         },
         (error) => {
           console.error("Error getting location:", error);
+          setLoading(false); // Set loading ke false jika terjadi error
         }
       );
     } else {
       console.error("Geolocation is not supported by this browser.");
+      setLoading(false); // Set loading ke false jika geolocation tidak didukung
     }
   }
 
@@ -63,8 +69,17 @@ const Location = forwardRef(({ updateLocation }, ref) => {
 
   return (
     <Form.Item label="Lokasi" name="location">
-      <Button type="primary" onClick={getCurrentLocation} style={{ marginBottom: "10px" }}>
-        Lihat Koordinat
+      <Button
+        type="primary"
+        onClick={getCurrentLocation}
+        style={{ marginBottom: "10px" }}
+        disabled={loading} // Nonaktifkan tombol saat loading
+      >
+        {loading ? (
+          <Spin size="small" /> // Menampilkan spinner di dalam tombol
+        ) : (
+          "Lihat Koordinat"
+        )}
       </Button>
       <TextArea
         disabled={true}
@@ -77,6 +92,7 @@ const Location = forwardRef(({ updateLocation }, ref) => {
           color: "black",
         }}
       />
+      
       {latitude && longitude && (
         <MapContainer
           center={[latitude, longitude]}

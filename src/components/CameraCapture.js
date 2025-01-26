@@ -3,14 +3,13 @@ import { Button, Form, Typography, message } from 'antd';
 
 const { Title } = Typography;
 
-const CameraCapture = forwardRef(({ handleFileChange, handleCancel }, ref) => {
-  const [image, setImage] = useState(null);
+const CameraCapture = forwardRef(({ handleFileChange, handleBase64 }, ref) => {
   const [fileName, setFileName] = useState('CapturedImage.png');
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [image, setImage] = useState(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
-  // Mulai kamera
   const startCamera = () => {
     navigator.mediaDevices.getUserMedia({ video: true })
       .then((stream) => {
@@ -18,106 +17,120 @@ const CameraCapture = forwardRef(({ handleFileChange, handleCancel }, ref) => {
         setIsCameraActive(true);
       })
       .catch((err) => {
-        console.error("Error accessing camera: ", err);
+        console.error('Error accessing camera: ', err);
         message.error('Gagal mengakses kamera. Pastikan kamera terhubung.');
       });
   };
 
-  // Ambil gambar dari stream video
   const captureImage = () => {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
     const dataUrl = canvas.toDataURL('image/png');
+    const base64Data = dataUrl.split(',')[1];
+  
+    // Mengecek apakah gambar adalah base64
+    console.log("Base64 image:", base64Data);
+    console.log(":", dataUrl);
+  
     setImage(dataUrl);
     setFileName(`CapturedImage_${new Date().getTime()}.png`);
-    handleFileChange(`CapturedImage_${new Date().getTime()}.png`); // Kirim foto yang diambil ke parent
+    handleFileChange(`CapturedImage_${new Date().getTime()}.png`); // Pastikan data URL base64 dikirim ke parent
+    handleBase64(base64Data);
   };
 
-  // Stop kamera
   const stopCamera = () => {
     const stream = videoRef.current?.srcObject;
     if (stream) {
       const tracks = stream.getTracks();
-      tracks.forEach(track => track.stop());
+      tracks.forEach((track) => track.stop());
       videoRef.current.srcObject = null;
       setIsCameraActive(false);
-    } else {
-      console.warn("Stream is already null or undefined.");
     }
   };
 
-  // Expose stopCamera method to parent component
+  const clearPreview = () => {
+    setImage(null); // Clear preview image
+    setFileName('CapturedImage.png');
+  };
+
   useImperativeHandle(ref, () => ({
     stopCamera,
+    validatePhoto: () => {
+      if (!isCameraActive) {
+        message.error('Kamera belum aktif, silakan nyalakan kamera terlebih dahulu!');
+        return false;
+      }
+      if (!image) {
+        message.error('Silakan ambil foto terlebih dahulu!');
+        return false;
+      }
+      message.success('Foto valid!');
+      return true;
+    },
   }));
-
-  // Fungsi untuk reset preview gambar
-  const resetImage = () => {
-    setImage(null);
-    setFileName('CapturedImage.png');
-    handleCancel(); // Memanggil fungsi handleCancel yang diteruskan dari komponen induk
-  };
 
   return (
     <div>
       <Form.Item label="Foto" name="foto">
-        <Button
-          type="primary"
-          onClick={startCamera}
-          disabled={isCameraActive} // Disable jika kamera sudah aktif
-        >
-          Mulai Kamera
-        </Button>
-      </Form.Item>
-
-      <Form.Item>
-        <video
-          ref={videoRef}
-          width="100%" // Agar video responsif
-          height="auto"
-          autoPlay
-          style={{ border: '1px solid #ccc', borderRadius: '5px' }}
-        ></video>
-      </Form.Item>
-
-      <Form.Item label="" name="foto">
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Button
             type="primary"
-            onClick={captureImage}
-            disabled={!isCameraActive} // Disable jika kamera belum aktif
+            onClick={startCamera}
+            disabled={isCameraActive}
           >
-            Ambil Foto
+            Mulai Kamera
           </Button>
-          <Button
-            type="danger"
-            onClick={stopCamera}
-            disabled={!isCameraActive} // Disable jika kamera tidak aktif
-          >
-            Stop Kamera
-          </Button>
+          <video
+            ref={videoRef}
+            width="100%"
+            height="auto"
+            autoPlay
+            style={{ marginTop: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
+          ></video>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
+            <Button
+              type="primary"
+              onClick={captureImage}
+              disabled={!isCameraActive} // Tombol hanya aktif jika kamera aktif
+            >
+              Ambil Foto
+            </Button>
+            <Button
+              type="danger"
+              onClick={stopCamera}
+              disabled={!isCameraActive}
+            >
+              Stop Kamera
+            </Button>
+            <Button
+              type="default"
+              onClick={clearPreview}
+            >
+              Clear Preview
+            </Button>
+          </div>
         </div>
       </Form.Item>
 
-      {/* Preview Gambar dan Nama File */}
+      {/* Preview Gambar */}
       {image && (
-        <Form.Item style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Title level={5}>Preview Gambar</Title>
-          <img src={image} alt="Captured" style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain' }} />
-          <div>{fileName}</div>
-
-          {/* Tombol Cancel */}
-          <Button
-            type="default"
-            onClick={resetImage}
-            style={{ marginTop: '10px' }}
-          >
-            Cancel
-          </Button>
+        <Form.Item>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Title level={5}>Preview Gambar</Title>
+            <img
+              src={image}
+              alt="Captured"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '400px',
+                objectFit: 'contain',
+              }}
+            />
+            <div>{fileName}</div>
+          </div>
         </Form.Item>
       )}
-
       <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
     </div>
   );
