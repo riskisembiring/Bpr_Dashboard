@@ -56,82 +56,109 @@ const CameraCapture = forwardRef(({ handleFileChange, handleBase64 }, ref) => {
 
   useImperativeHandle(ref, () => ({
     stopCamera,
+    clearPreview,
     validatePhoto: () => {
       if (!isCameraActive) {
-        message.error('Kamera belum aktif, silakan nyalakan kamera terlebih dahulu!');
+        // message.error('Kamera belum aktif, silakan nyalakan kamera terlebih dahulu!');
         return false;
       }
       if (!image) {
-        message.error('Silakan ambil foto terlebih dahulu!');
+        // message.error('Silakan ambil foto terlebih dahulu!');
         return false;
       }
-      message.success('Foto valid!');
+      // message.success('Foto valid!');
       return true;
     },
   }));
 
   return (
-    <div>
-      <Form.Item label="Foto" name="foto">
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Button
-            type="primary"
-            onClick={startCamera}
-            disabled={isCameraActive}
-          >
-            Mulai Kamera
-          </Button>
-          <video
-            ref={videoRef}
-            width="100%"
-            height="auto"
-            autoPlay
-            style={{ marginTop: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
-          ></video>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
-            <Button
-              type="primary"
-              onClick={captureImage}
-              disabled={!isCameraActive} // Tombol hanya aktif jika kamera aktif
-            >
-              Ambil Foto
-            </Button>
-            <Button
-              type="danger"
-              onClick={stopCamera}
-              disabled={!isCameraActive}
-            >
-              Stop Kamera
-            </Button>
-            <Button
-              type="default"
-              onClick={clearPreview}
-            >
-              Clear Preview
-            </Button>
-          </div>
-        </div>
-      </Form.Item>
+<div>
+<Form.Item
+  label="Foto"
+  name="foto"
+  rules={[
+    {
+      required: !isCameraActive ,
+      message: 'Silahkan tekan Mulai Kamera terlebih dahulu!',
+    },
+  ]}
+>
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <Button
+      type="primary"
+      onClick={startCamera}
+      disabled={isCameraActive}
+    >
+      Mulai Kamera
+    </Button>
+    <video
+      ref={videoRef}
+      width="100%"
+      height="auto"
+      autoPlay
+      style={{ marginTop: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
+    ></video>
+    </div>
+    </Form.Item>
+  <Form.Item
+    label=""
+    // name="ambilFoto"
+    // rules={[
+    //   {
+    //     required: isCameraActive,
+    //     message: 'Silakan ambil foto terlebih dahulu!',
+    //   },
+    // ]}
+  >
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
+      <Button
+        type="primary"
+        onClick={captureImage}
+        disabled={!isCameraActive}
+      >
+        Ambil Foto
+      </Button>
+      <Button
+        type="danger"
+        onClick={stopCamera}
+        disabled={!isCameraActive}
+      >
+        Stop Kamera
+      </Button>
+      <Button
+        type="default"
+        onClick={clearPreview}
+        style={{ display: 'none' }}
+      >
+        Clear Preview
+      </Button>
+    </div>
+  </Form.Item>
 
-      {/* Preview Gambar */}
-      {image && (
-        <Form.Item>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Title level={5}>Preview Gambar</Title>
-            <img
-              src={image}
-              alt="Captured"
-              style={{
-                maxWidth: '100%',
-                maxHeight: '400px',
-                objectFit: 'contain',
-              }}
-            />
-            <div>{fileName}</div>
-          </div>
-        </Form.Item>
-      )}
-      <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+
+{/* Preview Gambar */}
+{image && (
+  <Form.Item
+    label="Preview Gambar"
+    name="preview"
+  >
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Title level={5}>Preview Gambar</Title>
+      <img
+        src={image}
+        alt="Captured"
+        style={{
+          maxWidth: '100%',
+          maxHeight: '400px',
+          objectFit: 'contain',
+        }}
+      />
+      <div>{fileName}</div>
+    </div>
+  </Form.Item>
+)}
+<canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+
     </div>
   );
 });

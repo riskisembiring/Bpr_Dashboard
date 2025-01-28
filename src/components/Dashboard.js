@@ -132,7 +132,9 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
         </Content>
 
         {/* Footer */}
-        <Footer className="footer">©2025 Created by Riski Sembiring</Footer>
+        <Footer className="footer">
+          ©2025 Created by <a href="https://riskisembiring.github.io/Portfolio/" target="_blank" rel="noopener noreferrer">Riski Sahputra Sembiring</a>
+        </Footer>
 
         {/* Logout Confirmation Modal */}
         <Modal

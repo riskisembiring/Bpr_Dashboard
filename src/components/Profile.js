@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Card, Avatar, List, Typography, Divider } from "antd";
+import { Card, Avatar, Typography } from "antd";
 import "../styles/Profile.css";
 
 const { Title, Text } = Typography;
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     // Mengambil data pengguna dari localStorage setelah login
     const username = localStorage.getItem("username");
     const role = localStorage.getItem("role");
     setUserData({ username, role }); // Menyimpan username ke state
+    console.log('username', username, role);
   }, []);
 
   // if (loading) {

@@ -23,7 +23,7 @@ const Login = ({ setIsAuthenticated, setUserRole }) => {
       if (response.ok) {
         message.success(data.message).then(() => {
           // Simpan token dan data pengguna di localStorage          
-          localStorage.setItem("username", data.role); // Menyimpan username
+          localStorage.setItem("username", data.username); // Menyimpan username
           localStorage.setItem("role", data.role); // Menyimpan token (jika perlu)
 
           setIsAuthenticated(true);

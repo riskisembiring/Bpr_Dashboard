@@ -19,6 +19,7 @@ const Collection = ({ userRole }) => {
   const [selectedId, setSelectedId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
+  const [isDataAdded, setIsDataAdded] = useState(false);
 
   const keteranganOptions = [
     "Pembayaran cicilan per bulan.",
@@ -37,40 +38,83 @@ const Collection = ({ userRole }) => {
 
   // Fetch data from API on component mount
   useEffect(() => {
+    const userRole = localStorage.getItem("role");
     const username = localStorage.getItem("username");
+  
+    // Set user data berdasarkan username
     setUserData({ username });
+  
     const fetchData = async () => {
       try {
         const response = await fetch("https://api-nasnus.vercel.app/api/data");
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
         const result = await response.json();
-        setData(result); // Menyimpan data dari API ke state
+  
+        let filtered;
+        if (userRole === "collector") {
+          // Jika userRole adalah collector, tampilkan data untuk username yang login
+          filtered = result.filter((item) => item.nameUser === username);
+        } else {
+          // Jika userRole bukan collector, tampilkan semua data
+          filtered = result;
+        }
+  
+        // Menyimpan data dari API ke state
+        setData(filtered);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        setLoading(false); // Set loading ke false setelah data di-fetch
+        // Set loading ke false setelah data di-fetch
+        setLoading(false);
       }
     };
-    
+  
     fetchData();
-  }, []);
+  
+    // Reset isDataAdded agar tidak terus memicu useEffect
+    if (isDataAdded) {
+      setIsDataAdded(false);
+    }
+  }, [isDataAdded]);
+
+  const resetFieldsVal = () => {
+    form.setFieldsValue({ location: null });
+    form.setFieldsValue({ foto: null });
+  };
 
   const handleNew = () => {
-    form.resetFields();
+    resetFieldsVal();
+    // form.resetFields();
     setIsEditing(false);
     setIsModalVisible(true);
-    setCurrentRecord(null);
+    // setCurrentRecord(null);
   };
 
   const handleEdit = (record) => {
     setIsEditing(true);
     setIsModalVisible(true);
-    setCurrentRecord(null);
+    // setCurrentRecord(null);
     // setCurrentRecord(record);
     form.setFieldsValue(record);
+    resetFieldsVal();
   };
 
+  const cek = () => {
+    console.log('cek', form.getFieldValue("foto"))
+    console.log('form.validateFields()', form.validateFields(["foto"]));
+  }
+
   const handleSave = async (values) => {
-    const updatedLocation = currentRecord?.location ?? locationRef.current?.getLocation() ?? "Unknown Location";
+    const updatedLocation = currentRecord?.location || locationRef.current?.getLocation();
+  
+    // Pastikan location valid sebelum lanjut
+    if (!updatedLocation) {
+      message.error("Silakan lihat lokasi terlebih dahulu!");
+      return;  // Hentikan proses jika lokasi tidak valid
+    }
+  
     const updatedFoto = currentRecord?.foto || "";
     const updatedBase64 = currentRecord?.fotoBase64 || "";
   
@@ -80,92 +124,79 @@ const Collection = ({ userRole }) => {
       year: "numeric",
     });
   
-    // Tampilkan pesan loading
     const hideLoading = message.loading("Menyimpan data...", 0);
   
     try {
-      if (isEditing && currentRecord) {
-        // Update data di Firestore (dengan menyertakan ID di URL)
-        const response = await fetch(`https://api-nasnus.vercel.app/api/data/${selectedId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...currentRecord,
+      // Validasi terlebih dahulu
+      const validateResult = await form.validateFields();
+      if (validateResult) {
+        if (isEditing && currentRecord) {
+          // Update data jika sedang dalam mode edit
+          const response = await fetch(`https://api-nasnus.vercel.app/api/data/${selectedId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...currentRecord,
+              ...values,
+              location: updatedLocation,
+              foto: updatedFoto,
+              tanggal: currentDate,
+              nameUser: userData?.username,
+              fotoBase64: updatedBase64,
+            }),
+          });
+  
+          if (!response.ok) {
+            throw new Error("Gagal memperbarui data di server");
+          }
+          message.success("Data berhasil diubah.");
+          // form.setFieldsValue({ uploadfoto: null });  // Reset nilai foto
+        } else {
+          // Simpan data baru jika tidak dalam mode edit
+          const newRecord = {
+            key: `${data.length + 1}`,
             ...values,
             location: updatedLocation,
             foto: updatedFoto,
             tanggal: currentDate,
             nameUser: userData?.username,
             fotoBase64: updatedBase64,
-          }),
-        });
+            status: "Belum di cek",
+          };
   
-        if (!response.ok) {
-          throw new Error("Gagal memperbarui data di server");
+          const response = await fetch("https://api-nasnus.vercel.app/api/data", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newRecord),
+          });
+  
+          if (!response.ok) {
+            throw new Error("Gagal menambahkan data baru ke server");
+          }
+          message.success("Data berhasil disimpan.");
         }
-  
-        // Tutup pesan loading
-        hideLoading();
-  
-        // Tampilkan pesan sukses untuk update data
-        message.success("Data berhasil diubah.");
-      } else {
-        // Data baru untuk ditambahkan
-        const newRecord = {
-          key: `${data.length + 1}`,
-          ...values,
-          location: updatedLocation,
-          foto: updatedFoto,
-          tanggal: currentDate,
-          nameUser: userData?.username,
-          fotoBase64: updatedBase64,
-          status: "Belum di cek",
-        };
-  
-        // Tambahkan data baru ke Firestore
-        const response = await fetch("https://api-nasnus.vercel.app/api/data", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newRecord),
-        });
-  
-        if (!response.ok) {
-          throw new Error("Gagal menambahkan data baru ke server");
-        }
-  
-        // Tutup pesan loading
-        hideLoading();
-  
-        // Tampilkan pesan sukses untuk data baru
-        message.success("Data berhasil disimpan.");
+        form.resetFields();
+        if (cameraRef.current) {
+         cameraRef.current.stopCamera();
+         cameraRef.current.clearPreview();
+       }
+       if (locationRef.current) {
+         await locationRef.current.resetLocation();
+       }
+       setIsDataAdded(true);
+       setIsModalVisible(false);
       }
-  
-      // Setelah berhasil, panggil API untuk mendapatkan data terbaru
-      const fetchDataResponse = await fetch("https://api-nasnus.vercel.app/api/data");
-      if (!fetchDataResponse.ok) {
-        throw new Error("Gagal mendapatkan data dari server");
-      }
-  
-      const updatedData = await fetchDataResponse.json();
-  
-      // Reset lokasi dan kamera
-      locationRef.current?.resetLocation();
-      setData(updatedData);
-      if (cameraRef.current) {
-        cameraRef.current.stopCamera();
-      }
-      setIsModalVisible(false);
     } catch (error) {
-      // Tutup pesan loading dan tampilkan pesan error
-      hideLoading();
       message.error(error.message || "Terjadi kesalahan.");
+    } finally {
+      hideLoading();
     }
-  };  
-
+  };
+  
   const handleStatusChange = async (value, record) => {
     try {
       // Update data lokal
@@ -187,9 +218,7 @@ const Collection = ({ userRole }) => {
           status: value === "" ? "Belum di cek" : value,
         }),
       }); 
-      console.log("Status updated successfully on the server");
     } catch (error) {
-      console.error("Error updating status:", error);
     }
   };
 
@@ -218,21 +247,27 @@ const Collection = ({ userRole }) => {
         catatan: record.catatan
       }),
     });
-    console.log("Catatan updated successfully on the server");
   } catch (error) {
-    console.error("Error updating catatan:", error);
   }
 };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
+const handleCancel = async () => {
+  try {
     form.resetFields();
-    locationRef.current?.resetLocation();
     handleFileChange(null);
     if (cameraRef.current) {
       cameraRef.current.stopCamera();
+      cameraRef.current.clearPreview();
     }
-  };
+    if (locationRef.current) {
+      await locationRef.current.resetLocation();
+    }
+    setIsModalVisible(false);
+    // await form.validateFields();
+  } catch (error) {
+    console.error("Error during cancel process:", error);
+  }
+};
 
   const handleSearch = (e) => {
     setSearchText(e.target.value);
@@ -253,11 +288,7 @@ const Collection = ({ userRole }) => {
     if (cameraRef.current && !cameraRef.current.validatePhoto()) {
       return; // Jika validasi gagal, hentikan eksekusi
     }
-
-    // Lanjutkan dengan proses create/update
-    message.success('Proses berhasil dilanjutkan!');
   };
-
   const filteredData = userRole === 'direksi'
   ? data.filter((item) =>
       searchText === "" || 
@@ -436,9 +467,9 @@ const Collection = ({ userRole }) => {
       <Modal
         title={isEditing ? "Edit Data" : "New Data"}
         visible={isModalVisible}
-        onCancel={handleCancel}
         footer={null}
         style={{ top: 20 }}
+        closable={false}
       >
         <div style={{ maxHeight: "600px", overflowY: "auto" }}>
           <Form
@@ -512,10 +543,10 @@ const Collection = ({ userRole }) => {
             </Form.Item>
 
             {/* Camera Component */}
-            <CameraCapture ref={cameraRef} handleFileChange={handleFileChange} handleBase64={handleBase64}/>
+            <CameraCapture ref={cameraRef} handleFileChange={handleFileChange} handleBase64={handleBase64} />
 
             {/* Location Component */}
-            <Location ref={locationRef} updateLocation={updateLocation} />
+            <Location ref={locationRef} updateLocation={updateLocation} form={form}/>
 
             <Form.Item>
               <Button type="primary" htmlType="submit" onClick={handleCreateOrUpdate}>
@@ -523,6 +554,9 @@ const Collection = ({ userRole }) => {
               </Button>
               <Button onClick={handleCancel} style={{ marginLeft: "10px" }}>
                 Cancel
+              </Button>
+              <Button onClick={cek} style={{ marginLeft: "10px", display: 'none' }}>
+                Cek
               </Button>
             </Form.Item>
           </Form>

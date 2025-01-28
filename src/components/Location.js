@@ -1,5 +1,5 @@
 import React, { useState, useImperativeHandle, forwardRef } from "react";
-import { Form, Button, Input, Spin } from "antd";
+import { Form, Button, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -12,7 +12,7 @@ const customIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
-const Location = forwardRef(({ updateLocation }, ref) => {
+const Location = forwardRef(({ updateLocation, form }, ref) => {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [displayName, setDisplayName] = useState(null);
@@ -35,6 +35,8 @@ const Location = forwardRef(({ updateLocation }, ref) => {
                 setLongitude(lon);
                 setDisplayName(data.lat + ' ' + data.lon);
                 updateLocation(data.lat + ' ' + data.lon);
+                form.setFieldsValue({ location: data.lat + ' ' + data.lon });
+                form.validateFields(["location"])
               } else {
                 console.error("No results found.");
               }
@@ -60,6 +62,7 @@ const Location = forwardRef(({ updateLocation }, ref) => {
     setLongitude(null);
     setDisplayName(null);
     updateLocation(null);
+    form.setFieldsValue({ location: null });
   };
 
   useImperativeHandle(ref, () => ({
@@ -68,7 +71,13 @@ const Location = forwardRef(({ updateLocation }, ref) => {
   }));
 
   return (
-    <Form.Item label="Lokasi" name="location">
+    <Form.Item
+      label="Lokasi"
+      name="location"
+      rules={[
+        { required: true, message: "Silakan lihat lokasi terlebih dahulu!" },
+      ]}
+    >
       <Button
         type="primary"
         onClick={getCurrentLocation}
