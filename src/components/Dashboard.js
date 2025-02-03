@@ -8,30 +8,30 @@ const { Header, Content, Sider, Footer } = Layout;
 
 const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
   const navigate = useNavigate();
-  const [selectedMenuKey, setSelectedMenuKey] = useState("1"); // State for active menu key
-  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false); // State for logout confirmation modal
+  const [selectedMenuKey, setSelectedMenuKey] = useState("1");
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    navigate("/"); // Logout and redirect to login page
+    navigate("/"); 
   };
 
   const handleMenuClick = (key, path) => {
-    setSelectedMenuKey(key); // Update selected menu key
-    navigate(path); // Navigate to the desired path
+    setSelectedMenuKey(key);
+    navigate(path);
   };
 
   const showLogoutModal = () => {
-    setIsLogoutModalVisible(true); // Show logout confirmation modal
+    setIsLogoutModalVisible(true);
   };
 
   const handleConfirmLogout = () => {
-    setIsLogoutModalVisible(false); // Close modal
-    handleLogout(); // Proceed with logout
+    setIsLogoutModalVisible(false);
+    handleLogout();
   };
 
   const handleCancelLogout = () => {
-    setIsLogoutModalVisible(false); // Close modal without logging out
+    setIsLogoutModalVisible(false);
   };
 
   const menuItems = [
@@ -52,7 +52,36 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
         {
           key: "2-2",
           label: "E-Filing",
-          onClick: () => handleMenuClick("2-2", "/dashboard/menu/efiling"),
+          children: [
+            {
+              key: "2-2-1",
+              label: "Deposito",
+              onClick: () => handleMenuClick("2-2-1", "/dashboard/menu/efiling/deposito"),
+            },
+            {
+              key: "2-2-2",
+              label: "Kredit",
+              onClick: () => handleMenuClick("2-2-2", "/dashboard/menu/efiling/kredit"),
+            },
+          ],
+        },
+        {
+          key: "2-3",
+          label: "Pengajuan Kredit",
+          onClick: () => {
+            const targetPath =
+              userRole === "marketing"
+                ? "/dashboard/menu/pengajuanKreditAo"
+                : userRole === "adminKredit"
+                ? "/dashboard/menu/pengajuanKreditAk"
+                : "/not-authorized"; // Default jika role tidak cocok
+            handleMenuClick("2-3", targetPath);
+          },
+        },
+        {
+          key: "2-4",
+          label: "Cetak MAK",
+          onClick: () => handleMenuClick("2-4", "/dashboard/menu/cetakMAK"),
         },
       ],
     },
@@ -62,6 +91,7 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
       onClick: () => handleMenuClick("3", "/dashboard/about-us"),
     },
   ];
+  
 
   const userMenu = (
     <Menu>
@@ -81,7 +111,7 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
         <Menu
           theme="dark"
           mode="inline"
-          selectedKeys={[selectedMenuKey]} // Highlight the active menu
+          selectedKeys={[selectedMenuKey]}
           className="menu"
           items={menuItems}
         />
@@ -121,7 +151,7 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
           className="mobile-navbar"
           theme="dark"
           mode="horizontal"
-          selectedKeys={[selectedMenuKey]} // Highlight the active menu
+          selectedKeys={[selectedMenuKey]}
           items={menuItems}
           style={{ display: "none" }}
         />
@@ -141,8 +171,8 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
           closable={false}
           title="Konfirmasi Logout"
           visible={isLogoutModalVisible}
-          onOk={handleConfirmLogout} // Confirm logout
-          onCancel={handleCancelLogout} // Cancel logout
+          onOk={handleConfirmLogout}
+          onCancel={handleCancelLogout}
           okText="Ya"
           cancelText="Tidak"
         >

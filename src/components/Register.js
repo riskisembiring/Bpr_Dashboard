@@ -47,6 +47,9 @@ const Register = () => {
           >
             <Select placeholder="Pilih Role">
               <Option value="collector">Collector</Option>
+              <Option value="marketing">Marketing</Option>
+              <Option value="adminKredit">Admin Kredit</Option>
+              <Option value="analisis">Analisis</Option>
               <Option value="direksi">Direksi</Option>
               <Option value="verifikator">Verifikator</Option>
             </Select>

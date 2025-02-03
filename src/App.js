@@ -4,8 +4,12 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import DashboardLayout from "./components/Dashboard";
 import Profile from "./components/Profile";
-import Collection from "./components/Collection";
-import EFiling from "./components/Efiling";
+import Collection from "./collector/Collection";
+import Deposito from "./efilling/Deposito";
+import Kredit from "./efilling/Kredit";
+import PengajuanKreditAo from "./pengajuanKreditAo/PengajuanKreditMarketingAo";
+import PengajuanKreditAk from "./pengajuanKreditAk/PengajuanKreditMarketingAk";
+import CetakMAK from "./cetakMAK/CetakMAK";
 import AboutUs from "./components/AboutUs";
 
 const App = () => {
@@ -50,7 +54,18 @@ const App = () => {
           {/* Halaman dalam Dashboard */}
           <Route path="profile" element={<Profile />} />
           <Route path="menu/collection" element={<Collection userRole={userRole} />} />
-          <Route path="menu/efiling" element={<EFiling />} />
+          <Route path="menu/efiling/deposito" element={<Deposito />} />
+          <Route path="menu/efiling/kredit" element={<Kredit />} />
+          {/* Rute dinamis berdasarkan userRole */}
+            {userRole === "marketing" ? (
+              <Route path="menu/pengajuanKreditAo" element={<PengajuanKreditAo />} />
+            ) : userRole === "adminKredit" ? (
+              <Route path="menu/pengajuanKreditAk" element={<PengajuanKreditAk />} />
+            ) : (
+              // Default jika userRole tidak cocok
+              <Route path="*" element={<Navigate to="/not-authorized" replace />} />
+            )}
+          <Route path="menu/cetakMAK" element={<CetakMAK />} />
           <Route path="about-us" element={<AboutUs />} />
         </Route>
 
