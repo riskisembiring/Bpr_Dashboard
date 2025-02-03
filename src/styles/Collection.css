@@ -5,6 +5,17 @@ General styles for the table
   margin-bottom: 20px;
 }
 
+.ant-modal-close {
+  display: flex !important; /* Pastikan tombol terlihat */
+  justify-content: center;
+  align-items: center;
+}
+
+.ant-modal-close-icon {
+  font-size: 24px; /* Ukuran tombol close */
+  color: red; /* Warna ikon close */
+}
+
 .button-group {
   display: flex;
   justify-content: flex-end; /* Posisi tombol di sebelah kanan */
@@ -27,6 +38,13 @@ General styles for the table
 .ant-table {
     width: 100%;
     overflow-x: auto;
+  }
+
+  .ant-table th,
+  .ant-table td {
+    padding: 4px; /* Reduce padding for better mobile readability */
+    word-wrap: break-word; /* Allow text to break on smaller screens */
+    font-size: 12px; /* Smaller font size */
   }
   
   /* Media query for mobile devices */
