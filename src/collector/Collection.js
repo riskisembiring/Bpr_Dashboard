@@ -26,6 +26,7 @@ const Collection = ({ userRole }) => {
   const [modalContentKet, setModalContentKet] = useState("");
   const [isModalImageVisible, setIsModalImageVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loadingKey, setLoadingKey] = useState(null);
 
 
   const keteranganOptions = [
@@ -242,13 +243,39 @@ const Collection = ({ userRole }) => {
   const handleBase64 = (fotoBase64) => {
     setCurrentRecord((prev) => ({ ...prev, fotoBase64 }));
   };
+//       const updatedData = data.map((item) =>
+//         item.key === record.key ? { ...item, catatan: value } : item
+//       );
+//       setData(updatedData);
 
-  const handleCatatanChange = async (value, record) => {
-    try {
-      const updatedData = data.map((item) =>
-        item.key === record.key ? { ...item, catatan: value } : item
-      );
-      setData(updatedData);
+//     await fetch(`https://api-nasnus.vercel.app/api/data/${selectedId}`, {
+//       method: "PUT",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         ...record,
+//         catatan: record.catatan
+//       }),
+//     });
+//   } catch (error) {
+//   }
+// };
+
+const handleCatatanChange = (record, value) => {
+  const updatedData = data.map((item) =>
+    item.key === record.key ? { ...item, catatan: value } : item
+  );
+  setData(updatedData);
+};
+
+const onclickSaveCatatan = async (record) => {
+  setLoadingKey(record.key);
+  try {
+    const updatedData = data.map((item) =>
+      item.key === record.key ? { ...item, catatan: record.catatan } : item
+    );
+    setData(updatedData);
 
     await fetch(`https://api-nasnus.vercel.app/api/data/${selectedId}`, {
       method: "PUT",
@@ -257,12 +284,18 @@ const Collection = ({ userRole }) => {
       },
       body: JSON.stringify({
         ...record,
-        catatan: record.catatan
+        catatan: record.catatan,
       }),
     });
+    message.success("Catatan berhasil disimpan.");
   } catch (error) {
+    message.error("Gagal menyimpan catatan.");
+    console.error(error);
+  } finally {
+    setLoadingKey(null);
   }
 };
+
 
 const handleCancel = async () => {
   try {
@@ -444,10 +477,10 @@ const handleCancel = async () => {
       render: (_, record) => (
         <div>
           <Select
-            value={record.status || "Belum di cek"} // pastikan ada nilai default
+            value={record.status || "Belum di cek"}
             style={{ width: 120, marginRight: "10px" }}
-            disabled={userRole !== "verifikator"}
             onChange={(value) => handleStatusChange(value, record)}
+            disabled={userRole !== "verifikator"}
             placeholder="Pilih Status"
           >
             {/* <Option value='Belum di cek'>Pilih Status</Option> */}
@@ -455,13 +488,16 @@ const handleCancel = async () => {
             <Option value="reject">Reject</Option>
           </Select>
           <TextArea
-            value={record.catatan || ""} // pastikan ada nilai default
+            value={record.catatan || ""}
             placeholder="Catatan"
+            onChange={(e) => handleCatatanChange(record, e.target.value)}
             style={{ width: 300, height: 100 }}
-            onChange={(e) => handleCatatanChange(e.target.value, record)}
             disabled={userRole !== "verifikator"}
           />
-        </div>
+          <Button type="primary" 
+          onClick={() => onclickSaveCatatan(record)}
+          loading={loadingKey === record.key}>Save Catatan</Button>        
+      </div>
       ),
     }
   ];
