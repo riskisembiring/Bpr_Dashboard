@@ -1,5 +1,5 @@
 import React, { useState, useImperativeHandle, forwardRef } from "react";
-import { Form, Button, Spin } from "antd";
+import { Form, Button, Spin, Input} from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -12,10 +12,11 @@ const customIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
-const Location = forwardRef(({ updateLocation, form }, ref) => {
+const Location = forwardRef(({ updateLocation, nameLocation, form }, ref) => {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [displayName, setDisplayName] = useState(null);
+  const [displayLoc, setDisplayLoc] = useState(null);
   const [loading, setLoading] = useState(false); // State untuk loading
 
   function getCurrentLocation() {
@@ -35,6 +36,8 @@ const Location = forwardRef(({ updateLocation, form }, ref) => {
                 setLongitude(lon);
                 setDisplayName(data.lat + ' ' + data.lon);
                 updateLocation(data.lat + ' ' + data.lon);
+                setDisplayLoc(data.display_name)
+                nameLocation(data.display_name)
                 form.setFieldsValue({ location: data.lat + ' ' + data.lon });
                 form.validateFields(["location"])
               } else {
@@ -61,6 +64,8 @@ const Location = forwardRef(({ updateLocation, form }, ref) => {
     setLatitude(null);
     setLongitude(null);
     setDisplayName(null);
+    setDisplayLoc(null);
+    nameLocation(null)
     updateLocation(null);
     form.setFieldsValue({ location: null });
   };
@@ -68,9 +73,11 @@ const Location = forwardRef(({ updateLocation, form }, ref) => {
   useImperativeHandle(ref, () => ({
     resetLocation,
     getLocation: () => `${latitude}, ${longitude}`,
+    getNameLoc: () => `${displayLoc}`
   }));
 
   return (
+    <>
     <Form.Item
       label="Lokasi"
       name="location"
@@ -101,7 +108,6 @@ const Location = forwardRef(({ updateLocation, form }, ref) => {
           color: "black",
         }}
       />
-      
       {latitude && longitude && (
         <MapContainer
           center={[latitude, longitude]}
@@ -116,7 +122,9 @@ const Location = forwardRef(({ updateLocation, form }, ref) => {
           <Marker position={[latitude, longitude]} icon={customIcon}></Marker>
         </MapContainer>
       )}
+      <Input style={{display: 'none'}} value={displayLoc}></Input>
     </Form.Item>
+    </>
   );
 });
 

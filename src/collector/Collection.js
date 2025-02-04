@@ -121,7 +121,9 @@ const Collection = ({ userRole }) => {
   };
 
   const handleSave = async (values) => {
+    console.log('currentRecord', currentRecord)
     const updatedLocation = currentRecord?.location || locationRef.current?.getLocation();
+    const namedLocation = currentRecord?.nameLoc || locationRef.current?.getNameLoc();
   
     // Pastikan location valid sebelum lanjut
     if (!updatedLocation) {
@@ -132,11 +134,16 @@ const Collection = ({ userRole }) => {
     const updatedFoto = currentRecord?.foto || "";
     const updatedBase64 = currentRecord?.fotoBase64 || "";
   
-    const currentDate = new Date().toLocaleDateString("id-ID", {
+    const currentDate = `${new Date().toLocaleDateString("id-ID", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
-    });
+    })} ${new Date().toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).replaceAll('.', ':')}`;
   
     const hideLoading = message.loading("Menyimpan data...", 0);
   
@@ -154,6 +161,7 @@ const Collection = ({ userRole }) => {
             body: JSON.stringify({
               ...currentRecord,
               ...values,
+              nameLoc: namedLocation,
               location: updatedLocation,
               foto: updatedFoto,
               tanggal: currentDate,
@@ -172,6 +180,7 @@ const Collection = ({ userRole }) => {
           const newRecord = {
             key: `${data.length + 1}`,
             ...values,
+            nameLoc: namedLocation,
             location: updatedLocation,
             foto: updatedFoto,
             tanggal: currentDate,
@@ -330,6 +339,17 @@ const handleCancel = async () => {
     }
   };
 
+  const nameLocation = (nameLoc) => {
+    if (isEditing && currentRecord) {
+      const updatedData = data.map((item) =>
+        item.key === currentRecord.key ? { ...item, nameLoc } : item
+      );
+      setData(updatedData);
+    } else {
+      setCurrentRecord((prev) => ({ ...prev, nameLoc }));
+    }
+  };
+
   const handleImageClick = (image) => {
     setSelectedImage(image); // Set gambar ke state
     setIsModalImageVisible(true); // Tampilkan modal
@@ -372,11 +392,12 @@ const handleCancel = async () => {
       hidden: true
     },
     {
-      title: "Tanggal",
+      title: "Tanggal & Waktu",
       dataIndex: "tanggal",
       key: "tanggal",
       // hidden: userRole !== 'collector' ? false : true,
-      sorter: (a, b) => a.tanggal.localeCompare(b.tanggal),
+      defaultSortOrder: 'ascend',
+      sorter: (a, b) => new Date(b.tanggal) - new Date(a.tanggal),
       sortDirections: ["ascend", "descend"],
     },
     {
@@ -418,7 +439,7 @@ const handleCancel = async () => {
           <>
             {text.substring(0, 100)}...
             <Button type="link" onClick={() => handleShowModalKet(text)}>
-              Lihat Selengkapnya
+              Lihat lengkapnya
             </Button>
           </>
         ) : (
@@ -430,8 +451,6 @@ const handleCancel = async () => {
     //   title: "Foto",
     //   dataIndex: "foto",
     //   key: "foto",
-    //   sorter: (a, b) => a.foto.localeCompare(b.foto),
-    //   sortDirections: ["ascend", "descend"],
     // },
     {
       title: "Foto",
@@ -450,11 +469,18 @@ const handleCancel = async () => {
       },
     },
     {
+      title: "Alamat Debitur",
+      dataIndex: "nameLoc",
+      key: "nameLoc",
+      // sorter: (a, b) => a.nameLoc.localeCompare(b.nameLoc),
+      // sortDirections: ["ascend", "descend"],
+    },
+    {
       title: "Location",
       dataIndex: "location",
       key: "location",
-      sorter: (a, b) => a.location.localeCompare(b.location),
-      sortDirections: ["ascend", "descend"],
+      // sorter: (a, b) => a.location.localeCompare(b.location),
+      // sortDirections: ["ascend", "descend"],
       render: (text) => <a href={`https://www.google.com/maps/place/${text}`} target="_blank" rel="noopener noreferrer">{text}</a>,
     },
     {
@@ -473,7 +499,7 @@ const handleCancel = async () => {
       dataIndex: "status",
       key: "status",
       width: 300,
-      hidden: userRole === 'collector' ? true : false,
+      // hidden: userRole === 'collector' ? true : false,
       render: (_, record) => (
         <div>
           <Select
@@ -496,7 +522,8 @@ const handleCancel = async () => {
           />
           <Button type="primary" 
           onClick={() => onclickSaveCatatan(record)}
-          loading={loadingKey === record.key}>Save Catatan</Button>        
+          loading={loadingKey === record.key} disabled={userRole !== "verifikator"}>Save Catatan
+          </Button>        
       </div>
       ),
     }
@@ -593,11 +620,16 @@ const handleCancel = async () => {
             form={form}
             initialValues={{
               ...currentRecord,
-              tanggal: new Date().toLocaleDateString('id-ID', {
+              tanggal: `${new Date().toLocaleDateString('id-ID', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',
-              }),
+              })} ${new Date().toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+              }).replaceAll('.', ':')}`,
             }}
             onFinish={handleSave}
             labelCol={{ span: 6 }}
@@ -610,11 +642,16 @@ const handleCancel = async () => {
               hidden={true}
             >
               <Input
-                value={new Date().toLocaleDateString('id-ID', {
+                value={`${new Date().toLocaleDateString('id-ID', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
-                })}
+                })} ${new Date().toLocaleTimeString('id-ID', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  hour12: false,
+                }).replaceAll('.', ':')}`}
               />
             </Form.Item>
 
@@ -662,7 +699,7 @@ const handleCancel = async () => {
             <CameraCapture ref={cameraRef} handleFileChange={handleFileChange} handleBase64={handleBase64} />
 
             {/* Location Component */}
-            <Location ref={locationRef} updateLocation={updateLocation} form={form}/>
+            <Location ref={locationRef} updateLocation={updateLocation} nameLocation={nameLocation} nama form={form}/>
 
             <Form.Item>
               <Button type="primary" htmlType="submit" onClick={handleCreateOrUpdate}>

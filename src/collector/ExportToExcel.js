@@ -22,6 +22,7 @@ const ExportToExcel = ({ data, disabled }) => {
       "hasil",
       "keterangan",
       "fotoBase64", // Tetap menggunakan 'fotoBase64' di kode
+      "nameLoc",
       "location",
       "status",
       "catatan",
