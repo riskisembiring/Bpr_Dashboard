@@ -1,0 +1,24 @@
+.form-table {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0px;
+  }
+  
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+  }
+  
+  .form-item {
+    flex: 1 1 45%;
+    min-width: 200px;
+  }
+  
+  @media (max-width: 768px) {
+    .form-item {
+      flex: 1 1 100%;
+    }
+  }
+  

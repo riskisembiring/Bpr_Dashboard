@@ -126,7 +126,7 @@ const Step1 = ({ form }) => {
 
         <Form.Item
           label="Jabatan"
-          name="jenisJabatan"
+          name="jabatan"
           // rules={[{ required: true, message: "Harap masukkan Jabatan!" }]}
         >
           <Input placeholder="Masukkan Jabatan" style={{textTransform: 'uppercase'}}/>
@@ -143,7 +143,6 @@ const Step1 = ({ form }) => {
               }
             }}/>
         </Form.Item>
-
         <Form.Item
           label="Status Karyawan"
           name="statusKaryawan"
@@ -188,8 +187,8 @@ const Step1 = ({ form }) => {
         </Form.Item>
 
         <Form.Item
-          label="Jenis Pengajuan"
-          name="jenisPengajuan"
+          label="Jenis Pengajuan Kredit"
+          name="jenisPengajuanKredit"
           // rules={[{ required: true, message: "Pilih Jenis Pengajuan!" }]}
         >
           <Radio.Group>

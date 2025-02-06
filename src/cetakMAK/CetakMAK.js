@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Typography, Table, Modal } from "antd";
 import moment from "moment";
-import { jsPDF } from "jspdf";  // Import jsPDF
+import { handleExportToPDF } from "./PdfDebitur";
 import Step1 from "./Step1";
 import Step2 from "./Step2";
 import Step3 from "./Step3";
@@ -15,13 +15,27 @@ const CetakMak = () => {
   const [showModal, setShowModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const [formData, setFormData] = useState({});
+  const [selectedRowKey, setSelectedRowKey] = useState(null); // Default selected row key
 
   useEffect(() => {
-    const storedData = localStorage.getItem("formMarketingData");
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      setDataDebitur(parsedData);
-    }
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/data-mak");
+        const result = await response.json();
+        if (response.ok) {
+          setDataDebitur(result.data);
+          if (result.data.length > 0) {
+            setSelectedRowKey(result.data[0].nomorMak); // Set default selected row
+          }
+        } else {
+          console.error("Failed to fetch data:", result);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleNextStep = () => {
@@ -37,41 +51,32 @@ const CetakMak = () => {
     setFormStep(formStep - 1);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const values = form.getFieldsValue();
     const updatedFormData = { ...formData, ...values };
 
-    const storedData = localStorage.getItem("formMarketingData");
-    let newData = storedData ? JSON.parse(storedData) : [];
-    newData.push(updatedFormData);
-    localStorage.setItem("formMarketingData", JSON.stringify(newData));
+    try {
+      const response = await fetch("http://localhost:3000/api/data-mak", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedFormData),
+      });
 
-    setDataDebitur(newData);
+      const result = await response.json();
 
-    alert("Data berhasil disimpan ke localStorage!");
-    setShowModal(false);
-  };
-
-  const handleExportToPDF = () => {
-    const doc = new jsPDF();
-
-    // Customizing the title and table
-    doc.setFontSize(18);
-    doc.text("Data Debitur", 14, 16); // Title
-
-    doc.autoTable({
-      head: [["Nama Debitur", "Nomor MAK", "Tanggal MAK"]],
-      body: dataDebitur.map((data) => [
-        data.namaDebitur,
-        data.nomorMak,
-        moment(data.tanggalMak).format("DD-MM-YYYY"),
-      ]),
-      startY: 20,
-      theme: "grid",
-    });
-
-    // Save the generated PDF
-    doc.save("data_debitur.pdf");
+      if (response.ok) {
+        setDataDebitur((prevData) => [...prevData, updatedFormData]);
+        alert("Data berhasil disimpan!");
+        setShowModal(false);
+      } else {
+        alert("Error: " + result.message);
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+      alert("Terjadi kesalahan saat menyimpan data!");
+    }
   };
 
   const columns = [
@@ -93,6 +98,10 @@ const CetakMak = () => {
     },
   ];
 
+  const onRowClick = (record) => {
+    setSelectedRowKey(record.nomorMak); // Store selected row key
+  };
+
   const renderFormStep = () => {
     switch (formStep) {
       case 1:
@@ -112,58 +121,92 @@ const CetakMak = () => {
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Title level={4}>Daftar Data</Title>
           <div>
-            <Button type="primary" onClick={() => setShowModal(true)} style={{ marginRight: "10px" }}>
+            <Button
+              type="primary"
+              onClick={() => setShowModal(true)}
+              style={{ marginRight: "10px" }}
+            >
               Tambah Data
             </Button>
-            <Button type="primary" onClick={handleExportToPDF}>
+            <Button
+              type="primary"
+              onClick={() => {
+                if (selectedRowKey) {
+                  const selectedRow = dataDebitur.find(
+                    (item) => item.nomorMak === selectedRowKey
+                  );
+                  handleExportToPDF(selectedRow);
+                } else {
+                  alert("Please select a row to export.");
+                }
+              }}
+            >
               Export to PDF
             </Button>
           </div>
         </div>
-        <Table columns={columns} dataSource={dataDebitur} rowKey="nama" pagination={false} />
+
+        <Table
+          columns={columns}
+          dataSource={dataDebitur}
+          rowKey="nomorMak"
+          pagination={false}
+          onRow={(record) => ({
+            onClick: () => onRowClick(record),
+          })}
+          rowClassName={(record) =>
+            record.nomorMak === selectedRowKey ? "selected-row" : ""
+          }
+        />
       </div>
 
       <Modal
-        title="Form Data Debitur"
+        title={
+          formStep === 1
+            ? "Form Data Debitur"
+            : formStep === 2
+            ? "Form Ringkasan Pengajuan Kredit"
+            : "Form Analisa Kredit"
+        }
         visible={showModal}
-        onCancel={() => setShowModal(false)}
-        footer={null}
         closable={false}
+        footer={null}
         width={1200}
       >
         <Form form={form} layout="vertical" style={{ marginBottom: "20px" }}>
           {renderFormStep()}
-          <Form.Item style={{ display: 'flex', justifyContent: 'right' }}>
-            {formStep === 3 ? (
+          <Form.Item style={{ display: "flex", justifyContent: "right" }}>
+            {formStep === 1 ? (
               <>
-                <Button type="primary" onClick={handleSave}>
-                  Save
+                <Button
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
                 </Button>
-                <Button 
-                  style={{ marginLeft: "10px" }} 
-                  onClick={() => { 
+                <Button type="primary"style={{ marginLeft: "10px" }} onClick={handleNextStep}>
+                  Next
+                </Button>
+              </>
+            ) : formStep === 2 || formStep === 3 ? (
+              <>
+                <Button                 
+                  onClick={() => {
                     setFormStep(1);
-                    setShowModal(false); 
+                    setShowModal(false);
                   }}
                 >
                   Cancel
                 </Button>
-              </>
-            ) : (
-              <>
-                <Button type="primary" onClick={handleNextStep}>
-                  Next
+                <Button style={{ marginLeft: "10px" }}
+                  onClick={handleBackStep}
+                >
+                  Previous
                 </Button>
-                {formStep > 1 && (
-                  <Button 
-                    style={{ marginLeft: "10px" }} 
-                    onClick={handleBackStep} // Back button for step 2 and 3
-                  >
-                    Back
-                  </Button>
-                )}
+                <Button type="primary" style={{ marginLeft: "10px" }} onClick={formStep === 3 ? handleSave : handleNextStep}>
+                  {formStep === 3 ? "Submit" : "Next"}
+                </Button>
               </>
-            )}
+            ) : null}
           </Form.Item>
         </Form>
       </Modal>
