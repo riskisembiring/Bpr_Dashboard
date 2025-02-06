@@ -470,10 +470,10 @@ const handleCancel = async () => {
     },
     {
       title: "Alamat Debitur",
-      dataIndex: "nameLoc",
-      key: "nameLoc",
-      // sorter: (a, b) => a.nameLoc.localeCompare(b.nameLoc),
-      // sortDirections: ["ascend", "descend"],
+      dataIndex: "alamatDeb",
+      key: "alamatDeb",
+      sorter: (a, b) => a.alamatDeb.localeCompare(b.alamatDeb),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Location",
@@ -664,6 +664,14 @@ const handleCancel = async () => {
               <Input />
             </Form.Item>
 
+            <Form.Item
+              label="Alamat Debitur"
+              name="alamatDeb"
+              rules={[{ required: true, message: "Please input Alamat Lengkap Debitur!" }]}
+            >
+              <TextArea rows={4}/>
+            </Form.Item>
+
             {/* Input Aktifitas */}
             <Form.Item
               label="Aktifitas"
@@ -692,7 +700,7 @@ const handleCancel = async () => {
             {/* Input Keterangan */}
             <Form.Item label="Keterangan" name="keterangan"
               rules={[{ required: true, message: "Please input keterangan!" }]}>
-              <TextArea />
+              <TextArea rows={6}/>
             </Form.Item>
 
             {/* Camera Component */}
