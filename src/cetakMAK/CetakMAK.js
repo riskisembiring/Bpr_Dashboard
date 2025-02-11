@@ -28,7 +28,7 @@ const CetakMak = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/data-mak");
+        const response = await fetch("https://api-nasnus.vercel.app/api/data-mak");
         const result = await response.json();
         if (response.ok) {
           setDataDebitur(result.data);
@@ -64,7 +64,7 @@ const CetakMak = () => {
     const updatedFormData = { ...formData, ...values };
 
     try {
-      const response = await fetch("http://localhost:3000/api/data-mak", {
+      const response = await fetch("https://api-nasnus.vercel.app/api/data-mak", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

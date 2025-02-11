@@ -62,7 +62,7 @@ const PengajuanKreditMarketingAo = () => {
     });
   
     // Mengirim data ke API
-    fetch("http://localhost:3000/api/submit-kredit", {
+    fetch("https://api-nasnus.vercel.app/api/submit-kredit", {
       method: "POST",
       body: formData,
     })

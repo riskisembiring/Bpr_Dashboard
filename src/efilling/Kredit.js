@@ -79,7 +79,7 @@ const Kredit = () => {
       });
 
       // Kirim request ke backend
-      const response = await fetch("http://localhost:3000/api/upload-file", {
+      const response = await fetch("https://api-nasnus.vercel.app/api/upload-file", {
         method: "POST",
         body: formData,
       });
