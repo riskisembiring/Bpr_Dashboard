@@ -1,42 +1,94 @@
 import React, { useState } from "react";
 import { Form, Input, Button, List, message } from "antd";
+import axios from 'axios';
 
 const Step3 = ({ form }) => {
-  const [userGoals, setUserGoals] = useState([]); // Daftar tujuan pengguna
-  const [userGoalInput, setUserGoalInput] = useState(""); // Input untuk tujuan pengguna
+  const [tests, settests] = useState([]);
+  const [testInput, settestInput] = useState("");
 
-  const [debtProfiles, setDebtProfiles] = useState([]); // Daftar Profil Debitur
-  const [debtProfileInput, setDebtProfileInput] = useState(""); // Input untuk Profil Debitur
+  const [debtProfiles, setDebtProfiles] = useState([]);
+  const [debtProfileInput, setDebtProfileInput] = useState(""); 
+
+  const [file, setFile] = useState(null);
+  const [businessPhotos, setbusinessPhotos] = useState('');
+  const [isValidFile, setIsValidFile] = useState(false);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+
+    if (!selectedFile) {
+      alert('Pilih file terlebih dahulu!');
+      setIsValidFile(false);
+      return;
+    }
+
+    // Validasi ukuran file (max 500 KB)
+    if (selectedFile.size > 500 * 1024) {
+      setIsValidFile(false);
+      alert('Ukuran file tidak boleh lebih dari 500 KB.');
+      return;
+    }
+
+    // Validasi tipe file
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!validTypes.includes(selectedFile.type)) {
+      alert('Hanya file berformat JPEG, JPG, atau PNG yang diperbolehkan.');
+      setIsValidFile(false);
+      return;
+    }
+    setIsValidFile(true);
+    setFile(selectedFile);
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      alert('Pilih file terlebih dahulu!');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const response = await axios.post('http://localhost:3000/api/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setbusinessPhotos(response.data.data);
+      form.setFieldsValue({ businessPhotos: response.data.data });
+      alert('Upload berhasil!');
+    } catch (error) {
+      console.error(error);
+      alert('Terjadi kesalahan saat meng-upload file.');
+    }
+  };
 
   // Menambahkan tujuan pengguna ke dalam daftar
   const handleAddUserGoal = () => {
-    console.log("Jumlah userGoals:", userGoals.length);
-    if (userGoals.length >= 3) {
+    console.log("Jumlah tests:", tests.length);
+    if (tests.length >= 3) {
       message.warning("Anda sudah menambahkan 3 tujuan pengguna, tidak dapat menambah lagi.");
-      return; // Menghentikan eksekusi fungsi jika sudah mencapai batas
+      return;
     }
-    if (userGoalInput.trim()) {
-      const newUserGoals = [...userGoals, userGoalInput];
-      setUserGoals(newUserGoals);
+    if (testInput.trim()) {
+      const newtests = [...tests, testInput];
+      settests(newtests);
 
       form.setFieldsValue({
-        userGoals: newUserGoals,
+        tests: newtests,
       });
-      setUserGoalInput(""); // Reset tampilan input
+      settestInput("");
     }
   };
 
-  // Menghapus tujuan pengguna dari daftar
   const handleRemoveUserGoal = (index) => {
-    const newUserGoals = userGoals.filter((_, i) => i !== index);
-    setUserGoals(newUserGoals);
+    const newtests = tests.filter((_, i) => i !== index);
+    settests(newtests);
 
     form.setFieldsValue({
-      userGoals: newUserGoals,
+      tests: newtests,
     });
   };
 
-  // Menambahkan Profil Debitur ke dalam daftar
   const handleAddDebtProfile = () => {
     if (debtProfileInput.trim()) {
       const newDebtProfiles = [...debtProfiles, debtProfileInput];
@@ -46,11 +98,10 @@ const Step3 = ({ form }) => {
         debtProfiles: newDebtProfiles,
       });
 
-      setDebtProfileInput(""); // Reset tampilan input
+      setDebtProfileInput(""); 
     }
   };
 
-  // Menghapus Profil Debitur dari daftar
   const handleRemoveDebtProfile = (index) => {
     const newDebtProfiles = debtProfiles.filter((_, i) => i !== index);
     setDebtProfiles(newDebtProfiles);
@@ -60,12 +111,10 @@ const Step3 = ({ form }) => {
     });
   };
 
-  // Menangani perubahan input untuk tujuan pengguna
   const handleUserGoalChange = (e) => {
-    setUserGoalInput(e.target.value);
+    settestInput(e.target.value);
   };
 
-  // Menangani perubahan input untuk Profil Debitur
   const handleDebtProfileChange = (e) => {
     setDebtProfileInput(e.target.value);
   };
@@ -75,32 +124,30 @@ const Step3 = ({ form }) => {
       form={form}
       layout="vertical"
       initialValues={{
-        userGoals: [],
+        tests: [],
         debtProfiles: [],
       }}
     >
-      {/* Input Tujuan Penggunaan */}
       <Form.Item label="Tujuan Penggunaan">
         <Input
-          value={userGoalInput}
+          value={testInput}
           onChange={handleUserGoalChange}
           placeholder="Masukkan tujuan penggunaan"
         />
-      </Form.Item>
+        </Form.Item>
       <Button
         type="primary"
         onClick={handleAddUserGoal}
         style={{ marginBottom: "16px" }}
-        disabled={userGoals.length >= 3}
+        disabled={tests.length >= 3}
       >
         Tambah Tujuan Pengguna
       </Button>
 
-      {/* Daftar Tujuan Pengguna */}
       <List
         header="Daftar Tujuan Pengguna (Max 3)"
         bordered
-        dataSource={userGoals}
+        dataSource={tests}
         renderItem={(item, index) => (
           <List.Item
             actions={[
@@ -118,8 +165,7 @@ const Step3 = ({ form }) => {
         )}
         style={{ marginBottom: "24px" }}
       />
-
-      {/* Input Profil Debitur & Hasil Cek Lingkungan */}
+    
       <Form.Item label="Profil Debitur & Hasil Cek Lingkungan">
         <Input
           value={debtProfileInput}
@@ -131,12 +177,11 @@ const Step3 = ({ form }) => {
         type="primary"
         onClick={handleAddDebtProfile}
         style={{ marginBottom: "16px" }}
-        disabled={userGoals.length >= 3}
+        disabled={debtProfiles.length >= 3}
       >
         Tambah Profil Debitur
       </Button>
 
-      {/* Daftar Profil Debitur */}
       <List
         header="Daftar Profil Debitur & Hasil Cek Lingkungan (Max 3)"
         bordered
@@ -157,22 +202,19 @@ const Step3 = ({ form }) => {
           </List.Item>
         )}
       />
-      {/* Field Tersembunyi untuk Menyimpan Nilai */}
-      <Form.Item name="userGoals" hidden>
+      <Form.Item name="tests" hidden>
         <Input type="hidden" />
       </Form.Item>
       <Form.Item name="debtProfiles" hidden>
         <Input type="hidden" />
       </Form.Item>
-
-      {/* Form Items lainnya */}
+      
       {[
         { label: "Latar Belakang & Aktivitas Usaha", name: "businessBackground" },
         { label: "Supplier", name: "supplier" },
         { label: "Pemasaran / Distribusi", name: "marketing" },
         { label: "Kontrak Kerja yang Dimiliki", name: "contracts" },
         { label: "Rencana Pengembangan Usaha", name: "developmentPlan" },
-        { label: "Foto Usaha", name: "businessPhotos" },
       ].map((item) => (
         <Form.Item
           key={item.name}
@@ -185,6 +227,17 @@ const Step3 = ({ form }) => {
           <Input placeholder={`Masukkan ${item.label}`} />
         </Form.Item>
       ))}
+      <Form.Item label="Upload Foto Usaha" name='businessPhotos' rules={[{ required: true }]}>
+        <Input type="file" onChange={handleFileChange} name={businessPhotos}/>
+        <Button onClick={handleUpload} disabled={!isValidFile} >Upload Foto</Button>
+        </Form.Item>
+
+        {businessPhotos && (
+        <div>
+          <h3 style={{fontWeight: 'normal'}}>Foto yang di-upload:</h3>
+          <img src={businessPhotos} alt="Uploaded" style={{ maxWidth: '150px' }} />
+        </div>
+      )}
     </Form>
   );
 };

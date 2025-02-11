@@ -5,6 +5,10 @@ import { handleExportToPDF } from "./PdfDebitur";
 import Step1 from "./Step1";
 import Step2 from "./Step2";
 import Step3 from "./Step3";
+import Step4 from "./Step4";
+import Step5 from "./Step5";
+import Step6 from "./Step6";
+import Step7 from "./Step7";
 import "../styles/CetakMak.css";
 
 const { Title } = Typography;
@@ -14,13 +18,17 @@ const CetakMak = () => {
   const [dataDebitur, setDataDebitur] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    userGoalInput: "",
+    userGoals: [],
+  });
+  // const [formData5, setFormData5] = useState({ catatanAgunanInput: "" });
   const [selectedRowKey, setSelectedRowKey] = useState(null); // Default selected row key
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://api-nasnus.vercel.app/api/data-mak");
+        const response = await fetch("http://localhost:3000/api/data-mak");
         const result = await response.json();
         if (response.ok) {
           setDataDebitur(result.data);
@@ -56,7 +64,7 @@ const CetakMak = () => {
     const updatedFormData = { ...formData, ...values };
 
     try {
-      const response = await fetch("https://api-nasnus.vercel.app/api/data-mak", {
+      const response = await fetch("http://localhost:3000/api/data-mak", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,6 +118,19 @@ const CetakMak = () => {
         return <Step2 form={form} />;
       case 3:
         return <Step3 form={form} />;
+      case 4:
+        return <Step4 form={form} />;
+      case 5:
+        return <Step5 form={form} />;
+      case 6:
+        return <Step6 form={form} />;
+        case 7:
+          return (
+            <Step7
+              formData={formData}
+              setFormData={setFormData} // Gunakan setter untuk menyinkronkan data
+            />
+          );
       default:
         return null;
     }
@@ -119,7 +140,7 @@ const CetakMak = () => {
     <div>
       <div style={{ marginBottom: "20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <Title level={4}>Daftar Data</Title>
+          <Title level={4}>Daftar data debitur</Title>
           <div>
             <Button
               type="primary"
@@ -166,7 +187,13 @@ const CetakMak = () => {
             ? "Form Data Debitur"
             : formStep === 2
             ? "Form Ringkasan Pengajuan Kredit"
-            : "Form Analisa Kredit"
+            : formStep === 3 
+            ? "Form Analisa Kredit"
+            : formStep === 4
+            ? ""
+            : formStep === 5
+            ? ""
+            : "" 
         }
         visible={showModal}
         closable={false}
@@ -179,20 +206,37 @@ const CetakMak = () => {
             {formStep === 1 ? (
               <>
                 <Button
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </Button>
+                onClick={() => {
+                  setShowModal(false); // Tutup modal
+                  form.resetFields(); // Reset semua field dalam form
+                  setFormData((prev) => ({
+                    ...prev,
+                    userGoalInput: '',
+                    userGoals: [],
+                    signature	: null
+                  }));
+                }}
+              >
+                Cancel
+              </Button>
                 <Button type="primary"style={{ marginLeft: "10px" }} onClick={handleNextStep}>
                   Next
                 </Button>
               </>
-            ) : formStep === 2 || formStep === 3 ? (
+            ) : formStep === 2 || formStep === 3 || formStep === 4 || formStep === 5 || formStep === 6 || formStep === 7 ? (
               <>
                 <Button                 
                   onClick={() => {
+                    form.resetFields();
                     setFormStep(1);
                     setShowModal(false);
+                    form.resetFields();
+                    setFormData((prev) => ({
+                      ...prev,
+                      userGoalInput: '',
+                      userGoals: [],
+                      signature: null
+                    }));
                   }}
                 >
                   Cancel
@@ -202,8 +246,8 @@ const CetakMak = () => {
                 >
                   Previous
                 </Button>
-                <Button type="primary" style={{ marginLeft: "10px" }} onClick={formStep === 3 ? handleSave : handleNextStep}>
-                  {formStep === 3 ? "Submit" : "Next"}
+                <Button type="primary" style={{ marginLeft: "10px" }} onClick={formStep === 7 ? handleSave : handleNextStep}>
+                  {formStep === 7 ? "Submit" : "Next"}
                 </Button>
               </>
             ) : null}

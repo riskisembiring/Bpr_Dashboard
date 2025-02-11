@@ -566,19 +566,24 @@ const handleCancel = async () => {
       </div>
     </div>
 
-      <Table
-        columns={columns.filter((column) => !column.hidden)}
-        dataSource={filteredData}
-        rowKey="id"
-        onRow={(record) => ({
-          onClick: () => handleSelectId(record.id),
-          style: {
-            backgroundColor: selectedId === record.id ? "#e6f7ff" : "", // Menandai baris yang dipilih
-          },
-        })}
-        scroll={{ x: 1200, y: 400 }}
-        pagination={{ pageSize: 10 }}
-      />
+    <Table
+      columns={columns.filter((column) => !column.hidden)}
+      dataSource={filteredData}
+      rowKey="id"
+      onRow={(record) => ({
+        onClick: () => handleSelectId(record.id),
+        style: {
+          backgroundColor: selectedId === record.id ? "#e6f7ff" : "", // Menandai baris yang dipilih
+        },
+      })}
+      scroll={{ x: 1200, y: 400 }}
+      pagination={{
+        pageSize: 10,
+        onChange: (page, pageSize) => {
+          console.log(`Page: ${page}, PageSize: ${pageSize}`);
+        },
+      }}
+    />
       <Modal
         title="Keterangan Lengkap"
         open={isModalOpenKet}
