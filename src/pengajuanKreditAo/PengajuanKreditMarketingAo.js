@@ -20,7 +20,7 @@ const PengajuanKreditMarketingAo = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    // form.resetFields();
+    form.resetFields();
     setCapturedPhotos({});
   };
 

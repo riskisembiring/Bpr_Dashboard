@@ -1,63 +1,82 @@
-import React, { useRef, useState } from "react";
-import { Form, Input, Button, List, message, Radio } from "antd";
+import React, {useRef, useState, useEffect } from "react";
+import { UploadOutlined, LoadingOutlined } from "@ant-design/icons";
+import { Form, Input, Upload, Button, List, message, Radio } from "antd";
 import axios from "axios";
 
 const Step7 = ({ formData, setFormData }) => {
+  const [fileList, setFileList] = useState([]);
   const [useDigitalSignature, setUseDigitalSignature] = useState(false);
   const canvasRef = useRef(null);
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (!selectedFile) {
-      alert("Pilih file terlebih dahulu!");
+  // Memuat data dari `formData.businessPhotos` saat komponen dirender
+  useEffect(() => {
+    const initialFileList = (formData.businessPhotos || []).map(
+      (url, index) => ({
+        uid: index.toString(),
+        name: url.split("/").pop(), // Ambil nama file dari URL
+        url,
+      })
+    );
+    setFileList(initialFileList);
+  }, [formData.businessPhotos]);
+
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleUpload = async ({ file, onSuccess, onError }) => {
+    if (fileList.length >= 3) {
+      // Cek apakah sudah ada 3 foto
+      message.error("You can only upload up to 3 photos.");
+      onError(new Error("Upload limit reached."));
       return;
     }
 
-    // Validasi ukuran file (max 500 KB)
-    if (selectedFile.size > 500 * 1024) {
-      alert("Ukuran file tidak boleh lebih dari 500 KB.");
+    const maxSize = 500 * 1024; // 500 KB dalam byte
+    if (file.size > maxSize) {
+      message.error(`${file.name} exceeds the maximum file size of 500 KB.`);
+      onError(new Error("File size exceeds limit."));
       return;
     }
 
-    // Validasi tipe file
-    const validTypes = ["image/jpeg", "image/jpg", "image/png"];
-    if (!validTypes.includes(selectedFile.type)) {
-      alert("Hanya file berformat JPEG, JPG, atau PNG yang diperbolehkan.");
-      return;
-    }
-
-    const fileURL = URL.createObjectURL(selectedFile);
-    setFormData((prev) => ({
-      ...prev,
-      businessPhotos: fileURL,
-      selectedFile, // Menyimpan file yang dipilih untuk upload
-    }));
-  };
-
-  const handleFileUpload = async () => {
-    if (!formData.selectedFile) {
-      alert("Pilih file terlebih dahulu!");
-      return;
-    }
-
-    const formDataUpload = new FormData();
-    formDataUpload.append("file", formData.selectedFile);
+    setIsUploading(true); // Tampilkan loading
+    const uploadData = new FormData();
+    uploadData.append("file", file);
 
     try {
-      const response = await axios.post("https://api-nasnus.vercel.app/api/upload", formDataUpload, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/upload",
+        uploadData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       if (response.status === 200) {
-        message.success("File berhasil diunggah!");
+        message.success(`${file.name} uploaded successfully.`);
+        console.log(response.data.data);
+        // const fileUrl = `https://ik.imagekit.io/4jhgq1ri0/bprNasnus/${file.name}`;
+        const fileUrl = response.data.data;
+        // Perbarui formData.businessPhotos hanya dengan URL
+        const updatedPhotos = [...(formData.businessPhotos || []), fileUrl];
+        setFormData({ ...formData, businessPhotos: updatedPhotos });
+
+        // Perbarui fileList untuk menampilkan nama file
+        setFileList(
+          updatedPhotos.map((url, index) => ({
+            uid: index.toString(),
+            name: url.split("/").pop(), // Ambil nama file dari URL
+            url,
+          }))
+        );
+
+        onSuccess({ data: fileUrl });
       } else {
-        message.error("Terjadi kesalahan saat mengunggah file.");
+        throw new Error("Upload failed");
       }
     } catch (error) {
-      console.error("Error saat mengunggah file:", error);
-      message.error("Terjadi kesalahan saat mengunggah file.");
+      message.error(`${file.name} failed to upload.`);
+      onError(error);
+    } finally {
+      setIsUploading(false); // Sembunyikan loading
     }
   };
 
@@ -87,8 +106,12 @@ const Step7 = ({ formData, setFormData }) => {
   const startDrawing = (e) => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    const offsetX = e.nativeEvent ? e.nativeEvent.offsetX : e.touches[0].clientX - canvas.getBoundingClientRect().left;
-    const offsetY = e.nativeEvent ? e.nativeEvent.offsetY : e.touches[0].clientY - canvas.getBoundingClientRect().top;
+    const offsetX = e.nativeEvent
+      ? e.nativeEvent.offsetX
+      : e.touches[0].clientX - canvas.getBoundingClientRect().left;
+    const offsetY = e.nativeEvent
+      ? e.nativeEvent.offsetY
+      : e.touches[0].clientY - canvas.getBoundingClientRect().top;
 
     ctx.beginPath();
     ctx.moveTo(offsetX, offsetY);
@@ -99,8 +122,12 @@ const Step7 = ({ formData, setFormData }) => {
     const canvas = canvasRef.current;
     if (!canvas.isDrawing) return;
     const ctx = canvas.getContext("2d");
-    const offsetX = e.nativeEvent ? e.nativeEvent.offsetX : e.touches[0].clientX - canvas.getBoundingClientRect().left;
-    const offsetY = e.nativeEvent ? e.nativeEvent.offsetY : e.touches[0].clientY - canvas.getBoundingClientRect().top;
+    const offsetX = e.nativeEvent
+      ? e.nativeEvent.offsetX
+      : e.touches[0].clientX - canvas.getBoundingClientRect().left;
+    const offsetY = e.nativeEvent
+      ? e.nativeEvent.offsetY
+      : e.touches[0].clientY - canvas.getBoundingClientRect().top;
 
     ctx.lineTo(offsetX, offsetY);
     ctx.stroke();
@@ -129,28 +156,41 @@ const Step7 = ({ formData, setFormData }) => {
     }));
   };
 
+  const handleRemove = (file) => {
+    // Hapus URL dari businessPhotos di formData
+    const updatedPhotos = formData.businessPhotos.filter(
+      (photo) => photo !== file.url
+    );
+    setFormData({ ...formData, businessPhotos: updatedPhotos });
+
+    // Perbarui fileList
+    setFileList(
+      updatedPhotos.map((url, index) => ({
+        uid: index.toString(),
+        name: url.split("/").pop(), // Ambil nama file dari URL
+        url,
+      }))
+    );
+  };
+
   return (
-    <div>
-      <Form.Item label="Upload Foto Usaha" rules={[{ required: true }]}>
-        <Input type="file" onChange={handleFileChange} />
+    <>
+      <Upload
+        customRequest={handleUpload}
+        fileList={fileList}
+        onRemove={handleRemove}
+        multiple={false}
+        maxCount={3}
+        showUploadList={{ showRemoveIcon: true }}
+        accept="image/*"
+      >
         <Button
-          onClick={handleFileUpload}
-          disabled={!formData.selectedFile}
-          style={{ marginTop: "10px" }}
+          icon={isUploading ? <LoadingOutlined /> : <UploadOutlined />}
+          disabled={isUploading}
         >
-          Unggah Foto
+          {isUploading ? "Uploading..." : "Upload"}
         </Button>
-      </Form.Item>
-      {formData.businessPhotos && (
-        <div>
-          <h3 style={{ fontWeight: "normal" }}>Foto yang di-upload:</h3>
-          <img
-            src={formData.businessPhotos}
-            alt="Uploaded"
-            style={{ maxWidth: "150px" }}
-          />
-        </div>
-      )}
+      </Upload>
 
       <Form.Item label="Tujuan Pengguna">
         <Input
@@ -160,7 +200,10 @@ const Step7 = ({ formData, setFormData }) => {
           }
           placeholder="Masukkan tujuan pengguna"
         />
-        <Button onClick={handleAddUserGoal} disabled={!formData.userGoalInput.trim()}>
+        <Button
+          onClick={handleAddUserGoal}
+          disabled={!formData.userGoalInput.trim()}
+        >
           Tambahkan Tujuan
         </Button>
       </Form.Item>
@@ -181,48 +224,53 @@ const Step7 = ({ formData, setFormData }) => {
         )}
       />
 
-<div>
-      <Form.Item label="Apakah ingin menggunakan Tanda Tangan Digital?">
-        <Radio.Group
-          value={useDigitalSignature}
-          onChange={(e) => setUseDigitalSignature(e.target.value)}
-        >
-          <Radio value={true}>Iya</Radio>
-          <Radio value={false}>Tidak</Radio>
-        </Radio.Group>
-      </Form.Item>
-
-      {useDigitalSignature && (
-        <Form.Item label="Tanda Tangan Digital">
-          <canvas
-            ref={canvasRef}
-            width={500}
-            height={200}
-            style={{ border: "1px solid #ccc", marginBottom: "10px", touchAction: "none", borderRadius: 15 }}
-            onMouseDown={startDrawing}
-            onMouseMove={draw}
-            onMouseUp={stopDrawing}
-            onMouseLeave={stopDrawing}
-            onTouchStart={(e) => {
-              e.preventDefault();
-              startDrawing(e);
-            }}
-            onTouchMove={(e) => {
-              e.preventDefault();
-              draw(e);
-            }}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              stopDrawing();
-            }}
-          />
-          <Button onClick={clearSignature} style={{ marginTop: "10px" }}>
-            Bersihkan Tanda Tangan
-          </Button>
+      <div>
+        <Form.Item label="Apakah ingin menggunakan Tanda Tangan Digital?">
+          <Radio.Group
+            value={useDigitalSignature}
+            onChange={(e) => setUseDigitalSignature(e.target.value)}
+          >
+            <Radio value={true}>Iya</Radio>
+            <Radio value={false}>Tidak</Radio>
+          </Radio.Group>
         </Form.Item>
-      )}
-    </div>
-    </div>
+
+        {useDigitalSignature && (
+          <Form.Item label="Tanda Tangan Digital">
+            <canvas
+              ref={canvasRef}
+              width={500}
+              height={200}
+              style={{
+                border: "1px solid #ccc",
+                marginBottom: "10px",
+                touchAction: "none",
+                borderRadius: 15,
+              }}
+              onMouseDown={startDrawing}
+              onMouseMove={draw}
+              onMouseUp={stopDrawing}
+              onMouseLeave={stopDrawing}
+              onTouchStart={(e) => {
+                e.preventDefault();
+                startDrawing(e);
+              }}
+              onTouchMove={(e) => {
+                e.preventDefault();
+                draw(e);
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                stopDrawing();
+              }}
+            />
+            <Button onClick={clearSignature} style={{ marginTop: "10px" }}>
+              Bersihkan Tanda Tangan
+            </Button>
+          </Form.Item>
+        )}
+      </div>
+    </>
   );
 };
 
