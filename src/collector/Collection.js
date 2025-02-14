@@ -5,6 +5,10 @@ import CameraCapture from "./CameraCapture";
 import Location from "./Location";
 import "../styles/Collection.css";
 import TextArea from "antd/es/input/TextArea";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -27,7 +31,6 @@ const Collection = ({ userRole }) => {
   const [isModalImageVisible, setIsModalImageVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loadingKey, setLoadingKey] = useState(null);
-
 
   const keteranganOptions = [
     "Pembayaran cicilan per bulan.",
@@ -395,11 +398,13 @@ const handleCancel = async () => {
       title: "Tanggal & Waktu",
       dataIndex: "tanggal",
       key: "tanggal",
-      // hidden: userRole !== 'collector' ? false : true,
-      defaultSortOrder: 'ascend',
-      sorter: (a, b) => new Date(b.tanggal) - new Date(a.tanggal),
-      sortDirections: ["ascend", "descend"],
-    },
+      defaultSortOrder: "descend", // Urutkan dari terbaru ke terlama
+      sorter: (a, b) => {
+        const dateA = dayjs(a.tanggal, "DD/MM/YYYY HH:mm:ss");
+        const dateB = dayjs(b.tanggal, "DD/MM/YYYY HH:mm:ss");   
+        return dateA.valueOf() - dateB.valueOf();
+      }
+    },   
     {
       title: "Nama User",
       dataIndex: "nameUser",
