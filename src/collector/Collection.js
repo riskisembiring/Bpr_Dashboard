@@ -181,7 +181,7 @@ const Collection = ({ userRole }) => {
         } else {
           // Simpan data baru jika tidak dalam mode edit
           const newRecord = {
-            key: `${data.length + 1}`,
+            // key: `${data.length + 1}`,
             ...values,
             nameLoc: namedLocation,
             location: updatedLocation,
@@ -227,7 +227,7 @@ const Collection = ({ userRole }) => {
     try {
       // Update data lokal
       const updatedData = data.map((item) =>
-        item.key === record.key
+        item.id === record.id
           ? { ...item, status: value === "" ? "Belum di cek" : value }
           : item
       );  
@@ -275,17 +275,18 @@ const Collection = ({ userRole }) => {
 // };
 
 const handleCatatanChange = (record, value) => {
+  console.log('value', value)
   const updatedData = data.map((item) =>
-    item.key === record.key ? { ...item, catatan: value } : item
+    item.id === record.id ? { ...item, catatan: value } : item
   );
   setData(updatedData);
 };
 
 const onclickSaveCatatan = async (record) => {
-  setLoadingKey(record.key);
+  setLoadingKey(record.id);
   try {
     const updatedData = data.map((item) =>
-      item.key === record.key ? { ...item, catatan: record.catatan } : item
+      item.id === record.id ? { ...item, catatan: record.catatan } : item
     );
     setData(updatedData);
 
@@ -334,7 +335,7 @@ const handleCancel = async () => {
   const updateLocation = (location) => {
     if (isEditing && currentRecord) {
       const updatedData = data.map((item) =>
-        item.key === currentRecord.key ? { ...item, location } : item
+        item.id === currentRecord.id ? { ...item, location } : item
       );
       setData(updatedData);
     } else {
@@ -345,7 +346,7 @@ const handleCancel = async () => {
   const nameLocation = (nameLoc) => {
     if (isEditing && currentRecord) {
       const updatedData = data.map((item) =>
-        item.key === currentRecord.key ? { ...item, nameLoc } : item
+        item.id === currentRecord.id ? { ...item, nameLoc } : item
       );
       setData(updatedData);
     } else {
@@ -527,7 +528,7 @@ const handleCancel = async () => {
           />
           <Button type="primary" 
           onClick={() => onclickSaveCatatan(record)}
-          loading={loadingKey === record.key} disabled={userRole !== "verifikator"}>Save Catatan
+          loading={loadingKey === record.id} disabled={userRole !== "verifikator"}>Save Catatan
           </Button>        
       </div>
       ),
@@ -626,7 +627,7 @@ const handleCancel = async () => {
       >
         <div style={{ maxHeight: "600px", overflowY: "auto" }}>
           <Form
-            key={currentRecord?.key || "new"}
+            key={currentRecord?.id || "new"}
             form={form}
             initialValues={{
               ...currentRecord,
