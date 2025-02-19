@@ -9,6 +9,7 @@ import Step4 from "./Step4";
 import Step5 from "./Step5";
 import Step6 from "./Step6";
 import Step7 from "./Step7";
+import Step8 from "./Step8";
 import "../styles/CetakMak.css";
 
 const { Title } = Typography;
@@ -22,9 +23,17 @@ const CetakMak = () => {
   const [selectedRowKey, setSelectedRowKey] = useState(null);
   const [formStep, setFormStep] = useState(1);
   const [formData, setFormData] = useState({
+    invoiceInput: "",
+    invoices: [],
+    nominalInput: "",
+    nominals: [],
+    namaSupplierInput: "",
+    namaSuppliers: [],
     userGoalInput: "",
     userGoals: [],
-    businessPhotos: [], // Tambahkan ini
+    photoUsaha: [],
+    photoAgunan: [],
+    businessPhotos: [],
   });
 
   useEffect(() => {
@@ -76,7 +85,7 @@ const CetakMak = () => {
     const updatedFormData = { ...formData, ...values };
 
     try {
-      const response = await fetch("https://api-nasnus.vercel.app/api/data-mak", {
+      const response = await fetch("http://localhost:3000/api/data-mak", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -132,23 +141,49 @@ const CetakMak = () => {
       case 1:
         return <Step1 form={form} />;
       case 2:
-        return <Step2 form={form} />;
+        return (
+        <Step2
+              formData={formData}
+              setFormData={setFormData}
+            />
+          );
       case 3:
-        return <Step3 form={form} />;
+        return (
+        <Step3
+              formData={formData}
+              setFormData={setFormData}
+            />
+          );
       case 4:
-        return <Step4 form={form} />;
+        return (
+        <Step4
+              formData={formData}
+              setFormData={setFormData}
+            />
+          );
       case 5:
-        return <Step5 form={form} />;
+        return (
+        <Step5
+              formData={formData}
+              setFormData={setFormData}
+            />
+          );
       case 6:
-        return <Step6 form={form} />;
-        case 7:
-          return (
-            <Step7
+        return (
+          <Step6
+            formData={formData}
+            setFormData={setFormData}
+          />
+        );
+      case 7:
+      return (
+        <Step7
           formData={formData}
           setFormData={setFormData}
-          onPrevious={() => setFormStep(6)} // Callback untuk kembali ke langkah sebelumnya
         />
-          );
+      );
+      case 8:
+        return <Step8 form={form} />;
       default:
         return null;
     }
@@ -210,16 +245,22 @@ const CetakMak = () => {
       <Modal
         title={
           formStep === 1
-            ? "Form Data Debitur"
+            ? "Data Debitur"
             : formStep === 2
-            ? "Form Ringkasan Pengajuan Kredit"
+            ? "Ringkasan Pengajuan Kredit"
             : formStep === 3 
-            ? "Form Analisa Kredit"
+            ? "I.   ANALISA KUALITATIF"
             : formStep === 4
-            ? ""
+            ? "II.  ANALISA KUANTITATIF"
             : formStep === 5
             ? ""
-            : "" 
+            : formStep === 6
+            ? ""
+            : formStep === 7
+            ? ""
+            : formStep === 8
+            ? ""
+            : ""
         }
         visible={showModal}
         closable={false}
@@ -233,12 +274,33 @@ const CetakMak = () => {
               <>
                 <Button
                 onClick={() => {
-                  setShowModal(false); // Tutup modal
-                  form.resetFields(); // Reset semua field dalam form
+                  setShowModal(false);
+                  form.resetFields();
                   setFormData((prev) => ({
                     ...prev,
+                    invoiceInput: "",
+                    invoices: [],
+                    nominalInput: "",
+                    nominals: [],
+                    namaSupplierInput: "",
+                    namaSuppliers: [],
                     userGoalInput: '',
                     userGoals: [],
+                    photoUsaha: [],
+                    tableRingkasanPengajuanKredit: [],
+                    tableInvoicePembelian: [],
+                    tableBuktiTransaksiPembelian: [],
+                    tableHasilVerifikasiSupplier: [],
+                    tableRekapitulatif: [],
+                    tableRekapitulatif2: [],
+                    tableAnalisaRekKoran: [],
+                    tableAnalisaRekKoran2: [],
+                    tableAnalisaRekKoran3: [],
+                    tableLabaRugiProforma: [],
+                    tableNeracaProforma: [],
+                    tableDataAgunan: [],
+                    photoAgunan: [],
+                    tableData: [],
                     signature	: null
                   }));
                 }}
@@ -249,7 +311,7 @@ const CetakMak = () => {
                   Next
                 </Button>
               </>
-            ) : formStep === 2 || formStep === 3 || formStep === 4 || formStep === 5 || formStep === 6 || formStep === 7 ? (
+            ) : formStep === 2 || formStep === 3 || formStep === 4 || formStep === 5 || formStep === 6 || formStep === 7 || formStep === 8 ? (
               <>
                 <Button                 
                   onClick={() => {
@@ -259,8 +321,29 @@ const CetakMak = () => {
                     form.resetFields();
                     setFormData((prev) => ({
                       ...prev,
+                      invoiceInput: "",
+                      invoices: [],
+                      nominalInput: "",
+                      nominals: [],
+                      namaSupplierInput: "",
+                      namaSuppliers: [],
                       userGoalInput: '',
                       userGoals: [],
+                      photoUsaha: [],
+                      tableRingkasanPengajuanKredit: [],
+                      tableInvoicePembelian: [],
+                      tableBuktiTransaksiPembelian: [],
+                      tableHasilVerifikasiSupplier: [],
+                      tableRekapitulatif: [],
+                      tableRekapitulatif2: [],
+                      tableAnalisaRekKoran: [],
+                      tableAnalisaRekKoran2: [],
+                      tableAnalisaRekKoran3: [],
+                      tableLabaRugiProforma: [],
+                      tableNeracaProforma: [],
+                      tableDataAgunan: [],
+                      tableData: [],
+                      photoAgunan: [],
                       signature: null
                     }));
                   }}
@@ -272,8 +355,8 @@ const CetakMak = () => {
                 >
                   Previous
                 </Button>
-                <Button type="primary" style={{ marginLeft: "10px" }} onClick={formStep === 7 ? handleSave : handleNextStep}>
-                  {formStep === 7 ? "Submit" : "Next"}
+                <Button type="primary" style={{ marginLeft: "10px" }} onClick={formStep === 8 ? handleSave : handleNextStep}>
+                  {formStep === 8 ? "Submit" : "Next"}
                 </Button>
               </>
             ) : null}

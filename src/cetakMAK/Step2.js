@@ -1,61 +1,142 @@
 import React from "react";
-import { Form, Input } from "antd";
-import "../styles/Step2.css";
-const Step2 = ({ form }) => {
+import { Table, Input, Button, Space, Form } from "antd";
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+
+const Step2 = ({ formData, setFormData }) => {
+  const data = formData.tableRingkasanPengajuanKredit || [];
+  const data2 = formData.tableRingkasanPengajuanKredit2 || [];
+
+  const handleInputChange = (value, key, column, tableKey) => {
+    const newData = (tableKey === "tableRingkasanPengajuanKredit" ? data : data2).map((row) => {
+      if (row.key === key) {
+        return { ...row, [column]: value };
+      }
+      return row;
+    });
+    setFormData({ ...formData, [tableKey]: newData });
+  };
+
+  const addRow = (tableKey) => {
+    const newRow = {
+      key: ((tableKey === "tableRingkasanPengajuanKredit" ? data : data2).length + 1).toString(),
+      jenisKredit: "",
+      plafond: "",
+      sukuBunga: "",
+      tenor: "",
+      biayaProvisi: "",
+      biayaAdm: "",
+    };
+    const newData = [...(tableKey === "tableRingkasanPengajuanKredit" ? data : data2), newRow];
+    setFormData({ ...formData, [tableKey]: newData });
+  };
+
+  const removeRow = (key, tableKey) => {
+    const newData = (tableKey === "tableRingkasanPengajuanKredit" ? data : data2).filter((row) => row.key !== key);
+    setFormData({ ...formData, [tableKey]: newData });
+  };
+
+  const columns = (tableKey) => [
+    {
+      title: "Jenis Kredit",
+      dataIndex: "jenisKredit",
+      key: "jenisKredit",
+      render: (text, record) => (
+        <Input
+          value={record.jenisKredit}
+          placeholder="Masukkan Jenis Kredit"
+          onChange={(e) => handleInputChange(e.target.value, record.key, "jenisKredit", tableKey)}
+        />
+      ),
+    },
+    {
+      title: "Plafond",
+      dataIndex: "plafond",
+      key: "plafond",
+      render: (text, record) => (
+        <Input
+          value={record.plafond}
+          placeholder="Masukkan plafond"
+          onChange={(e) => handleInputChange(e.target.value, record.key, "plafond", tableKey)}
+        />
+      ),
+    },
+    {
+      title: "Suku Bunga",
+      dataIndex: "sukuBunga",
+      key: "sukuBunga",
+      render: (text, record) => (
+        <Input
+          value={record.sukuBunga}
+          placeholder="Masukkan Suku Bunga"
+          onChange={(e) => handleInputChange(e.target.value, record.key, "sukuBunga", tableKey)}
+        />
+      ),
+    },
+    {
+      title: "Tenor",
+      dataIndex: "tenor",
+      key: "tenor",
+      render: (text, record) => (
+        <Input
+          value={record.tenor}
+          placeholder="Masukkan Tenor"
+          onChange={(e) => handleInputChange(e.target.value, record.key, "tenor", tableKey)}
+        />
+      ),
+    },
+    {
+      title: "Biaya Provisi",
+      dataIndex: "biayaProvisi",
+      key: "biayaProvisi",
+      render: (text, record) => (
+        <Input
+          value={record.biayaProvisi}
+          placeholder="Masukkan Biaya Provisi"
+          onChange={(e) => handleInputChange(e.target.value, record.key, "biayaProvisi", tableKey)}
+        />
+      ),
+    },
+    {
+      title: "Biaya ADM.",
+      dataIndex: "biayaAdm",
+      key: "biayaAdm",
+      render: (text, record) => (
+        <Input
+          value={record.biayaAdm}
+          placeholder="Masukkan Biaya ADM"
+          onChange={(e) => handleInputChange(e.target.value, record.key, "biayaAdm", tableKey)}
+        />
+      ),
+    },
+    {
+      title: "Aksi",
+      key: "aksi",
+      render: (_, record) => (
+        <Space>
+          <Button danger icon={<DeleteOutlined />} onClick={() => removeRow(record.key, tableKey)}>
+            Hapus
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
   return (
-    <div className="form-table">
-      <div className="form-row">
-        <div className="form-item">
-          <Form.Item label="Plafon" name="plafon">
-            <Input placeholder="Masukkan Plafon" />
-          </Form.Item>
-        </div>
-        <div className="form-item">
-          <Form.Item label="Suku Bunga" name="sukuBunga">
-            <Input placeholder="Masukkan bunga" />
-          </Form.Item>
-        </div>
-        <div className="form-item">
-          <Form.Item label="Tenor" name="tenor">
-            <Input placeholder="Masukkan tenor" />
-          </Form.Item>
-        </div>
-        <div className="form-item">
-          <Form.Item label="Biaya Provinsi" name="biayaProvinsi">
-            <Input placeholder="Masukkan biaya provinsi" />
-          </Form.Item>
-        </div>
+    <div>
+
+      <Table columns={columns("tableRingkasanPengajuanKredit")} dataSource={data} pagination={false} bordered style={{ marginBottom: "16px" }} />
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => addRow("tableRingkasanPengajuanKredit")} style={{ marginTop: "8px" }}>
+        Tambah Baris
+      </Button>
+      <Form.Item
+        label="Tujuan pengajuan kredit"
+        name="tujuanPengajuanKredit"
+        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueFromEvent={(e) => e.target.value.split("\n")}
+      >
+        <Input.TextArea placeholder="Masukkan Tujuan pengajuan kredit" />
+      </Form.Item>
       </div>
-      <div className="form-row">
-        <div className="form-item">
-          <Form.Item label="Biaya Adm" name="biayaAdm">
-            <Input placeholder="Masukkan biaya Adm" />
-          </Form.Item>
-        </div>
-        <div className="form-item">
-          <Form.Item label="Nilai Pasar" name="nilaiPasar">
-            <Input placeholder="Masukkan nilai pasar" />
-          </Form.Item>
-        </div>
-        <div className="form-item">
-          <Form.Item label="Nilai Likuiditas" name="nilaiLikuiditas">
-            <Input placeholder="Masukkan nilai likuiditas" />
-          </Form.Item>
-        </div>
-        <div className="form-item">
-          <Form.Item label="Angsuran Bulan" name="angsuranBulan">
-            <Input placeholder="Masukkan angsuran/bulan" />
-          </Form.Item>
-        </div>
-        <div className="form-row">
-        <div className="form-item" style={{ width: "100%" }}>
-          <Form.Item label="Dasar Rekomendasi Account Officer" name="dasarRekomendasiAccOff">
-            <Input.TextArea placeholder="Masukkan dasar rekomendasi account officer" />
-          </Form.Item>
-        </div>
-      </div>
-      </div>
-    </div>
   );
 };
 

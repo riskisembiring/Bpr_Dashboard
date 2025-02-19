@@ -1,244 +1,536 @@
-import React, { useState } from "react";
-import { Form, Input, Button, List, message } from "antd";
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import {
+  UploadOutlined,
+  LoadingOutlined,
+  DeleteOutlined,
+  PlusOutlined
+} from "@ant-design/icons";
+import { Table, Form, Input, Button, Space, Upload, message } from "antd";
+import axios from "axios";
 
-const Step3 = ({ form }) => {
-  const [tests, settests] = useState([]);
-  const [testInput, settestInput] = useState("");
+const Step3 = ({ formData, setFormData }) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const data = formData.tableInvoicePembelian || [];
+  const data2 = formData.tableInvoicePembelian2 || [];
+  const data3 = formData.tableBuktiTransaksiPembelian || [];
+  const data4 = formData.tableBuktiTransaksiPembelian4 || [];
+  const data5 = formData.tableHasilVerifikasiSupplier || [];
+  const data6 = formData.tableHasilVerifikasiSupplier6 || [];
+  const [fileList, setFileList] = useState([]);
 
-  const [debtProfiles, setDebtProfiles] = useState([]);
-  const [debtProfileInput, setDebtProfileInput] = useState(""); 
-
-  const [file, setFile] = useState(null);
-  const [businessPhotos, setbusinessPhotos] = useState('');
-  const [isValidFile, setIsValidFile] = useState(false);
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-
-    if (!selectedFile) {
-      alert('Pilih file terlebih dahulu!');
-      setIsValidFile(false);
-      return;
-    }
-
-    // Validasi ukuran file (max 500 KB)
-    if (selectedFile.size > 500 * 1024) {
-      setIsValidFile(false);
-      alert('Ukuran file tidak boleh lebih dari 500 KB.');
-      return;
-    }
-
-    // Validasi tipe file
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if (!validTypes.includes(selectedFile.type)) {
-      alert('Hanya file berformat JPEG, JPG, atau PNG yang diperbolehkan.');
-      setIsValidFile(false);
-      return;
-    }
-    setIsValidFile(true);
-    setFile(selectedFile);
+  const handleInputChange = (value, key, column, tableKey) => {
+    const newData = (tableKey === "tableInvoicePembelian" ? data : data2).map(
+      (row) => {
+        if (row.key === key) {
+          return { ...row, [column]: value };
+        }
+        return row;
+      }
+    );
+    setFormData({ ...formData, [tableKey]: newData });
   };
 
-  const handleUpload = async () => {
-    if (!file) {
-      alert('Pilih file terlebih dahulu!');
+    const handleInputChange2 = (value, key, column, tableKey2) => {
+    const newData = (tableKey2 === "tableBuktiTransaksiPembelian" ? data3 : data4).map(
+      (row) => {
+        if (row.key === key) {
+          return { ...row, [column]: value };
+        }
+        return row;
+      }
+    );
+    setFormData({ ...formData, [tableKey2]: newData });
+  };
+
+  const handleInputChange3 = (value, key, column, tableKey3) => {
+    const newData = (tableKey3 === "tableHasilVerifikasiSupplier" ? data5 : data6).map(
+      (row) => {
+        if (row.key === key) {
+          return { ...row, [column]: value };
+        }
+        return row;
+      }
+    );
+    setFormData({ ...formData, [tableKey3]: newData });
+  };
+
+  const addRow = (tableKey) => {
+    const newRow = {
+      key: (
+        (tableKey === "tableInvoicePembelian" ? data : data2).length + 1
+      ).toString(),
+      invoices: "",
+      nominals: "",
+      namaSupplier: "",
+    };
+    const newData = [
+      ...(tableKey === "tableInvoicePembelian" ? data : data2),
+      newRow,
+    ];
+    setFormData({ ...formData, [tableKey]: newData });
+  };
+
+  const addRow2 = (tableKey2) => {
+    const newRow = {
+      key: (
+        (tableKey2 === "tableBuktiTransaksiPembelian" ? data3 : data4).length + 1
+      ).toString(),
+      namaToko: "",
+      nominalBelanja: "",
+    };
+    const newData = [
+      ...(tableKey2 === "tableBuktiTransaksiPembelian" ? data3 : data4),
+      newRow,
+    ];
+    setFormData({ ...formData, [tableKey2]: newData });
+  };
+
+  const addRow3 = (tableKey3) => {
+    const newRow = {
+      key: (
+        (tableKey3 === "tableHasilVerifikasiSupplier" ? data5 : data6).length + 1
+      ).toString(),
+      namaToko: "",
+      noteleponWeb: "",
+    };
+    const newData = [
+      ...(tableKey3 === "tableHasilVerifikasiSupplier" ? data5 : data6),
+      newRow,
+    ];
+    setFormData({ ...formData, [tableKey3]: newData });
+  };
+
+  const removeRow = (key, tableKey) => {
+    const newData = (
+      tableKey === "tableInvoicePembelian" ? data : data2
+    ).filter((row) => row.key !== key);
+    setFormData({ ...formData, [tableKey]: newData });
+  };
+
+  const removeRow2 = (key, tableKey2) => {
+    const newData = (
+      tableKey2 === "tableBuktiTransaksiPembelian" ? data3 : data4
+    ).filter((row) => row.key !== key);
+    setFormData({ ...formData, [tableKey2]: newData });
+  };
+
+  const removeRow3 = (key, tableKey3) => {
+    const newData = (
+      tableKey3 === "tableHasilVerifikasiSupplier" ? data5 : data6
+    ).filter((row) => row.key !== key);
+    setFormData({ ...formData, [tableKey3]: newData });
+  };
+
+  const columns = (tableKey) => [
+    {
+      title: "Invoice",
+      dataIndex: "invoices",
+      key: "invoices",
+      render: (text, record) => (
+        <Input
+          value={record.invoices}
+          placeholder="Masukkan Invoice"
+          onChange={(e) =>
+            handleInputChange(
+              e.target.value,
+              record.key,
+              "invoices",
+              tableKey
+            )
+          }
+        />
+      ),
+    },
+    {
+      title: "Nominal",
+      dataIndex: "nominals",
+      key: "nominals",
+      render: (text, record) => (
+        <Input
+          value={record.nominals}
+          placeholder="Masukkan Nominal"
+          onChange={(e) =>
+            handleInputChange(e.target.value, record.key, "nominals", tableKey)
+          }
+        />
+      ),
+    },
+    {
+      title: "Nama Supplier",
+      dataIndex: "namaSupplier",
+      key: "namaSupplier",
+      render: (text, record) => (
+        <Input
+          value={record.namaSupplier}
+          placeholder="Masukkan Nama Supplier"
+          onChange={(e) =>
+            handleInputChange(e.target.value, record.key, "namaSupplier", tableKey)
+          }
+        />
+      ),
+    },
+    {
+      title: "Aksi",
+      key: "aksi",
+      render: (_, record) => (
+        <Space>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => removeRow(record.key, tableKey)}
+          >
+            Hapus
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  const columns2 = (tableKey2) => [
+    {
+      title: "Nama Toko",
+      dataIndex: "namaToko",
+      key: "namaToko",
+      render: (text, record) => (
+        <Input
+          value={record.namaToko}
+          placeholder="Masukkan Nama Toko"
+          onChange={(e) =>
+            handleInputChange2(
+              e.target.value,
+              record.key,
+              "namaToko",
+              tableKey2
+            )
+          }
+        />
+      ),
+    },
+    {
+      title: "Nominal Belanja",
+      dataIndex: "nominalBelanja",
+      key: "nominalBelanja",
+      render: (text, record) => (
+        <Input
+          value={record.nominalBelanja}
+          placeholder="Masukkan Nominal"
+          onChange={(e) =>
+            handleInputChange2(e.target.value, record.key, "nominalBelanja", tableKey2)
+          }
+        />
+      ),
+    },
+    {
+      title: "Aksi",
+      key: "aksi",
+      render: (_, record) => (
+        <Space>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => removeRow2(record.key, tableKey2)}
+          >
+            Hapus
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  const columns3 = (tableKey3) => [
+    {
+      title: "Nama Toko",
+      dataIndex: "namaToko",
+      key: "namaToko",
+      render: (text, record) => (
+        <Input
+          value={record.namaToko}
+          placeholder="Masukkan Nama Toko"
+          onChange={(e) =>
+            handleInputChange3(
+              e.target.value,
+              record.key,
+              "namaToko",
+              tableKey3
+            )
+          }
+        />
+      ),
+    },
+    {
+      title: "No. telpon/web dan online shop",
+      dataIndex: "noteleponWeb",
+      key: "noteleponWeb",
+      render: (text, record) => (
+        <Input
+          value={record.noteleponWeb}
+          placeholder="Masukkan No. telpon/web dan online shop"
+          onChange={(e) =>
+            handleInputChange3(e.target.value, record.key, "noteleponWeb", tableKey3)
+          }
+        />
+      ),
+    },
+    {
+      title: "Aksi",
+      key: "aksi",
+      render: (_, record) => (
+        <Space>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => removeRow3(record.key, tableKey3)}
+          >
+            Hapus
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  useEffect(() => {
+    const initialFileList = (formData.photoUsaha || []).map((item, index) => ({
+      uid: index.toString(),
+      name: item.url.split("/").pop(),
+      url: item.url,
+      description: item.description || "",
+    }));
+    setFileList(initialFileList);
+  }, [formData.photoUsaha]);
+
+  const handleUpload = async ({ file, onSuccess, onError }) => {
+    if (fileList.length >= 12) {
+      message.error("You can only upload up to 12 photos");
+      onError(new Error("Upload limit reached."));
       return;
     }
-    const formData = new FormData();
-    formData.append('file', file);
+
+    const maxSize = 500 * 1024;
+    if (file.size > maxSize) {
+      message.error(`${file.name} exceeds the maximum file size of 500 KB.`);
+      onError(new Error("File size exceeds limit."));
+      return;
+    }
+
+    setIsUploading(true);
+    const uploadData = new FormData();
+    uploadData.append("file", file);
+
     try {
-      const response = await axios.post('https://api-nasnus.vercel.app/api/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setbusinessPhotos(response.data.data);
-      form.setFieldsValue({ businessPhotos: response.data.data });
-      alert('Upload berhasil!');
+      const response = await axios.post(
+        "http://localhost:3000/api/upload",
+        uploadData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      if (response.status === 200) {
+        message.success(`${file.name} uploaded successfully.`);
+
+        const fileUrl = response.data.data;
+        const updatedPhotos = [
+          ...(formData.photoUsaha || []),
+          { url: fileUrl, description: "" },
+        ];
+        setFormData({ ...formData, photoUsaha: updatedPhotos });
+
+        setFileList(
+          updatedPhotos.map((item, index) => ({
+            uid: index.toString(),
+            name: item.url.split("/").pop(),
+            url: item.url,
+            description: item.description,
+          }))
+        );
+
+        onSuccess({ data: fileUrl });
+      } else {
+        throw new Error("Upload failed");
+      }
     } catch (error) {
-      console.error(error);
-      alert('Terjadi kesalahan saat meng-upload file.');
+      message.error(`${file.name} failed to upload.`);
+      onError(error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  // Menambahkan tujuan pengguna ke dalam daftar
-  const handleAddUserGoal = () => {
-    console.log("Jumlah tests:", tests.length);
-    if (tests.length >= 3) {
-      message.warning("Anda sudah menambahkan 3 tujuan pengguna, tidak dapat menambah lagi.");
-      return;
-    }
-    if (testInput.trim()) {
-      const newtests = [...tests, testInput];
-      settests(newtests);
-
-      form.setFieldsValue({
-        tests: newtests,
-      });
-      settestInput("");
-    }
+  const handleRemove = (file) => {
+    const updatedPhotos = formData.photoUsaha.filter(
+      (photo) => photo.url !== file.url
+    );
+    setFormData({ ...formData, photoUsaha: updatedPhotos });
+    setFileList(
+      updatedPhotos.map((item, index) => ({
+        uid: index.toString(),
+        name: item.url.split("/").pop(),
+        url: item.url,
+        description: item.description,
+      }))
+    );
   };
 
-  const handleRemoveUserGoal = (index) => {
-    const newtests = tests.filter((_, i) => i !== index);
-    settests(newtests);
-
-    form.setFieldsValue({
-      tests: newtests,
-    });
-  };
-
-  const handleAddDebtProfile = () => {
-    if (debtProfileInput.trim()) {
-      const newDebtProfiles = [...debtProfiles, debtProfileInput];
-      setDebtProfiles(newDebtProfiles);
-
-      form.setFieldsValue({
-        debtProfiles: newDebtProfiles,
-      });
-
-      setDebtProfileInput(""); 
-    }
-  };
-
-  const handleRemoveDebtProfile = (index) => {
-    const newDebtProfiles = debtProfiles.filter((_, i) => i !== index);
-    setDebtProfiles(newDebtProfiles);
-
-    form.setFieldsValue({
-      debtProfiles: newDebtProfiles,
-    });
-  };
-
-  const handleUserGoalChange = (e) => {
-    settestInput(e.target.value);
-  };
-
-  const handleDebtProfileChange = (e) => {
-    setDebtProfileInput(e.target.value);
+  const handleDescriptionChange = (index, value) => {
+    const updatedPhotos = [...formData.photoUsaha];
+    updatedPhotos[index].description = value;
+    setFormData({ ...formData, photoUsaha: updatedPhotos });
+    setFileList(
+      updatedPhotos.map((item, idx) => ({
+        uid: idx.toString(),
+        name: item.url.split("/").pop(),
+        url: item.url,
+        description: item.description,
+      }))
+    );
   };
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      initialValues={{
-        tests: [],
-        debtProfiles: [],
-      }}
-    >
-      <Form.Item label="Tujuan Penggunaan">
-        <Input
-          value={testInput}
-          onChange={handleUserGoalChange}
-          placeholder="Masukkan tujuan penggunaan"
-        />
-        </Form.Item>
+    <>
+      <Form.Item
+        label="Profil Debitur"
+        name="profilDebitur"
+        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueFromEvent={(e) => e.target.value.split("\n")}
+      >
+        <Input.TextArea placeholder="Masukkan Profil Debitur" />
+      </Form.Item>
+
+      <Form.Item
+        label="Analisa Usaha / Pekerjaan"
+        name="analisaUsahaPekerjaan"
+        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueFromEvent={(e) => e.target.value.split("\n")}
+      >
+        <Input.TextArea placeholder="Masukkan Analisa Usaha / Pekerjaan" />
+      </Form.Item>
+
+      <Form.Item
+        label="Aspek Pengadaan Barang/Bahan Baku"
+        name="aspekPengadaanBarang"
+        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueFromEvent={(e) => e.target.value.split("\n")}
+      >
+        <Input.TextArea placeholder="Masukkan Aspek Pengadaan Barang/Bahan Baku" />
+      </Form.Item>
+
+      <Table
+        columns={columns("tableInvoicePembelian")}
+        dataSource={data}
+        pagination={false}
+        bordered
+        style={{ marginBottom: "16px" }}
+      />
       <Button
         type="primary"
-        onClick={handleAddUserGoal}
-        style={{ marginBottom: "16px" }}
-        disabled={tests.length >= 3}
+        icon={<PlusOutlined />}
+        onClick={() => addRow("tableInvoicePembelian")}
+        style={{ marginTop: "8px" }}
       >
-        Tambah Tujuan Pengguna
+        Tambah Baris
       </Button>
 
-      <List
-        header="Daftar Tujuan Pengguna (Max 3)"
-        bordered
-        dataSource={tests}
-        renderItem={(item, index) => (
-          <List.Item
-            actions={[
-              <Button
-                type="link"
-                danger
-                onClick={() => handleRemoveUserGoal(index)}
-              >
-                Hapus
-              </Button>,
-            ]}
-          >
-            {index + 1}. {item}
-          </List.Item>
-        )}
-        style={{ marginBottom: "24px" }}
-      />
-    
-      <Form.Item label="Profil Debitur & Hasil Cek Lingkungan">
-        <Input
-          value={debtProfileInput}
-          onChange={handleDebtProfileChange}
-          placeholder="Masukkan Profil Debitur & Hasil Cek Lingkungan"
-        />
+      <Form.Item
+        label="Note"
+        name="noteInvoice"
+        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueFromEvent={(e) => e.target.value.split("\n")}
+      >
+        <Input.TextArea placeholder="Masukkan Note"
+        autoSize={{ minRows: 4, maxRows: 8 }}/>
       </Form.Item>
+
+      <Table
+        columns={columns2("tableBuktiTransaksiPembelian")}
+        dataSource={data3}
+        pagination={false}
+        bordered
+        style={{ marginBottom: "16px" }}
+      />
       <Button
         type="primary"
-        onClick={handleAddDebtProfile}
-        style={{ marginBottom: "16px" }}
-        disabled={debtProfiles.length >= 3}
+        icon={<PlusOutlined />}
+        onClick={() => addRow2("tableBuktiTransaksiPembelian")}
+        style={{ marginTop: "8px" }}
       >
-        Tambah Profil Debitur
+        Tambah Baris
       </Button>
 
-      <List
-        header="Daftar Profil Debitur & Hasil Cek Lingkungan (Max 3)"
+      <Table
+        columns={columns3("tableHasilVerifikasiSupplier")}
+        dataSource={data5}
+        pagination={false}
         bordered
-        dataSource={debtProfiles}
-        renderItem={(item, index) => (
-          <List.Item
-            actions={[
-              <Button
-                type="link"
-                danger
-                onClick={() => handleRemoveDebtProfile(index)}
-              >
-                Hapus
-              </Button>,
-            ]}
-          >
-            {index + 1}. {item}
-          </List.Item>
-        )}
+        style={{ marginBottom: "16px" }}
       />
-      <Form.Item name="tests" hidden>
-        <Input type="hidden" />
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => addRow3("tableHasilVerifikasiSupplier")}
+        style={{ marginTop: "8px" }}
+      >
+        Tambah Baris
+      </Button>
+
+      <Form.Item
+        label="Aspek Pemasaran/Distribusi"
+        name="aspekPemasaranDistribusi"
+        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueFromEvent={(e) => e.target.value.split("\n")}
+      >
+        <Input.TextArea
+          placeholder="Masukkan Aspek Pemasaran/Distribusi"
+          autoSize={{ minRows: 4, maxRows: 8 }}
+        />
       </Form.Item>
-      <Form.Item name="debtProfiles" hidden>
-        <Input type="hidden" />
+
+      <Form.Item
+        label="Kontrak Kerja Yang Dimiliki"
+        name="kontrakKerjaDimiliki"
+        // rules={[{ required: true, message: "Harap masukkan nama debitur Anda!" }]}
+      >
+        <Input placeholder="Masukkan Kontrak Kerja Yang Dimiliki" />
       </Form.Item>
-      
-      {[
-        { label: "Latar Belakang & Aktivitas Usaha", name: "businessBackground" },
-        { label: "Supplier", name: "supplier" },
-        { label: "Pemasaran / Distribusi", name: "marketing" },
-        { label: "Kontrak Kerja yang Dimiliki", name: "contracts" },
-        { label: "Rencana Pengembangan Usaha", name: "developmentPlan" },
-      ].map((item) => (
-        <Form.Item
-          key={item.name}
-          label={item.label}
-          name={item.name}
-          rules={[
-            { required: true, message: `Harap masukkan ${item.label}!` },
-          ]}
+
+      <Form.Item
+        label="Aspek Rencana Pengembangan Usaha"
+        name="aspekRencanaPengembanganUsaha"
+        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueFromEvent={(e) => e.target.value.split("\n")}
+      >
+        <Input.TextArea
+          placeholder="Masukkan Aspek Rencana Pengembangan Usaha"
+          autoSize={{ minRows: 4, maxRows: 8 }}
+        />
+      </Form.Item>
+
+      <Upload
+        customRequest={handleUpload}
+        fileList={fileList}
+        onRemove={handleRemove}
+        multiple={false}
+        maxCount={12}
+        showUploadList={{ showRemoveIcon: true }}
+        accept="image/*"
+      >
+        <Button
+          icon={isUploading ? <LoadingOutlined /> : <UploadOutlined />}
+          disabled={isUploading}
         >
-          <Input placeholder={`Masukkan ${item.label}`} />
-        </Form.Item>
-      ))}
-      <Form.Item label="Upload Foto Usaha" name='businessPhotos' rules={[{ required: true }]}>
-        <Input type="file" onChange={handleFileChange} name={businessPhotos}/>
-        <Button onClick={handleUpload} disabled={!isValidFile} >Upload Foto</Button>
-        </Form.Item>
+          {isUploading ? "Uploading..." : "Upload Foto Usaha"}
+        </Button>
+      </Upload>
 
-        {businessPhotos && (
-        <div>
-          <h3 style={{fontWeight: 'normal'}}>Foto yang di-upload:</h3>
-          <img src={businessPhotos} alt="Uploaded" style={{ maxWidth: '150px' }} />
+      {fileList.map((file, index) => (
+        <div key={file.uid} style={{ marginTop: 10 }}>
+          <Input
+            placeholder={`Tambahkan deskripsi foto ${index + 1}`}
+            value={file.description}
+            onChange={(e) => handleDescriptionChange(index, e.target.value)}
+          />
         </div>
-      )}
-    </Form>
+      ))}
+    </>
   );
 };
 

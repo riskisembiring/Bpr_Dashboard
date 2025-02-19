@@ -4,30 +4,38 @@ import { NumericFormat } from "react-number-format";
 
 const Step1 = ({ form }) => {
   const [nominal, setNominal] = useState("");
+  const [userData, setUserData] = useState(null);
 
-  <NumericFormat
-    value={nominal}
-    thousandSeparator="."
-    decimalSeparator=","
-    prefix="Rp "
-    onValueChange={(values) => handleNominalChange(values.value)}
-    renderText={(value) => <Input value={value} />}
-  />;
+  useEffect(() => {
+    const username = localStorage.getItem("username") || "Default User";
+    setUserData({ username });
+  }, []);
+
+  useEffect(() => {
+    if (userData) {
+      form.setFieldsValue({
+        namaUser: userData.username,
+      });
+    }
+  }, [userData, form]);
 
   const handleNominalChange = (value) => {
     setNominal(value);
   };
 
   return (
-    <>
+    <Form form={form} layout="vertical">
       <Row gutter={16}>
+        {/* Kolom Kiri */}
         <Col span={12}>
-        <Form.Item
+          <Form.Item
             label="Nama User"
             name="namaUser"
+            style={{ display: 'none'}}
           >
-            <Input hidden/>
+            <Input/>
           </Form.Item>
+
           <Form.Item
             label="Nama Debitur"
             name="namaDebitur"
@@ -208,8 +216,11 @@ const Step1 = ({ form }) => {
               <Radio value="tidakTerkait">Tidak Terkait</Radio>
             </Radio.Group>
           </Form.Item>
+        </Col>
 
-          <Form.Item
+        {/* Kolom Kanan */}
+        <Col span={12}>
+        <Form.Item
             label="Status Pembiayaan"
             name="statusPembiayaan"
             // rules={[{ required: true, message: "Pilih Status Pembiayaan!" }]}
@@ -219,8 +230,7 @@ const Step1 = ({ form }) => {
               <Radio value="sindikasi">Sindikasi</Radio>
             </Radio.Group>
           </Form.Item>
-        </Col>
-        <Col span={12}>
+
           <Form.Item
             label="Jenis Kredit"
             name="jenisKredit"
@@ -391,7 +401,7 @@ const Step1 = ({ form }) => {
           </Form.Item>
         </Col>
       </Row>
-    </>
+    </Form>
   );
 };
 
