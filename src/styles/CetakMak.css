@@ -54,4 +54,25 @@
   .modal-cell:last-child {
     border-right: none;
   }
+
+  @media (max-width: 768px) {
+    .ant-typography {
+      font-size: 14px; /* Mengurangi ukuran font untuk tampilan mobile */
+    }
+    .ant-btn {
+      font-size: 12px; /* Ukuran font tombol lebih kecil di mobile */
+      padding: 6px 10px; /* Mengurangi padding tombol */
+    }
+    .ant-table {
+      font-size: 12px; /* Mengurangi ukuran font tabel */
+    }
+    .ant-btn-group {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+  }
+  
+  
+  
   

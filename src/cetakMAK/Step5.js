@@ -1,6 +1,7 @@
 import React from "react";
 import { Table, Input, Button, Space, Form } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { NumericFormat } from "react-number-format";
 
 const Step5 = ({ formData, setFormData }) => {
   const data = formData.tableAnalisaRekKoran || [];
@@ -28,42 +29,41 @@ const Step5 = ({ formData, setFormData }) => {
   const addRow = (tableKey) => {
     let targetData;
     if (tableKey === "tableAnalisaRekKoran") {
-        targetData = data;
+      targetData = data;
     } else if (tableKey === "tableAnalisaRekKoran2") {
-        targetData = data2;
+      targetData = data2;
     } else if (tableKey === "tableAnalisaRekKoran3") {
-        targetData = data3;
+      targetData = data3;
     } else {
-        return;
+      return;
     }
     const newRow = {
-        key: (targetData.length + 1).toString(),
-        bulan: "",
-        mutasiDebet: "",
-        qty1: "",
-        mutasiKredit: "",
-        qty2: "",
-        saldoRataRata: "",
+      key: (targetData.length + 1).toString(),
+      bulan: "",
+      mutasiDebet: "",
+      qty1: "",
+      mutasiKredit: "",
+      qty2: "",
+      saldoRataRata: "",
     };
     const newData = [...targetData, newRow];
     setFormData({ ...formData, [tableKey]: newData });
-};
+  };
 
-const removeRow = (key, tableKey) => {
-  let targetData;
-  if (tableKey === "tableAnalisaRekKoran") {
+  const removeRow = (key, tableKey) => {
+    let targetData;
+    if (tableKey === "tableAnalisaRekKoran") {
       targetData = data;
-  } else if (tableKey === "tableAnalisaRekKoran2") {
+    } else if (tableKey === "tableAnalisaRekKoran2") {
       targetData = data2;
-  } else if (tableKey === "tableAnalisaRekKoran3") {
+    } else if (tableKey === "tableAnalisaRekKoran3") {
       targetData = data3;
-  } else {
+    } else {
       return;
-  }
-  const newData = targetData.filter((row) => row.key !== key);
-  setFormData({ ...formData, [tableKey]: newData });
-};
-
+    }
+    const newData = targetData.filter((row) => row.key !== key);
+    setFormData({ ...formData, [tableKey]: newData });
+  };
 
   const columns = (tableKey) => [
     {
@@ -74,7 +74,10 @@ const removeRow = (key, tableKey) => {
         <Input
           value={record.bulan}
           placeholder="Masukkan Bulan"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "bulan", tableKey)}
+          onChange={(e) =>
+            handleInputChange(e.target.value, record.key, "bulan", tableKey)
+          }
+          className="responsive-input"
         />
       ),
     },
@@ -83,22 +86,48 @@ const removeRow = (key, tableKey) => {
       dataIndex: "mutasiDebet",
       key: "mutasiDebet",
       render: (text, record) => (
-        <Input
-          value={record.mutasiDebet}
+        <NumericFormat
+          value={String(record.mutasiDebet)}
           placeholder="Masukkan Mutasi Debet"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "mutasiDebet", tableKey)}
+          onValueChange={(values) =>
+            handleInputChange(
+              String(values.value),
+              record.key,
+              "mutasiDebet",
+              tableKey
+            )
+          }
+          thousandSeparator="."
+          decimalSeparator=","
+          allowNegative={false}
+          decimalScale={0}
+          fixedDecimalScale={false}
+          className="responsive-input"
         />
       ),
     },
     {
-      title: "QTY",
+      title: "Qty",
       dataIndex: "qty1",
       key: "qty1",
       render: (text, record) => (
-        <Input
-          value={record.qty1}
-          placeholder="Masukkan QTY"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "qty1", tableKey)}
+        <NumericFormat
+          value={String(record.qty1)}
+          placeholder="Masukkan Qty"
+          onValueChange={(values) =>
+            handleInputChange(
+              String(values.value),
+              record.key,
+              "qty1",
+              tableKey
+            )
+          }
+          thousandSeparator="."
+          decimalSeparator=","
+          allowNegative={false}
+          decimalScale={0}
+          fixedDecimalScale={false}
+          className="responsive-input"
         />
       ),
     },
@@ -107,35 +136,49 @@ const removeRow = (key, tableKey) => {
       dataIndex: "mutasiKredit",
       key: "mutasiKredit",
       render: (text, record) => (
-        <Input
-          value={record.mutasiKredit}
+        <NumericFormat
+          value={String(record.mutasiKredit)}
           placeholder="Masukkan Mutasi Kredit"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "mutasiKredit", tableKey)}
+          onValueChange={(values) =>
+            handleInputChange(
+              String(values.value),
+              record.key,
+              "mutasiKredit",
+              tableKey
+            )
+          }
+          thousandSeparator="."
+          decimalSeparator=","
+          allowNegative={false}
+          decimalScale={0}
+          fixedDecimalScale={false}
+          className="responsive-input"
         />
       ),
     },
     {
-      title: "QTY",
+      title: "Qty",
       dataIndex: "qty2",
       key: "qty2",
       render: (text, record) => (
-        <Input
-          value={record.qty2}
-          placeholder="Masukkan QTY"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "qty2", tableKey)}
-        />
-      ),
-    },
-    {
-      title: "Kol.",
-      dataIndex: "kol",
-      key: "kol",
-      render: (text, record) => (
-        <Input
-          value={record.kol}
-          placeholder="Masukkan Kol."
-          onChange={(e) => handleInputChange(e.target.value, record.key, "kol", tableKey)}
-        />
+        <NumericFormat
+        value={String(record.qty2)}
+        placeholder="Masukkan Qty"
+        onValueChange={(values) =>
+          handleInputChange(
+            String(values.value),
+            record.key,
+            "qty2",
+            tableKey
+          )
+        }
+        thousandSeparator="."
+        decimalSeparator=","
+        allowNegative={false}
+        decimalScale={0}
+        fixedDecimalScale={false}
+        className="responsive-input"
+      />
       ),
     },
     {
@@ -143,11 +186,24 @@ const removeRow = (key, tableKey) => {
       dataIndex: "saldoRataRata",
       key: "saldoRataRata",
       render: (text, record) => (
-        <Input
-          value={record.saldoRataRata}
-          placeholder="Masukkan Saldo Rata-Rata"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "saldoRataRata", tableKey)}
-        />
+        <NumericFormat
+        value={String(record.saldoRataRata)}
+        placeholder="Masukkan Saldo Rata-Rata"
+        onValueChange={(values) =>
+          handleInputChange(
+            String(values.value),
+            record.key,
+            "saldoRataRata",
+            tableKey
+          )
+        }
+        thousandSeparator="."
+        decimalSeparator=","
+        allowNegative={false}
+        decimalScale={0}
+        fixedDecimalScale={false}
+        className="responsive-input"
+      />
       ),
     },
     {
@@ -155,7 +211,11 @@ const removeRow = (key, tableKey) => {
       key: "aksi",
       render: (_, record) => (
         <Space>
-          <Button danger icon={<DeleteOutlined />} onClick={() => removeRow(record.key, tableKey)}>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => removeRow(record.key, tableKey)}
+          >
             Hapus
           </Button>
         </Space>
@@ -179,19 +239,24 @@ const removeRow = (key, tableKey) => {
       <Form.Item label="Periode" name="periode">
         <Input placeholder="Masukkan Periode" />
       </Form.Item>
-      <Table columns={columns("tableAnalisaRekKoran")} dataSource={data} pagination={false} bordered style={{ marginBottom: "16px" }} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => addRow("tableAnalisaRekKoran")} style={{ marginTop: "8px" }}>
+      <h3>Tabel Analisa Rekening Koran 1</h3>
+      <Table
+        columns={columns("tableAnalisaRekKoran")}
+        dataSource={data}
+        pagination={false}
+        bordered
+        style={{ marginBottom: "16px" }}
+        scroll={{ x: "max-content" }}
+        responsive
+      />
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => addRow("tableAnalisaRekKoran")}
+        style={{ marginTop: "8px" }}
+      >
         Tambah Baris
       </Button>
-      {/* <Form.Item
-        label="Penjelasan Laporan Rekening Koran"
-        name="penjelasanLaporanRekKoran"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
-      >
-        <Input.TextArea placeholder="Masukkan Penjelasan Laporan Rekening Koran" />
-      </Form.Item> */}
-
       <h4>Analisa 2</h4>
       <Form.Item label="Rekening Koran Bank" name="rekeningKoranBank2">
         <Input placeholder="Masukkan Rekening Koran Bank" />
@@ -205,19 +270,24 @@ const removeRow = (key, tableKey) => {
       <Form.Item label="Periode" name="periode2">
         <Input placeholder="Masukkan Periode" />
       </Form.Item>
-      <Table columns={columns("tableAnalisaRekKoran2")} dataSource={data2} pagination={false} bordered style={{ marginBottom: "16px" }} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => addRow("tableAnalisaRekKoran2")} style={{ marginTop: "8px" }}>
+      <h3>Tabel Analisa Rekening Koran 2</h3>
+      <Table
+        columns={columns("tableAnalisaRekKoran2")}
+        dataSource={data2}
+        pagination={false}
+        bordered
+        style={{ marginBottom: "16px" }}
+        scroll={{ x: "max-content" }}
+        responsive
+      />
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => addRow("tableAnalisaRekKoran2")}
+        style={{ marginTop: "8px" }}
+      >
         Tambah Baris
       </Button>
-      {/* <Form.Item
-        label="Penjelasan Laporan Rekening Koran"
-        name="penjelasanLaporanRekKoran"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
-      >
-        <Input.TextArea placeholder="Masukkan Penjelasan Laporan Rekening Koran" />
-      </Form.Item> */}
-
       <h4>Analisa 3</h4>
       <Form.Item label="Rekening Koran Bank" name="rekeningKoranBank3">
         <Input placeholder="Masukkan Rekening Koran Bank" />
@@ -231,18 +301,24 @@ const removeRow = (key, tableKey) => {
       <Form.Item label="Periode" name="periode3">
         <Input placeholder="Masukkan Periode" />
       </Form.Item>
-      <Table columns={columns("tableAnalisaRekKoran3")} dataSource={data3} pagination={false} bordered style={{ marginBottom: "16px" }} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => addRow("tableAnalisaRekKoran3")} style={{ marginTop: "8px" }}>
+      <h3>Tabel Analisa Rekening Koran 3</h3>
+      <Table
+        columns={columns("tableAnalisaRekKoran3")}
+        dataSource={data3}
+        pagination={false}
+        bordered
+        style={{ marginBottom: "16px" }}
+        scroll={{ x: "max-content" }}
+        responsive
+      />
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => addRow("tableAnalisaRekKoran3")}
+        style={{ marginTop: "8px" }}
+      >
         Tambah Baris
       </Button>
-      {/* <Form.Item
-        label="Penjelasan Laporan Rekening Koran"
-        name="penjelasanLaporanRekKoran"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
-      >
-        <Input.TextArea placeholder="Masukkan Penjelasan Laporan Rekening Koran" />
-      </Form.Item> */}
     </div>
   );
 };

@@ -1,23 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Form, Table, Input, Button, Space, Upload, message } from "antd";
-import { PlusOutlined, DeleteOutlined, LoadingOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  LoadingOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 
 const Step7 = ({ formData, setFormData }) => {
-    const [isUploading, setIsUploading] = useState(false);
-    const [fileList, setFileList] = useState([]);
-    const data = formData.tableDataAgunan || [];
-    const data2 = formData.tableDataAgunan2 || [];
-    
-    useEffect(() => {
-      const initialFileList = (formData.photoAgunan || []).map((item, index) => ({
-        uid: index.toString(),
-        name: item.url.split("/").pop(),
-        url: item.url,
-        description: item.description || ""
-      }));
-      setFileList(initialFileList);
-    }, [formData.photoAgunan]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [fileList, setFileList] = useState([]);
+  const data = formData.tableDataAgunan || [];
+  const data2 = formData.tableDataAgunan2 || [];
+
+  useEffect(() => {
+    const initialFileList = (formData.photoAgunan || []).map((item, index) => ({
+      uid: index.toString(),
+      name: item.url.split("/").pop(),
+      url: item.url,
+      description: item.description || "",
+    }));
+    setFileList(initialFileList);
+  }, [formData.photoAgunan]);
 
   const handleUpload = async ({ file, onSuccess, onError }) => {
     if (fileList.length >= 12) {
@@ -48,17 +53,22 @@ const Step7 = ({ formData, setFormData }) => {
 
       if (response.status === 200) {
         message.success(`${file.name} uploaded successfully.`);
-        
+
         const fileUrl = response.data.data;
-        const updatedPhotos = [...(formData.photoAgunan || []), { url: fileUrl, description: "" }];
+        const updatedPhotos = [
+          ...(formData.photoAgunan || []),
+          { url: fileUrl, description: "" },
+        ];
         setFormData({ ...formData, photoAgunan: updatedPhotos });
 
-        setFileList(updatedPhotos.map((item, index) => ({
-          uid: index.toString(),
-          name: item.url.split("/").pop(),
-          url: item.url,
-          description: item.description
-        })));
+        setFileList(
+          updatedPhotos.map((item, index) => ({
+            uid: index.toString(),
+            name: item.url.split("/").pop(),
+            url: item.url,
+            description: item.description,
+          }))
+        );
 
         onSuccess({ data: fileUrl });
       } else {
@@ -73,46 +83,58 @@ const Step7 = ({ formData, setFormData }) => {
   };
 
   const handleRemove = (file) => {
-    const updatedPhotos = formData.photoAgunan.filter((photo) => photo.url !== file.url);
+    const updatedPhotos = formData.photoAgunan.filter(
+      (photo) => photo.url !== file.url
+    );
     setFormData({ ...formData, photoAgunan: updatedPhotos });
-    setFileList(updatedPhotos.map((item, index) => ({
-      uid: index.toString(),
-      name: item.url.split("/").pop(),
-      url: item.url,
-      description: item.description
-    })));
+    setFileList(
+      updatedPhotos.map((item, index) => ({
+        uid: index.toString(),
+        name: item.url.split("/").pop(),
+        url: item.url,
+        description: item.description,
+      }))
+    );
   };
 
   const handleDescriptionChange = (index, value) => {
     const updatedPhotos = [...formData.photoAgunan];
     updatedPhotos[index].description = value;
     setFormData({ ...formData, photoAgunan: updatedPhotos });
-    setFileList(updatedPhotos.map((item, idx) => ({
-      uid: idx.toString(),
-      name: item.url.split("/").pop(),
-      url: item.url,
-      description: item.description
-    })));
+    setFileList(
+      updatedPhotos.map((item, idx) => ({
+        uid: idx.toString(),
+        name: item.url.split("/").pop(),
+        url: item.url,
+        description: item.description,
+      }))
+    );
   };
 
-    const handleInputChange = (value, key, column, tableKey) => {
-        const newData = (tableKey === "tableDataAgunan" ? data : data2).map((row) => {
-          if (row.key === key) {
-            return { ...row, [column]: value };
-          }
-          return row;
-        });
-        setFormData({ ...formData, [tableKey]: newData });
-      };
-    
-    const removeRow = (key, tableKey) => {
-    const newData = (tableKey === "tableDataAgunan" ? data : data2).filter((row) => row.key !== key);
+  const handleInputChange = (value, key, column, tableKey) => {
+    const newData = (tableKey === "tableDataAgunan" ? data : data2).map(
+      (row) => {
+        if (row.key === key) {
+          return { ...row, [column]: value };
+        }
+        return row;
+      }
+    );
+    setFormData({ ...formData, [tableKey]: newData });
+  };
+
+  const removeRow = (key, tableKey) => {
+    const newData = (tableKey === "tableDataAgunan" ? data : data2).filter(
+      (row) => row.key !== key
+    );
     setFormData({ ...formData, [tableKey]: newData });
   };
 
   const addRow = (tableKey) => {
     const newRow = {
-      key: ((tableKey === "tableDataAgunan" ? data : data2).length + 1).toString(),
+      key: (
+        (tableKey === "tableDataAgunan" ? data : data2).length + 1
+      ).toString(),
       jenisAgunan: "",
       noDokumen: "",
       namaPemilikDanHubDebitur: "",
@@ -122,7 +144,10 @@ const Step7 = ({ formData, setFormData }) => {
       petugasAppraisal: "",
       KetAgunan: "",
     };
-    const newData = [...(tableKey === "tableDataAgunan" ? data : data2), newRow];
+    const newData = [
+      ...(tableKey === "tableDataAgunan" ? data : data2),
+      newRow,
+    ];
     setFormData({ ...formData, [tableKey]: newData });
   };
 
@@ -135,7 +160,14 @@ const Step7 = ({ formData, setFormData }) => {
         <Input
           value={record.jenisAgunan}
           placeholder="Masukkan Jenis Agunan"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "jenisAgunan", tableKey)}
+          onChange={(e) =>
+            handleInputChange(
+              e.target.value,
+              record.key,
+              "jenisAgunan",
+              tableKey
+            )
+          }
         />
       ),
     },
@@ -147,7 +179,9 @@ const Step7 = ({ formData, setFormData }) => {
         <Input
           value={record.noDokumen}
           placeholder="Masukkan No Dokumen"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "noDokumen", tableKey)}
+          onChange={(e) =>
+            handleInputChange(e.target.value, record.key, "noDokumen", tableKey)
+          }
         />
       ),
     },
@@ -159,7 +193,14 @@ const Step7 = ({ formData, setFormData }) => {
         <Input
           value={record.namaPemilikDanHubDebitur}
           placeholder="Masukkan Nama Pemilik & Hub Dengan Debitur"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "namaPemilikDanHubDebitur", tableKey)}
+          onChange={(e) =>
+            handleInputChange(
+              e.target.value,
+              record.key,
+              "namaPemilikDanHubDebitur",
+              tableKey
+            )
+          }
         />
       ),
     },
@@ -171,7 +212,14 @@ const Step7 = ({ formData, setFormData }) => {
         <Input
           value={record.luasTanahBangunan}
           placeholder="Masukkan Luas Tanah & bangunan"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "luasTanahBangunan", tableKey)}
+          onChange={(e) =>
+            handleInputChange(
+              e.target.value,
+              record.key,
+              "luasTanahBangunan",
+              tableKey
+            )
+          }
         />
       ),
     },
@@ -183,7 +231,14 @@ const Step7 = ({ formData, setFormData }) => {
         <Input
           value={record.nilaiPasar}
           placeholder="Masukkan Nilai Pasar"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "nilaiPasar", tableKey)}
+          onChange={(e) =>
+            handleInputChange(
+              e.target.value,
+              record.key,
+              "nilaiPasar",
+              tableKey
+            )
+          }
         />
       ),
     },
@@ -195,47 +250,67 @@ const Step7 = ({ formData, setFormData }) => {
         <Input
           value={record.nilaiLikuiditas}
           placeholder="Masukkan Nilai Likuiditas"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "nilaiLikuiditas", tableKey)}
+          onChange={(e) =>
+            handleInputChange(
+              e.target.value,
+              record.key,
+              "nilaiLikuiditas",
+              tableKey
+            )
+          }
         />
       ),
     },
     {
-        title: "Petugas Appraisal",
-        dataIndex: "petugasAppraisal",
-        key: "petugasAppraisal",
-        render: (text, record) => (
-          <Input
-            value={record.petugasAppraisal}
-            placeholder="Masukkan Petugas Appraisal"
-            onChange={(e) => handleInputChange(e.target.value, record.key, "petugasAppraisal", tableKey)}
-          />
-        ),
-      },
-      {
-        title: "Ket.",
-        dataIndex: "ketAgunan",
-        key: "ketAgunan",
-        render: (text, record) => (
-          <Input
-            value={record.ketAgunan}
-            placeholder="Masukkan Keterangan"
-            onChange={(e) => handleInputChange(e.target.value, record.key, "ketAgunan", tableKey)}
-          />
-        ),
-      },
+      title: "Petugas Appraisal",
+      dataIndex: "petugasAppraisal",
+      key: "petugasAppraisal",
+      render: (text, record) => (
+        <Input
+          value={record.petugasAppraisal}
+          placeholder="Masukkan Petugas Appraisal"
+          onChange={(e) =>
+            handleInputChange(
+              e.target.value,
+              record.key,
+              "petugasAppraisal",
+              tableKey
+            )
+          }
+        />
+      ),
+    },
+    {
+      title: "Ket.",
+      dataIndex: "ketAgunan",
+      key: "ketAgunan",
+      render: (text, record) => (
+        <Input
+          value={record.ketAgunan}
+          placeholder="Masukkan Keterangan"
+          onChange={(e) =>
+            handleInputChange(e.target.value, record.key, "ketAgunan", tableKey)
+          }
+        />
+      ),
+    },
     {
       title: "Aksi",
       key: "aksi",
       render: (_, record) => (
         <Space>
-          <Button danger icon={<DeleteOutlined />} onClick={() => removeRow(record.key, tableKey)}>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => removeRow(record.key, tableKey)}
+          >
             Hapus
           </Button>
         </Space>
       ),
     },
   ];
-    
+
   return (
     <>
       <h3>
@@ -247,14 +322,28 @@ const Step7 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Analisa Repayment Capacity" />
+        <Input.TextArea
+          placeholder="Masukkan Analisa Repayment Capacity"
+          autoSize={{ minRows: 8, maxRows: 8 }}
+        />
       </Form.Item>
 
-      <h3>
-        3. Data Agunan
-      </h3>
-      <Table columns={columns("tableDataAgunan")} dataSource={data} pagination={false} bordered style={{ marginBottom: "16px" }} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => addRow("tableDataAgunan")} style={{ marginTop: "8px" }}>
+      <h3>3. Data Agunan</h3>
+      <Table
+        columns={columns("tableDataAgunan")}
+        dataSource={data}
+        pagination={false}
+        bordered
+        style={{ marginBottom: "16px" }}
+        scroll={{ x: "max-content" }}
+        responsive
+      />
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => addRow("tableDataAgunan")}
+        style={{ marginTop: "8px", marginBottom: "12px" }}
+      >
         Tambah Baris
       </Button>
       <Form.Item
@@ -263,9 +352,12 @@ const Step7 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Catatan Data Agunan" />
+        <Input.TextArea
+          placeholder="Masukkan Catatan Data Agunan"
+          autoSize={{ minRows: 8, maxRows: 8 }}
+        />
       </Form.Item>
-
+      <h4>Foto Agunan</h4>
       <Upload
         customRequest={handleUpload}
         fileList={fileList}
@@ -282,7 +374,7 @@ const Step7 = ({ formData, setFormData }) => {
           {isUploading ? "Uploading..." : "Upload Foto Agunan"}
         </Button>
       </Upload>
-      
+
       {fileList.map((file, index) => (
         <div key={file.uid} style={{ marginTop: 10 }}>
           <Input
@@ -292,6 +384,7 @@ const Step7 = ({ formData, setFormData }) => {
           />
         </div>
       ))}
+      <br></br>
     </>
   );
 };

@@ -3,10 +3,11 @@ import {
   UploadOutlined,
   LoadingOutlined,
   DeleteOutlined,
-  PlusOutlined
+  PlusOutlined,
 } from "@ant-design/icons";
 import { Table, Form, Input, Button, Space, Upload, message } from "antd";
 import axios from "axios";
+import { NumericFormat } from "react-number-format";
 
 const Step3 = ({ formData, setFormData }) => {
   const [isUploading, setIsUploading] = useState(false);
@@ -30,27 +31,28 @@ const Step3 = ({ formData, setFormData }) => {
     setFormData({ ...formData, [tableKey]: newData });
   };
 
-    const handleInputChange2 = (value, key, column, tableKey2) => {
-    const newData = (tableKey2 === "tableBuktiTransaksiPembelian" ? data3 : data4).map(
-      (row) => {
-        if (row.key === key) {
-          return { ...row, [column]: value };
-        }
-        return row;
+
+  const handleInputChange2 = (value, key, column, tableKey2) => {
+    const newData = (
+      tableKey2 === "tableBuktiTransaksiPembelian" ? data3 : data4
+    ).map((row) => {
+      if (row.key === key) {
+        return { ...row, [column]: value };
       }
-    );
+      return row;
+    });
     setFormData({ ...formData, [tableKey2]: newData });
   };
 
   const handleInputChange3 = (value, key, column, tableKey3) => {
-    const newData = (tableKey3 === "tableHasilVerifikasiSupplier" ? data5 : data6).map(
-      (row) => {
-        if (row.key === key) {
-          return { ...row, [column]: value };
-        }
-        return row;
+    const newData = (
+      tableKey3 === "tableHasilVerifikasiSupplier" ? data5 : data6
+    ).map((row) => {
+      if (row.key === key) {
+        return { ...row, [column]: value };
       }
-    );
+      return row;
+    });
     setFormData({ ...formData, [tableKey3]: newData });
   };
 
@@ -73,7 +75,8 @@ const Step3 = ({ formData, setFormData }) => {
   const addRow2 = (tableKey2) => {
     const newRow = {
       key: (
-        (tableKey2 === "tableBuktiTransaksiPembelian" ? data3 : data4).length + 1
+        (tableKey2 === "tableBuktiTransaksiPembelian" ? data3 : data4).length +
+        1
       ).toString(),
       namaToko: "",
       nominalBelanja: "",
@@ -88,7 +91,8 @@ const Step3 = ({ formData, setFormData }) => {
   const addRow3 = (tableKey3) => {
     const newRow = {
       key: (
-        (tableKey3 === "tableHasilVerifikasiSupplier" ? data5 : data6).length + 1
+        (tableKey3 === "tableHasilVerifikasiSupplier" ? data5 : data6).length +
+        1
       ).toString(),
       namaToko: "",
       noteleponWeb: "",
@@ -131,29 +135,38 @@ const Step3 = ({ formData, setFormData }) => {
           value={record.invoices}
           placeholder="Masukkan Invoice"
           onChange={(e) =>
-            handleInputChange(
-              e.target.value,
-              record.key,
-              "invoices",
-              tableKey
-            )
+            handleInputChange(e.target.value, record.key, "invoices", tableKey)
           }
+          className="responsive-input"
         />
       ),
+      width: 280,
     },
     {
       title: "Nominal",
       dataIndex: "nominals",
       key: "nominals",
       render: (text, record) => (
-        <Input
-          value={record.nominals}
+        <NumericFormat
+          value={String(record.nominals)}
           placeholder="Masukkan Nominal"
-          onChange={(e) =>
-            handleInputChange(e.target.value, record.key, "nominals", tableKey)
+          onValueChange={(values) =>
+            handleInputChange(
+              String(values.value),
+              record.key,
+              "nominals",
+              tableKey
+            )
           }
+          thousandSeparator="."
+          decimalSeparator=","
+          allowNegative={false}
+          decimalScale={0}
+          fixedDecimalScale={false}
+          className="responsive-input"
         />
       ),
+      width: 200,
     },
     {
       title: "Nama Supplier",
@@ -164,10 +177,17 @@ const Step3 = ({ formData, setFormData }) => {
           value={record.namaSupplier}
           placeholder="Masukkan Nama Supplier"
           onChange={(e) =>
-            handleInputChange(e.target.value, record.key, "namaSupplier", tableKey)
+            handleInputChange(
+              e.target.value,
+              record.key,
+              "namaSupplier",
+              tableKey
+            )
           }
+          className="responsive-input"
         />
       ),
+      width: 280,
     },
     {
       title: "Aksi",
@@ -203,22 +223,36 @@ const Step3 = ({ formData, setFormData }) => {
               tableKey2
             )
           }
+          className="responsive-input"
         />
       ),
+      width: 280,
     },
     {
       title: "Nominal Belanja",
       dataIndex: "nominalBelanja",
       key: "nominalBelanja",
       render: (text, record) => (
-        <Input
-          value={record.nominalBelanja}
-          placeholder="Masukkan Nominal"
-          onChange={(e) =>
-            handleInputChange2(e.target.value, record.key, "nominalBelanja", tableKey2)
-          }
-        />
+        <NumericFormat
+        value={String(record.nominalBelanja)}
+        placeholder="Masukkan Nominal Belanja"
+        onValueChange={(values) =>
+          handleInputChange2(
+            String(values.value),
+            record.key,
+            "nominalBelanja",
+            tableKey2
+          )
+        }
+        thousandSeparator="."
+        decimalSeparator=","
+        allowNegative={false}
+        decimalScale={0}
+        fixedDecimalScale={false}
+        className="responsive-input"
+      />
       ),
+      width: 200,
     },
     {
       title: "Aksi",
@@ -254,6 +288,7 @@ const Step3 = ({ formData, setFormData }) => {
               tableKey3
             )
           }
+          className="responsive-input"
         />
       ),
     },
@@ -266,8 +301,14 @@ const Step3 = ({ formData, setFormData }) => {
           value={record.noteleponWeb}
           placeholder="Masukkan No. telpon/web dan online shop"
           onChange={(e) =>
-            handleInputChange3(e.target.value, record.key, "noteleponWeb", tableKey3)
+            handleInputChange3(
+              e.target.value,
+              record.key,
+              "noteleponWeb",
+              tableKey3
+            )
           }
+          className="responsive-input"
         />
       ),
     },
@@ -393,7 +434,10 @@ const Step3 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Profil Debitur" />
+        <Input.TextArea
+          placeholder="Masukkan Profil Debitur"
+          autoSize={{ minRows: 6, maxRows: 8 }}
+        />
       </Form.Item>
 
       <Form.Item
@@ -402,7 +446,10 @@ const Step3 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Analisa Usaha / Pekerjaan" />
+        <Input.TextArea
+          placeholder="Masukkan Analisa Usaha / Pekerjaan"
+          autoSize={{ minRows: 6, maxRows: 8 }}
+        />
       </Form.Item>
 
       <Form.Item
@@ -411,63 +458,74 @@ const Step3 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Aspek Pengadaan Barang/Bahan Baku" />
+        <Input.TextArea
+          placeholder="Masukkan Aspek Pengadaan Barang/Bahan Baku"
+          autoSize={{ minRows: 6, maxRows: 8 }}
+        />
       </Form.Item>
-
+      <h4>Tabel Invoice Pembelian</h4>
       <Table
         columns={columns("tableInvoicePembelian")}
         dataSource={data}
         pagination={false}
         bordered
         style={{ marginBottom: "16px" }}
+        scroll={{ x: "max-content" }}
+        responsive
       />
       <Button
         type="primary"
         icon={<PlusOutlined />}
         onClick={() => addRow("tableInvoicePembelian")}
-        style={{ marginTop: "8px" }}
+        style={{ marginTop: "8px", marginBottom: '12px' }}
       >
         Tambah Baris
       </Button>
-
+    
       <Form.Item
-        label="Note"
+        label="Note Invoice Pembelian"
         name="noteInvoice"
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Note"
-        autoSize={{ minRows: 4, maxRows: 8 }}/>
+        <Input.TextArea
+          placeholder="Masukkan Note"
+          autoSize={{ minRows: 4, maxRows: 8 }}
+        />
       </Form.Item>
-
+      <h4>Tabel Bukti Transaksi Pembelian</h4>
       <Table
         columns={columns2("tableBuktiTransaksiPembelian")}
         dataSource={data3}
         pagination={false}
         bordered
         style={{ marginBottom: "16px" }}
+        scroll={{ x: "max-content" }}
+        responsive
       />
       <Button
         type="primary"
         icon={<PlusOutlined />}
         onClick={() => addRow2("tableBuktiTransaksiPembelian")}
-        style={{ marginTop: "8px" }}
+        style={{ marginTop: "8px", marginBottom: '12px' }}
       >
         Tambah Baris
       </Button>
-
+      <h4>Tabel Hasil Verifikasi Suplayer bahan baku</h4>
       <Table
         columns={columns3("tableHasilVerifikasiSupplier")}
         dataSource={data5}
         pagination={false}
         bordered
         style={{ marginBottom: "16px" }}
+        scroll={{ x: "max-content" }}
+        responsive
       />
       <Button
         type="primary"
         icon={<PlusOutlined />}
         onClick={() => addRow3("tableHasilVerifikasiSupplier")}
-        style={{ marginTop: "8px" }}
+        style={{ marginTop: "8px", marginBottom: '12px' }}
       >
         Tambah Baris
       </Button>
@@ -480,7 +538,7 @@ const Step3 = ({ formData, setFormData }) => {
       >
         <Input.TextArea
           placeholder="Masukkan Aspek Pemasaran/Distribusi"
-          autoSize={{ minRows: 4, maxRows: 8 }}
+          autoSize={{ minRows: 10, maxRows: 8 }}
         />
       </Form.Item>
 
@@ -503,7 +561,7 @@ const Step3 = ({ formData, setFormData }) => {
           autoSize={{ minRows: 4, maxRows: 8 }}
         />
       </Form.Item>
-
+      <h4>Foto Usaha</h4>
       <Upload
         customRequest={handleUpload}
         fileList={fileList}
@@ -530,6 +588,7 @@ const Step3 = ({ formData, setFormData }) => {
           />
         </div>
       ))}
+      <br></br>
     </>
   );
 };

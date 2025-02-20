@@ -1,13 +1,17 @@
 import React from "react";
 import { Table, Input, Button, Space, Form } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { NumericFormat } from "react-number-format";
+import "../styles/Step2.css";
 
 const Step2 = ({ formData, setFormData }) => {
   const data = formData.tableRingkasanPengajuanKredit || [];
   const data2 = formData.tableRingkasanPengajuanKredit2 || [];
 
   const handleInputChange = (value, key, column, tableKey) => {
-    const newData = (tableKey === "tableRingkasanPengajuanKredit" ? data : data2).map((row) => {
+    const newData = (
+      tableKey === "tableRingkasanPengajuanKredit" ? data : data2
+    ).map((row) => {
       if (row.key === key) {
         return { ...row, [column]: value };
       }
@@ -18,7 +22,9 @@ const Step2 = ({ formData, setFormData }) => {
 
   const addRow = (tableKey) => {
     const newRow = {
-      key: ((tableKey === "tableRingkasanPengajuanKredit" ? data : data2).length + 1).toString(),
+      key: (
+        (tableKey === "tableRingkasanPengajuanKredit" ? data : data2).length + 1
+      ).toString(),
       jenisKredit: "",
       plafond: "",
       sukuBunga: "",
@@ -26,12 +32,17 @@ const Step2 = ({ formData, setFormData }) => {
       biayaProvisi: "",
       biayaAdm: "",
     };
-    const newData = [...(tableKey === "tableRingkasanPengajuanKredit" ? data : data2), newRow];
+    const newData = [
+      ...(tableKey === "tableRingkasanPengajuanKredit" ? data : data2),
+      newRow,
+    ];
     setFormData({ ...formData, [tableKey]: newData });
   };
 
   const removeRow = (key, tableKey) => {
-    const newData = (tableKey === "tableRingkasanPengajuanKredit" ? data : data2).filter((row) => row.key !== key);
+    const newData = (
+      tableKey === "tableRingkasanPengajuanKredit" ? data : data2
+    ).filter((row) => row.key !== key);
     setFormData({ ...formData, [tableKey]: newData });
   };
 
@@ -44,21 +55,45 @@ const Step2 = ({ formData, setFormData }) => {
         <Input
           value={record.jenisKredit}
           placeholder="Masukkan Jenis Kredit"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "jenisKredit", tableKey)}
+          onChange={(e) =>
+            handleInputChange(
+              e.target.value,
+              record.key,
+              "jenisKredit",
+              tableKey
+            )
+          }
+          className="responsive-input"
         />
       ),
+      width: 180,
     },
     {
       title: "Plafond",
       dataIndex: "plafond",
       key: "plafond",
       render: (text, record) => (
-        <Input
-          value={record.plafond}
+        <NumericFormat
+          value={String(record.plafond)}
           placeholder="Masukkan plafond"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "plafond", tableKey)}
+          onValueChange={(values) =>
+            handleInputChange(
+              String(values.value),
+              record.key,
+              "plafond",
+              tableKey
+            )
+          } // Mengirimkan nilai dalam bentuk string
+          prefix="Rp "
+          thousandSeparator="."
+          decimalSeparator=","
+          allowNegative={false}
+          decimalScale={0}
+          fixedDecimalScale={false}
+          className="responsive-input"
         />
       ),
+      width: 180,
     },
     {
       title: "Suku Bunga",
@@ -68,9 +103,13 @@ const Step2 = ({ formData, setFormData }) => {
         <Input
           value={record.sukuBunga}
           placeholder="Masukkan Suku Bunga"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "sukuBunga", tableKey)}
+          onChange={(e) =>
+            handleInputChange(e.target.value, record.key, "sukuBunga", tableKey)
+          }
+          className="responsive-input"
         />
       ),
+      width: 220,
     },
     {
       title: "Tenor",
@@ -80,52 +119,103 @@ const Step2 = ({ formData, setFormData }) => {
         <Input
           value={record.tenor}
           placeholder="Masukkan Tenor"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "tenor", tableKey)}
+          onChange={(e) =>
+            handleInputChange(e.target.value, record.key, "tenor", tableKey)
+          }
+          className="responsive-input"
         />
       ),
+      width: 160,
     },
     {
       title: "Biaya Provisi",
       dataIndex: "biayaProvisi",
       key: "biayaProvisi",
       render: (text, record) => (
-        <Input
-          value={record.biayaProvisi}
+        <NumericFormat
+          value={String(record.biayaProvisi)}
           placeholder="Masukkan Biaya Provisi"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "biayaProvisi", tableKey)}
+          onValueChange={(values) =>
+            handleInputChange(
+              String(values.value),
+              record.key,
+              "biayaProvisi",
+              tableKey
+            )
+          }
+          prefix="Rp "
+          thousandSeparator="."
+          decimalSeparator=","
+          allowNegative={false}
+          decimalScale={0}
+          fixedDecimalScale={false}
+          className="responsive-input"
         />
       ),
+      width: 160,
     },
     {
       title: "Biaya ADM.",
       dataIndex: "biayaAdm",
       key: "biayaAdm",
       render: (text, record) => (
-        <Input
-          value={record.biayaAdm}
+        <NumericFormat
+          value={String(record.biayaAdm)}
           placeholder="Masukkan Biaya ADM"
-          onChange={(e) => handleInputChange(e.target.value, record.key, "biayaAdm", tableKey)}
+          onValueChange={(values) =>
+            handleInputChange(
+              String(values.value),
+              record.key,
+              "biayaAdm",
+              tableKey
+            )
+          }
+          prefix="Rp "
+          thousandSeparator="."
+          decimalSeparator=","
+          allowNegative={false}
+          decimalScale={0}
+          fixedDecimalScale={false}
+          className="responsive-input"
         />
       ),
+      width: 160,
     },
     {
       title: "Aksi",
       key: "aksi",
       render: (_, record) => (
         <Space>
-          <Button danger icon={<DeleteOutlined />} onClick={() => removeRow(record.key, tableKey)}>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => removeRow(record.key, tableKey)}
+          >
             Hapus
           </Button>
         </Space>
       ),
+      width: 100,
     },
   ];
 
   return (
     <div>
-
-      <Table columns={columns("tableRingkasanPengajuanKredit")} dataSource={data} pagination={false} bordered style={{ marginBottom: "16px" }} />
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => addRow("tableRingkasanPengajuanKredit")} style={{ marginTop: "8px" }}>
+      <Table
+        columns={columns("tableRingkasanPengajuanKredit")}
+        dataSource={data}
+        pagination={false}
+        bordered
+        style={{ marginBottom: "16px" }}
+        scroll={{ x: "max-content" }} // Mengizinkan scroll horizontal pada tabel
+        responsive // Membuat tabel responsif
+      />{" "}
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => addRow("tableRingkasanPengajuanKredit")}
+        style={{ marginTop: "8px", marginBottom: '12px' }}
+      >
         Tambah Baris
       </Button>
       <Form.Item
@@ -134,9 +224,9 @@ const Step2 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Tujuan pengajuan kredit" />
+        <Input.TextArea placeholder="Masukkan Tujuan pengajuan kredit" autoSize={{ minRows: 6, maxRows: 8 }}/>
       </Form.Item>
-      </div>
+    </div>
   );
 };
 

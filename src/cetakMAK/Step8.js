@@ -18,7 +18,7 @@ const Step8 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Legalitas Usaha / Pekerjaan" />
+        <Input.TextArea placeholder="Legalitas Usaha / Pekerjaan" autoSize={{ minRows: 4, maxRows: 8 }}/>
       </Form.Item>
       <h3>5. Kesimpulan & Rekomendasi</h3>
       <Form.Item
@@ -27,7 +27,7 @@ const Step8 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Legalitas Faktor Positif" />
+        <Input.TextArea placeholder="Masukkan Legalitas Faktor Positif" autoSize={{ minRows: 4, maxRows: 8 }}/>
       </Form.Item>
 
       <Form.Item
@@ -36,7 +36,7 @@ const Step8 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Faktor Faktor Negatif & Mitigasi" />
+        <Input.TextArea placeholder="Masukkan Faktor Faktor Negatif & Mitigasi" autoSize={{ minRows: 4, maxRows: 8 }}/>
       </Form.Item>
 
       <Form.Item
@@ -45,7 +45,7 @@ const Step8 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Rekomendasi" />
+        <Input.TextArea placeholder="Masukkan Rekomendasi" autoSize={{ minRows: 4, maxRows: 8 }}/>
       </Form.Item>
 
       <Form.Item
@@ -54,7 +54,7 @@ const Step8 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Persyaratan Sebelum Akad" />
+        <Input.TextArea placeholder="Masukkan Persyaratan Sebelum Akad" autoSize={{ minRows: 4, maxRows: 8 }}/>
       </Form.Item>
 
       <Form.Item
@@ -63,7 +63,7 @@ const Step8 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Persyaratan Saat Akad" />
+        <Input.TextArea placeholder="Masukkan Persyaratan Saat Akad" autoSize={{ minRows: 4, maxRows: 8 }}/>
       </Form.Item>
 
       <Form.Item
@@ -72,7 +72,7 @@ const Step8 = ({ formData, setFormData }) => {
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
         getValueFromEvent={(e) => e.target.value.split("\n")}
       >
-        <Input.TextArea placeholder="Masukkan Deviasi" />
+        <Input.TextArea placeholder="Masukkan Deviasi" autoSize={{ minRows: 4, maxRows: 8 }}/>
       </Form.Item>
 
       <h3>6. Struktur Kredit</h3>

@@ -43,7 +43,9 @@ const CetakMak = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch("https://api-nasnus.vercel.app/api/data-mak");
+        const response = await fetch(
+          "https://api-nasnus.vercel.app/api/data-mak"
+        );
         const result = await response.json();
         if (response.ok) {
           setDataDebitur(result.data);
@@ -64,7 +66,11 @@ const CetakMak = () => {
   }, []);
 
   const handleAccessCheck = () => {
-    return userRole === "marketing" || userRole === "analisis" || userRole === "direksi";
+    return (
+      userRole === "marketing" ||
+      userRole === "analisis" ||
+      userRole === "direksi"
+    );
   };
 
   const handleNextStep = () => {
@@ -141,47 +147,17 @@ const CetakMak = () => {
       case 1:
         return <Step1 form={form} />;
       case 2:
-        return (
-        <Step2
-              formData={formData}
-              setFormData={setFormData}
-            />
-          );
+        return <Step2 formData={formData} setFormData={setFormData} />;
       case 3:
-        return (
-        <Step3
-              formData={formData}
-              setFormData={setFormData}
-            />
-          );
+        return <Step3 formData={formData} setFormData={setFormData} />;
       case 4:
-        return (
-        <Step4
-              formData={formData}
-              setFormData={setFormData}
-            />
-          );
+        return <Step4 formData={formData} setFormData={setFormData} />;
       case 5:
-        return (
-        <Step5
-              formData={formData}
-              setFormData={setFormData}
-            />
-          );
+        return <Step5 formData={formData} setFormData={setFormData} />;
       case 6:
-        return (
-          <Step6
-            formData={formData}
-            setFormData={setFormData}
-          />
-        );
+        return <Step6 formData={formData} setFormData={setFormData} />;
       case 7:
-      return (
-        <Step7
-          formData={formData}
-          setFormData={setFormData}
-        />
-      );
+        return <Step7 formData={formData} setFormData={setFormData} />;
       case 8:
         return <Step8 form={form} />;
       default:
@@ -192,183 +168,234 @@ const CetakMak = () => {
   return (
     <div>
       {handleAccessCheck() ? (
-    <>
-      {isLoading ? (
-        <Spin tip="Loading..."> {/* Menampilkan indikator loading */}
-          <div style={{ height: 200 }} /> {/* Area untuk memastikan Spinner tampil dengan baik */}
-        </Spin>
-      ) : (
-        <div>
-      <div style={{ marginBottom: "20px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <Title level={4}>Daftar data debitur</Title>
-          <div>
-            <Button
-              type="primary"
-              onClick={() => setShowModal(true)}
-              style={{ marginRight: "10px" }}
-            >
-              Tambah Data
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => {
-                if (selectedRowKey) {
-                  const selectedRow = dataDebitur.find(
-                    (item) => item.nomorMak === selectedRowKey
-                  );
-                  handleExportToPDF(selectedRow);
-                } else {
-                  alert("Please select a row to export.");
-                }
-              }}
-            >
-              Export to PDF
-            </Button>
-          </div>
-        </div>
-
-        <Table
-          columns={columns}
-          dataSource={dataDebitur}
-          rowKey="nomorMak"
-          pagination={false}
-          onRow={(record) => ({
-            onClick: () => onRowClick(record),
-          })}
-          rowClassName={(record) =>
-            record.nomorMak === selectedRowKey ? "selected-row" : ""
-          }
-        />
-      </div>
-
-      <Modal
-        title={
-          formStep === 1
-            ? "Data Debitur"
-            : formStep === 2
-            ? "Ringkasan Pengajuan Kredit"
-            : formStep === 3 
-            ? "I.   ANALISA KUALITATIF"
-            : formStep === 4
-            ? "II.  ANALISA KUANTITATIF"
-            : formStep === 5
-            ? ""
-            : formStep === 6
-            ? ""
-            : formStep === 7
-            ? ""
-            : formStep === 8
-            ? ""
-            : ""
-        }
-        visible={showModal}
-        closable={false}
-        footer={null}
-        width={1200}
-      >
-        <Form form={form} layout="vertical" style={{ marginBottom: "20px" }}>
-          {renderFormStep()}
-          <Form.Item style={{ display: "flex", justifyContent: "right" }}>
-            {formStep === 1 ? (
-              <>
-                <Button
-                onClick={() => {
-                  setShowModal(false);
-                  form.resetFields();
-                  setFormData((prev) => ({
-                    ...prev,
-                    invoiceInput: "",
-                    invoices: [],
-                    nominalInput: "",
-                    nominals: [],
-                    namaSupplierInput: "",
-                    namaSuppliers: [],
-                    userGoalInput: '',
-                    userGoals: [],
-                    photoUsaha: [],
-                    tableRingkasanPengajuanKredit: [],
-                    tableInvoicePembelian: [],
-                    tableBuktiTransaksiPembelian: [],
-                    tableHasilVerifikasiSupplier: [],
-                    tableRekapitulatif: [],
-                    tableRekapitulatif2: [],
-                    tableAnalisaRekKoran: [],
-                    tableAnalisaRekKoran2: [],
-                    tableAnalisaRekKoran3: [],
-                    tableLabaRugiProforma: [],
-                    tableNeracaProforma: [],
-                    tableDataAgunan: [],
-                    photoAgunan: [],
-                    tableData: [],
-                    signature	: null
-                  }));
-                }}
-              >
-                Cancel
-              </Button>
-                <Button type="primary"style={{ marginLeft: "10px" }} onClick={handleNextStep}>
-                  Next
-                </Button>
-              </>
-            ) : formStep === 2 || formStep === 3 || formStep === 4 || formStep === 5 || formStep === 6 || formStep === 7 || formStep === 8 ? (
-              <>
-                <Button                 
-                  onClick={() => {
-                    form.resetFields();
-                    setFormStep(1);
-                    setShowModal(false);
-                    form.resetFields();
-                    setFormData((prev) => ({
-                      ...prev,
-                      invoiceInput: "",
-                      invoices: [],
-                      nominalInput: "",
-                      nominals: [],
-                      namaSupplierInput: "",
-                      namaSuppliers: [],
-                      userGoalInput: '',
-                      userGoals: [],
-                      photoUsaha: [],
-                      tableRingkasanPengajuanKredit: [],
-                      tableInvoicePembelian: [],
-                      tableBuktiTransaksiPembelian: [],
-                      tableHasilVerifikasiSupplier: [],
-                      tableRekapitulatif: [],
-                      tableRekapitulatif2: [],
-                      tableAnalisaRekKoran: [],
-                      tableAnalisaRekKoran2: [],
-                      tableAnalisaRekKoran3: [],
-                      tableLabaRugiProforma: [],
-                      tableNeracaProforma: [],
-                      tableDataAgunan: [],
-                      tableData: [],
-                      photoAgunan: [],
-                      signature: null
-                    }));
+        <>
+          {isLoading ? (
+            <Spin tip="Loading...">
+              {" "}
+              {/* Menampilkan indikator loading */}
+              <div style={{ height: 200 }} />{" "}
+              {/* Area untuk memastikan Spinner tampil dengan baik */}
+            </Spin>
+          ) : (
+            <div>
+              <div style={{ marginBottom: "20px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    marginBottom: "20px",
                   }}
                 >
-                  Cancel
-                </Button>
-                <Button style={{ marginLeft: "10px" }}
-                  onClick={handleBackStep}
+                  <Title
+                    level={5}
+                    style={{ flex: 1, fontSize: "16px", margin: 0 }}
+                  >
+                    Daftar Data Debitur
+                  </Title>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "flex-end",
+                      marginTop: "8px",
+                    }}
+                  >
+                    <Button
+                      type="primary"
+                      onClick={() => setShowModal(true)}
+                      style={{
+                        marginRight: "10px",
+                        fontSize: "14px",
+                        padding: "6px 12px",
+                      }}
+                    >
+                      Tambah Data
+                    </Button>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        if (selectedRowKey) {
+                          const selectedRow = dataDebitur.find(
+                            (item) => item.nomorMak === selectedRowKey
+                          );
+                          handleExportToPDF(selectedRow);
+                        } else {
+                          alert("Please select a row to export.");
+                        }
+                      }}
+                      style={{ fontSize: "14px", padding: "6px 12px" }}
+                    >
+                      Export to PDF
+                    </Button>
+                  </div>
+                </div>
+
+                <Table
+                  columns={columns}
+                  dataSource={dataDebitur}
+                  rowKey="nomorMak"
+                  pagination={false}
+                  onRow={(record) => ({
+                    onClick: () => onRowClick(record),
+                  })}
+                  rowClassName={(record) =>
+                    record.nomorMak === selectedRowKey ? "selected-row" : ""
+                  }
+                />
+              </div>
+
+              <Modal
+                title={
+                  formStep === 1
+                    ? "Data Debitur"
+                    : formStep === 2
+                    ? "Ringkasan Pengajuan Kredit"
+                    : formStep === 3
+                    ? "I.   ANALISA KUALITATIF"
+                    : formStep === 4
+                    ? "II.  ANALISA KUANTITATIF"
+                    : formStep === 5
+                    ? ""
+                    : formStep === 6
+                    ? ""
+                    : formStep === 7
+                    ? ""
+                    : formStep === 8
+                    ? ""
+                    : ""
+                }
+                visible={showModal}
+                closable={false}
+                footer={null}
+                width={1200}
+              >
+                <Form
+                  form={form}
+                  layout="vertical"
+                  style={{ marginBottom: "20px" }}
                 >
-                  Previous
-                </Button>
-                <Button type="primary" style={{ marginLeft: "10px" }} onClick={formStep === 8 ? handleSave : handleNextStep}>
-                  {formStep === 8 ? "Submit" : "Next"}
-                </Button>
-              </>
-            ) : null}
-          </Form.Item>
-        </Form>
-      </Modal>
-      </div>
-      )}
-      </>
-       ) : (
+                  {renderFormStep()}
+                  <Form.Item
+                    style={{ display: "flex", justifyContent: "right" }}
+                  >
+                    {formStep === 1 ? (
+                      <>
+                        <Button
+                          onClick={() => {
+                            setShowModal(false);
+                            form.resetFields();
+                            setFormData((prev) => ({
+                              ...prev,
+                              invoiceInput: "",
+                              invoices: [],
+                              nominalInput: "",
+                              nominals: [],
+                              namaSupplierInput: "",
+                              namaSuppliers: [],
+                              userGoalInput: "",
+                              userGoals: [],
+                              photoUsaha: [],
+                              tableRingkasanPengajuanKredit: [],
+                              tableInvoicePembelian: [],
+                              tableBuktiTransaksiPembelian: [],
+                              tableHasilVerifikasiSupplier: [],
+                              tableRekapitulatif: [],
+                              tableRekapitulatif2: [],
+                              tableAnalisaRekKoran: [],
+                              tableAnalisaRekKoran2: [],
+                              tableAnalisaRekKoran3: [],
+                              tableLabaRugiProforma: [],
+                              tableNeracaProforma: [],
+                              tableDataAgunan: [],
+                              photoAgunan: [],
+                              tableData: [],
+                              signature: null,
+                            }));
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="primary"
+                          style={{ marginLeft: "10px" }}
+                          onClick={handleNextStep}
+                        >
+                          Next
+                        </Button>
+                      </>
+                    ) : formStep === 2 ||
+                      formStep === 3 ||
+                      formStep === 4 ||
+                      formStep === 5 ||
+                      formStep === 6 ||
+                      formStep === 7 ||
+                      formStep === 8 ? (
+                      <>
+                        <Button
+                          onClick={() => {
+                            form.resetFields();
+                            setFormStep(1);
+                            setShowModal(false);
+                            form.resetFields();
+                            setFormData((prev) => ({
+                              ...prev,
+                              invoiceInput: "",
+                              invoices: [],
+                              nominalInput: "",
+                              nominals: [],
+                              namaSupplierInput: "",
+                              namaSuppliers: [],
+                              userGoalInput: "",
+                              userGoals: [],
+                              photoUsaha: [],
+                              tableRingkasanPengajuanKredit: [],
+                              tableInvoicePembelian: [],
+                              tableBuktiTransaksiPembelian: [],
+                              tableHasilVerifikasiSupplier: [],
+                              tableRekapitulatif: [],
+                              tableRekapitulatif2: [],
+                              tableAnalisaRekKoran: [],
+                              tableAnalisaRekKoran2: [],
+                              tableAnalisaRekKoran3: [],
+                              tableLabaRugiProforma: [],
+                              tableNeracaProforma: [],
+                              tableDataAgunan: [],
+                              tableData: [],
+                              photoAgunan: [],
+                              signature: null,
+                            }));
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          style={{ marginLeft: "10px" }}
+                          onClick={handleBackStep}
+                        >
+                          Previous
+                        </Button>
+                        <Button
+                          type="primary"
+                          style={{ marginLeft: "10px" }}
+                          onClick={formStep === 8 ? handleSave : handleNextStep}
+                        >
+                          {formStep === 8 ? "Submit" : "Next"}
+                        </Button>
+                      </>
+                    ) : null}
+                  </Form.Item>
+                </Form>
+              </Modal>
+            </div>
+          )}
+        </>
+      ) : (
         <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <Title level={4}>User '{userRole}' tidak memiliki akses untuk membuka menu ini!</Title>
+          <Title level={4}>
+            User '{userRole}' tidak memiliki akses untuk membuka menu ini!
+          </Title>
           <div style={{ fontSize: "30px" }}>😞</div>
         </div>
       )}

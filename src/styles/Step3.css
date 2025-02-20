@@ -1,0 +1,14 @@
+.responsive-input {
+    width: 100%; /* Agar input mengisi lebar kontainer */
+    box-sizing: border-box;
+    padding: 10px; /* Memberikan ruang tambahan di dalam input */
+    font-size: 16px; /* Ukuran font lebih besar untuk kenyamanan mengetik */
+    border-radius: 4px; /* Sedikit rounded border untuk tampilan lebih bagus */
+  }
+  
+  @media (max-width: 768px) {
+    .responsive-input {
+      font-size: 12px; /* Menjaga ukuran font tetap besar pada perangkat mobile */
+      padding: 12px; /* Memberikan lebih banyak ruang dalam input */
+    }
+  }

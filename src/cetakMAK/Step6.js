@@ -1,6 +1,7 @@
 import React from "react";
 import { Table, Input, Button, Space } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { NumericFormat } from "react-number-format";
 
 const Step6 = ({ formData, setFormData, tableKey }) => {
   const data = formData.tableLabaRugiProforma || [];
@@ -66,17 +67,23 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
           dataIndex: "nominalPeriode",
           key: "nominalPeriode",
           render: (text, record) => (
-            <Input
-              value={record.nominalPeriode}
+            <NumericFormat
+              value={String(record.nominalPeriode)}
               placeholder="Masukkan Nominal"
-              onChange={(e) =>
+              onValueChange={(values) =>
                 handleInputChange(
-                  e.target.value,
+                  String(values.value),
                   record.key,
                   "nominalPeriode",
                   tableKey
                 )
               }
+              thousandSeparator="."
+              decimalSeparator=","
+              allowNegative={false}
+              decimalScale={0}
+              fixedDecimalScale={false}
+              className="responsive-input"
             />
           ),
         },
@@ -85,18 +92,25 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
           dataIndex: "persenPeriode",
           key: "persenPeriode",
           render: (text, record) => (
-            <Input
-              value={record.persenPeriode}
-              placeholder="Masukkan %"
-              onChange={(e) =>
-                handleInputChange(
-                  e.target.value,
-                  record.key,
-                  "persenPeriode",
-                  tableKey
-                )
-              }
-            />
+            <NumericFormat
+            value={String(record.persenPeriode)}
+            placeholder="Masukkan %"
+            onValueChange={(values) =>
+              handleInputChange(
+                String(values.value),
+                record.key,
+                "persenPeriode",
+                tableKey
+              )
+            }
+            suffix=" %"
+            thousandSeparator="."
+            decimalSeparator=","
+            allowNegative={false}
+            decimalScale={0}
+            fixedDecimalScale={false}
+            className="responsive-input"
+          />
           ),
         },
       ],
@@ -109,18 +123,24 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
           dataIndex: "nominalProyeksi",
           key: "nominalProyeksi",
           render: (text, record) => (
-            <Input
-              value={record.nominalProyeksi}
-              placeholder="Masukkan Nominal"
-              onChange={(e) =>
-                handleInputChange(
-                  e.target.value,
-                  record.key,
-                  "nominalProyeksi",
-                  tableKey
-                )
-              }
-            />
+            <NumericFormat
+            value={String(record.nominalProyeksi)}
+            placeholder="Masukkan Nominal"
+            onValueChange={(values) =>
+              handleInputChange(
+                String(values.value),
+                record.key,
+                "nominalProyeksi",
+                tableKey
+              )
+            }
+            thousandSeparator="."
+            decimalSeparator=","
+            allowNegative={false}
+            decimalScale={0}
+            fixedDecimalScale={false}
+            className="responsive-input"
+          />
           ),
         },
         {
@@ -128,17 +148,24 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
           dataIndex: "persenProyeksi",
           key: "persenProyeksi",
           render: (text, record) => (
-            <Input
-              value={record.persenProyeksi}
+            <NumericFormat
+              value={String(record.persenProyeksi)}
               placeholder="Masukkan %"
-              onChange={(e) =>
+              onValueChange={(values) =>
                 handleInputChange(
-                  e.target.value,
+                  String(values.value),
                   record.key,
                   "persenProyeksi",
                   tableKey
                 )
               }
+              suffix=" %"
+              thousandSeparator="."
+              decimalSeparator=","
+              allowNegative={false}
+              decimalScale={0}
+              fixedDecimalScale={false}
+              className="responsive-input"
             />
           ),
         },
@@ -170,6 +197,8 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
         pagination={false}
         bordered
         style={{ marginBottom: "16px" }}
+        scroll={{ x: "max-content" }}
+        responsive
       />
       <Button
         type="primary"
@@ -180,13 +209,15 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
         Tambah Baris
       </Button>
 
-      <h4>b.Laporan Neraca Proforma</h4>
+      <h4>b. Laporan Neraca Proforma</h4>
       <Table
         columns={columns("tableNeracaProforma")}
         dataSource={data2}
         pagination={false}
         bordered
         style={{ marginBottom: "16px" }}
+        scroll={{ x: "max-content" }}
+        responsive
       />
       <Button
         type="primary"

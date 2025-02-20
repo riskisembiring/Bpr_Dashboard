@@ -63,13 +63,17 @@ const ringkasanStartY = doc.lastAutoTable.finalY + 10;
 
 const tableRingkasanPengajuanKredit = selectedData?.tableRingkasanPengajuanKredit || [];
 
+const formatNumberWithDot = (number) => {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 const ringkasanData = tableRingkasanPengajuanKredit.map(item => ({
   jenisKredit: item.jenisKredit || "N/A",
-  plafond: item.plafond || "N/A",
+  plafond: item.plafond ? "Rp " + formatNumberWithDot(item.plafond) : "N/A",
   sukuBunga: item.sukuBunga || "N/A",
   tenor: item.tenor || "N/A",
-  biayaProvisi: item.biayaProvisi || "N/A",
-  biayaAdm: item.biayaAdm || "N/A"
+  biayaProvisi: item.biayaProvisi ? "Rp " + formatNumberWithDot(item.biayaProvisi) : "N/A",
+  biayaAdm: item.biayaAdm ? "Rp " + formatNumberWithDot(item.biayaAdm) : "N/A"
 }));
 
 doc.setFontSize(10);
@@ -245,7 +249,7 @@ const aspekPengadaanBarang2 = aspekPengadaanBarang
   const maxRows = tableInvoicePembelian.length;
   
   // Posisi awal untuk teks dan tabel
-  const startY1 = analysisStartY3 + 8;
+  const startY1 = analysisStartY3 + 0;
   const boxWidth4 = 190;
   const rowHeight1 = 6;
   
@@ -258,7 +262,7 @@ const aspekPengadaanBarang2 = aspekPengadaanBarang
   const noteHeight = noteLines.length * 3;
   
   // Hitung total tinggi kotak agar mencakup teks + tabel + total + Note
-  const boxHeight4 = textHeight + (maxRows * rowHeight1) + noteHeight + 200;
+  const boxHeight4 = textHeight + (maxRows * rowHeight1) + noteHeight + 130;
   
   // Buat kotak utama
   doc.setLineWidth(0.5);
@@ -325,15 +329,16 @@ const aspekPengadaanBarang2 = aspekPengadaanBarang
   doc.text(noteLines, 15, noteStartY);
   
   // **TABEL KEDUA**: No | Nama Toko | Nominal Belanja
+  const tableBuktiTransaksiPembelian = selectedData?.tableBuktiTransaksiPembelian || [];
 
 // Ambil data untuk tabel kedua
-const namaToko = [...new Set(tableInvoicePembelian.map(item => item.namaSupplier))]; // Ambil nama toko unik
+const namaToko = [...new Set(tableBuktiTransaksiPembelian.map(item => item.namaToko))]; // Ambil nama toko unik
 const totalNominalBelanja = {};
 
 namaToko.forEach(nama => {
-    totalNominalBelanja[nama] = tableInvoicePembelian
-        .filter(item => item.namaSupplier === nama)
-        .reduce((sum, item) => sum + parseFloat(item.nominals.replace(/\./g, "").trim()), 0);
+    totalNominalBelanja[nama] = tableBuktiTransaksiPembelian
+        .filter(item => item.namaToko === nama)
+        .reduce((sum, item) => sum + parseFloat(item.nominalBelanja.replace(/\./g, "").trim()), 0);
 });
 
 // Posisi awal untuk tabel kedua (di bawah tabel pertama)
@@ -360,7 +365,7 @@ let rowY2 = table2StartY + rowHeight1;
 namaToko.forEach((nama, index) => {
     doc.text(String(index + 1), 12, rowY2);
     doc.text(nama, 25, rowY2);
-    doc.text(totalNominalBelanja[nama].toLocaleString("id-ID"), 120, rowY2);
+    doc.text('Rp ' + totalNominalBelanja[nama].toLocaleString("id-ID"), 120, rowY2);
 
     doc.line(10, rowY2 + 2, 200, rowY2 + 2); // Garis antar baris
     rowY2 += rowHeight1;
@@ -372,7 +377,7 @@ const totalTransaksi = Object.values(totalNominalBelanja).reduce((sum, value) =>
 // Tambahkan teks "Total transaksi pembelian stock"
 doc.setFontSize(8);
 doc.text("Total transaksi pembelian stock", 25, rowY2 + 2); // Posisi teks Total
-doc.text(totalTransaksi, 120, rowY2 + 2); // Nominal Total
+doc.text('Rp ' + totalTransaksi, 120, rowY2 + 2); // Nominal Total
 
 // Garis penutup bawah tabel kedua
 doc.line(10, rowY2 + 6, 200, rowY2 + 6);
