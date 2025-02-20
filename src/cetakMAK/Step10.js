@@ -43,7 +43,7 @@ const Step10 = ({ formData, setFormData }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/upload",
+        "https://api-nasnus.vercel.app/api/upload",
         uploadData,
         {
           headers: { "Content-Type": "multipart/form-data" },
