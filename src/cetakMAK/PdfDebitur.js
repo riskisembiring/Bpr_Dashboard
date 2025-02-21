@@ -791,6 +791,7 @@ for (let i = 1; i <= totalPages6; i++) {
     item.ket || '' // Keterangan
   ]);
   
+  
   const cleanNumber2 = (value) => {
     if (typeof value === 'string') {
       return parseFloat(value.replace(/\./g, '')) || 0;
