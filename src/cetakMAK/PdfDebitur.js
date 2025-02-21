@@ -240,7 +240,7 @@ const aspekPengadaanBarang2 = aspekPengadaanBarang
   const noteInvoice = selectedData?.noteInvoice || [];
   
   // Hitung total nominal
-  const totalNominal = nominals.reduce((sum, val) => sum + val, 0).toLocaleString("id-ID");
+  const totalNominal = nominals.reduce((sum, val) => sum + val, 0).toLocaleString("id-ID") || '';
   
   // Gabungkan Note menjadi satu teks
   const noteText = "Note:\n" + noteInvoice.map(n => (n.trim() === "" ? "\n" : n)).join("\n");
@@ -297,7 +297,7 @@ const aspekPengadaanBarang2 = aspekPengadaanBarang
       // Cetak teks dalam tabel
       doc.text(String(i + 1), 12, rowY);
       doc.text(invoiceLines, 25, rowY, { maxWidth: colWidths.invoice - 5 });
-      doc.text(nominals[i].toLocaleString("id-ID"), 100, rowY);
+      doc.text(nominals[i].toLocaleString("id-ID"), 100, rowY) || '';
       doc.text(supplierLines, 145, rowY, { maxWidth: colWidths.supplier - 5 });
   
       // Garis pemisah antar baris
@@ -365,14 +365,14 @@ let rowY2 = table2StartY + rowHeight1;
 namaToko.forEach((nama, index) => {
     doc.text(String(index + 1), 12, rowY2);
     doc.text(nama, 25, rowY2);
-    doc.text('Rp ' + totalNominalBelanja[nama].toLocaleString("id-ID"), 120, rowY2);
+    doc.text('Rp ' + totalNominalBelanja[nama].toLocaleString("id-ID"), 120, rowY2) || '';
 
     doc.line(10, rowY2 + 2, 200, rowY2 + 2); // Garis antar baris
     rowY2 += rowHeight1;
 });
 
 // Hitung total transaksi pembelian stock
-const totalTransaksi = Object.values(totalNominalBelanja).reduce((sum, value) => sum + value, 0).toLocaleString("id-ID");
+const totalTransaksi = Object.values(totalNominalBelanja).reduce((sum, value) => sum + value, 0).toLocaleString("id-ID") || '';
 
 // Tambahkan teks "Total transaksi pembelian stock"
 doc.setFontSize(8);
@@ -679,20 +679,21 @@ for (let i = 0; i < photoUsaha.length; i++) {
   const data = tableRekapitulatif.map((item, index) => [
     index + 1, // No
     item.namaBankLjk || '', // Nama Bank
-    item.plafon || 0, // Plafon
-    item.bakiDebet || 0, // Baki Debet
-    item.angsuran || 0, // Angsuran
+    item.plafon ? parseInt(item.plafon.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Plafon
+    item.bakiDebet ? parseInt(item.bakiDebet.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Baki Debet
+    item.angsuran ? parseInt(item.angsuran.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Angsuran
     item.kol || '', // Kol
     item.ket || '' // Keterangan
   ]);
   
   const cleanNumber = (value) => {
     if (typeof value === 'string') {
-      return parseFloat(value.replace(/,/g, '')) || 0;
+      return parseFloat(value.replace(/\./g, '')) || 0;
     }
     return parseFloat(value) || 0;
   };
   
+  // Hitung total dengan nilai asli (tanpa format)
   const totalPlafon = data.reduce((sum, row) => sum + cleanNumber(row[2]), 0);
   const totalBakiDebet = data.reduce((sum, row) => sum + cleanNumber(row[3]), 0);
   const totalAngsuran = data.reduce((sum, row) => sum + cleanNumber(row[4]), 0);
@@ -783,24 +784,25 @@ for (let i = 1; i <= totalPages6; i++) {
   const data2 = tableRekapitulatif2.map((item, index) => [
     index + 1, // No
     item.namaBankLjk || '', // Nama Bank
-    item.plafon || 0, // Plafon
-    item.bakiDebet || 0, // Baki Debet
-    item.angsuran || 0, // Angsuran
+    item.plafon ? parseInt(item.plafon.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Plafon
+    item.bakiDebet ? parseInt(item.bakiDebet.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Baki Debet
+    item.angsuran ? parseInt(item.angsuran.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Angsuran
     item.kol || '', // Kol
     item.ket || '' // Keterangan
   ]);
   
   const cleanNumber2 = (value) => {
     if (typeof value === 'string') {
-      return parseFloat(value.replace(/,/g, '')) || 0;
+      return parseFloat(value.replace(/\./g, '')) || 0;
     }
     return parseFloat(value) || 0;
   };
   
+  // Hitung total dengan nilai asli (tanpa format)
   const totalPlafon2 = data2.reduce((sum, row) => sum + cleanNumber2(row[2]), 0);
   const totalBakiDebet2 = data2.reduce((sum, row) => sum + cleanNumber2(row[3]), 0);
   const totalAngsuran2 = data2.reduce((sum, row) => sum + cleanNumber2(row[4]), 0);
-  
+
   doc.autoTable({
     head: [headers2],
     body: data2,
@@ -889,11 +891,11 @@ const tableAnalisaRekKoran = selectedData?.tableAnalisaRekKoran || [];
 const headers3 = ["BULAN", "MUTASI DEBET", "QTY", "MUTASI KREDIT", "QTY", "SALDO RATA-RATA"];
 const data3 = tableAnalisaRekKoran.map((item) => [
   item.bulan || '', // BULAN
-  item.mutasiDebet || '0', // MUTASI DEBET
-  item.qty1 || '0', // Qty Debet
-  item.mutasiKredit || '0', // MUTASI KREDIT
-  item.qty2 || '0', // Qty Kredit
-  item.saldoRataRata || '0', // SALDO
+  parseInt(item.mutasiDebet, 10).toLocaleString("id-ID") || '',
+  item.qty1 || '', // Qty Debet
+  parseInt(item.mutasiKredit, 10).toLocaleString("id-ID") || '',
+  item.qty2 || '', // Qty Kredit
+  parseInt(item.saldoRataRata, 10).toLocaleString("id-ID") || '',
 ]);
 
 // Menghitung total untuk setiap kolom yang diinginkan setelah mengonversi nilai string menjadi angka
@@ -1210,14 +1212,13 @@ const headers6 = [
 
 const tableLabaRugiProforma = selectedData?.tableLabaRugiProforma || [];
 
-// Mengubah data sesuai dengan format yang dibutuhkan oleh autoTable
 const data6 = tableLabaRugiProforma.map((item, index) => [
-  index + 1, // No
+  // index + 1, // No
   item.deskripsi || '',
-  item.nominalPeriode || '0',
-  item.persenPeriode || '0',
-  item.nominalProyeksi || '0',
-  item.persenProyeksi || '0'
+  parseInt(item.nominalPeriode, 10).toLocaleString("id-ID") || '',
+  item.persenPeriode || '',
+  parseInt(item.nominalProyeksi, 10).toLocaleString("id-ID") || '',
+  item.persenProyeksi || ''
 ]);
 
 // Buat tabel
