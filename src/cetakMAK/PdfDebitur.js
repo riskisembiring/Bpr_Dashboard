@@ -297,7 +297,7 @@ const aspekPengadaanBarang2 = aspekPengadaanBarang
       // Cetak teks dalam tabel
       doc.text(String(i + 1), 12, rowY);
       doc.text(invoiceLines, 25, rowY, { maxWidth: colWidths.invoice - 5 });
-      doc.text(nominals[i].toLocaleString("id-ID"), 100, rowY) || '';
+      doc.text(nominals[i].toLocaleString("id-ID"), 100, rowY);
       doc.text(supplierLines, 145, rowY, { maxWidth: colWidths.supplier - 5 });
   
       // Garis pemisah antar baris
@@ -365,7 +365,7 @@ let rowY2 = table2StartY + rowHeight1;
 namaToko.forEach((nama, index) => {
     doc.text(String(index + 1), 12, rowY2);
     doc.text(nama, 25, rowY2);
-    doc.text('Rp ' + totalNominalBelanja[nama].toLocaleString("id-ID"), 120, rowY2) || '';
+    doc.text('Rp ' + totalNominalBelanja[nama].toLocaleString("id-ID"), 120, rowY2);
 
     doc.line(10, rowY2 + 2, 200, rowY2 + 2); // Garis antar baris
     rowY2 += rowHeight1;
@@ -791,7 +791,7 @@ for (let i = 1; i <= totalPages6; i++) {
     item.ket || '' // Keterangan
   ]);
   
-  
+
   const cleanNumber2 = (value) => {
     if (typeof value === 'string') {
       return parseFloat(value.replace(/\./g, '')) || 0;
