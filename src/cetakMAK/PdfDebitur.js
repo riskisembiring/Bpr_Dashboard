@@ -1788,7 +1788,8 @@ doc.line(startX + colWidth * 2 + 5, lineY, startX + colWidth * 3 - 5, lineY); //
 
 // Tambahkan Nama di bawah tanda tangan
 doc.setFont("helvetica", "bold");
-doc.text("", startX + 5, startYx + rowHeight - 5);
+doc.text(selectedData?.namaAccOfficer, startX + 5, startYx + rowHeight - 5);
+// doc.text("Saka Taruma Aji Prasetya", startX + colWidth, startYx + rowHeight - 5);
 doc.text("Saka Taruma Aji Prasetya", startX + colWidth + 5, startYx + rowHeight - 5);
 doc.text("Lea Christine S", startX + colWidth * 2 + 5, startYx + rowHeight - 5);
 
