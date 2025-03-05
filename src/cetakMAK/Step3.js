@@ -5,7 +5,7 @@ import {
   DeleteOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Table, Form, Input, Button, Space, Upload, message } from "antd";
+import { Table, Form, Input, Button, Space, Upload, message, Radio } from "antd";
 import axios from "axios";
 import { NumericFormat } from "react-number-format";
 
@@ -18,6 +18,14 @@ const Step3 = ({ formData, setFormData }) => {
   const data5 = formData.tableHasilVerifikasiSupplier || [];
   const data6 = formData.tableHasilVerifikasiSupplier6 || [];
   const [fileList, setFileList] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(formData.selectedJob || "Karyawan");
+
+  const handleJobChange = (e) => {
+    setSelectedJob(e.target.value);
+    setFormData({ ...formData, selectedJob: e.target.value });
+  };
+
+  const isDisabled = selectedJob !== "Karyawan";
 
   const handleInputChange = (value, key, column, tableKey) => {
     const newData = (tableKey === "tableInvoicePembelian" ? data : data2).map(
@@ -43,6 +51,7 @@ const Step3 = ({ formData, setFormData }) => {
     });
     setFormData({ ...formData, [tableKey2]: newData });
   };
+
 
   const handleInputChange3 = (value, key, column, tableKey3) => {
     const newData = (
@@ -132,7 +141,8 @@ const Step3 = ({ formData, setFormData }) => {
       key: "invoices",
       render: (text, record) => (
         <Input
-          value={record.invoices}
+          value={isDisabled ? '' : record.invoices}
+          disabled={isDisabled}
           placeholder="Masukkan Invoice"
           onChange={(e) =>
             handleInputChange(e.target.value, record.key, "invoices", tableKey)
@@ -148,7 +158,8 @@ const Step3 = ({ formData, setFormData }) => {
       key: "nominals",
       render: (text, record) => (
         <NumericFormat
-          value={String(record.nominals)}
+          value={isDisabled ? '' : record.nominals}
+          disabled={isDisabled}
           placeholder="Masukkan Nominal"
           onValueChange={(values) =>
             handleInputChange(
@@ -166,7 +177,7 @@ const Step3 = ({ formData, setFormData }) => {
           className="responsive-input"
         />
       ),
-      width: 200,
+      width: 250,
     },
     {
       title: "Nama Supplier",
@@ -174,7 +185,8 @@ const Step3 = ({ formData, setFormData }) => {
       key: "namaSupplier",
       render: (text, record) => (
         <Input
-          value={record.namaSupplier}
+          value={isDisabled ? '' : record.namaSupplier}
+          disabled={isDisabled}
           placeholder="Masukkan Nama Supplier"
           onChange={(e) =>
             handleInputChange(
@@ -198,6 +210,7 @@ const Step3 = ({ formData, setFormData }) => {
             danger
             icon={<DeleteOutlined />}
             onClick={() => removeRow(record.key, tableKey)}
+            disabled={isDisabled}
           >
             Hapus
           </Button>
@@ -213,7 +226,8 @@ const Step3 = ({ formData, setFormData }) => {
       key: "namaToko",
       render: (text, record) => (
         <Input
-          value={record.namaToko}
+        value={isDisabled ? '' : record.namaToko}
+        disabled={isDisabled}
           placeholder="Masukkan Nama Toko"
           onChange={(e) =>
             handleInputChange2(
@@ -226,7 +240,6 @@ const Step3 = ({ formData, setFormData }) => {
           className="responsive-input"
         />
       ),
-      width: 280,
     },
     {
       title: "Nominal Belanja",
@@ -234,7 +247,8 @@ const Step3 = ({ formData, setFormData }) => {
       key: "nominalBelanja",
       render: (text, record) => (
         <NumericFormat
-        value={String(record.nominalBelanja)}
+        value={isDisabled ? '' : String(record.nominalBelanja)}
+        disabled={isDisabled}
         placeholder="Masukkan Nominal Belanja"
         onValueChange={(values) =>
           handleInputChange2(
@@ -252,7 +266,6 @@ const Step3 = ({ formData, setFormData }) => {
         className="responsive-input"
       />
       ),
-      width: 200,
     },
     {
       title: "Aksi",
@@ -263,6 +276,7 @@ const Step3 = ({ formData, setFormData }) => {
             danger
             icon={<DeleteOutlined />}
             onClick={() => removeRow2(record.key, tableKey2)}
+            disabled={isDisabled}
           >
             Hapus
           </Button>
@@ -278,7 +292,8 @@ const Step3 = ({ formData, setFormData }) => {
       key: "namaToko",
       render: (text, record) => (
         <Input
-          value={record.namaToko}
+          value={isDisabled ? '' : record.namaToko}
+          disabled={isDisabled}
           placeholder="Masukkan Nama Toko"
           onChange={(e) =>
             handleInputChange3(
@@ -298,7 +313,8 @@ const Step3 = ({ formData, setFormData }) => {
       key: "noteleponWeb",
       render: (text, record) => (
         <Input
-          value={record.noteleponWeb}
+        value={isDisabled ? '' : record.noteleponWeb}
+        disabled={isDisabled}
           placeholder="Masukkan No. telpon/web dan online shop"
           onChange={(e) =>
             handleInputChange3(
@@ -321,6 +337,7 @@ const Step3 = ({ formData, setFormData }) => {
             danger
             icon={<DeleteOutlined />}
             onClick={() => removeRow3(record.key, tableKey3)}
+            disabled={isDisabled}
           >
             Hapus
           </Button>
@@ -425,44 +442,72 @@ const Step3 = ({ formData, setFormData }) => {
       }))
     );
   };
-
+  
   return (
     <>
-      <Form.Item
-        label="Profil Debitur"
-        name="profilDebitur"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
-      >
-        <Input.TextArea
-          placeholder="Masukkan Profil Debitur"
-          autoSize={{ minRows: 6, maxRows: 8 }}
-        />
-      </Form.Item>
+    <Form.Item
+      label="Profil Debitur"
+      name="profilDebitur"
+      getValueProps={(value) => ({ value: (value || []).join("\n") || "" })}
+      getValueFromEvent={(e) => {
+        const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
+        return lines.length > 0 ? lines : undefined;
+      }}
+      rules={[{ required: true, message: "Profil Debitur wajib di isi!" }]}
+    >
+      <Input.TextArea
+        placeholder="Masukkan Profil Debitur"
+        autoSize={{ minRows: 6, maxRows: 8 }}
+        maxLength={700}
+      />
+    </Form.Item>
 
       <Form.Item
         label="Analisa Usaha / Pekerjaan"
         name="analisaUsahaPekerjaan"
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
+        getValueFromEvent={(e) => {
+          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
+          return lines.length > 0 ? lines : undefined;
+        }}
+        rules={[{ required: true, message: "Analisa Usaha / Pekerjaan wajib di isi!" }]}
       >
         <Input.TextArea
           placeholder="Masukkan Analisa Usaha / Pekerjaan"
           autoSize={{ minRows: 6, maxRows: 8 }}
+          maxLength={700}
+          defaultValue="123"
         />
+      </Form.Item>
+
+      <Form.Item label="Aspek Pengadaan Barang/Bahan Baku?" name="jenisPekerjaanDebt" 
+      rules={[{ required: true, message: "Aspek Pengadaan Barang/Bahan Baku wajib di isi!" }]}>
+        <Radio.Group onChange={handleJobChange} value={selectedJob}>
+          <Radio value="Karyawan">Karyawan</Radio>
+          <Radio value="Wiraswasta">Wiraswasta</Radio>
+          <Radio value="BackToBack">Back To Back</Radio>
+        </Radio.Group>
       </Form.Item>
 
       <Form.Item
         label="Aspek Pengadaan Barang/Bahan Baku"
         name="aspekPengadaanBarang"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
-      >
+        getValueProps={(value) => ({
+          value: isDisabled ? [] : (value || []).join("\n"),
+        })}
+        getValueFromEvent={(e) => {
+          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
+          return lines.length > 0 ? lines : undefined;
+        }}
+        rules={[{ required: isDisabled ? false : true, message: "Aspek Pengadaan Barang/Bahan Baku wajib di isi!" }]}>
         <Input.TextArea
           placeholder="Masukkan Aspek Pengadaan Barang/Bahan Baku"
           autoSize={{ minRows: 6, maxRows: 8 }}
+          maxLength={500}
+          disabled={isDisabled}
         />
       </Form.Item>
+
       <h4>Tabel Invoice Pembelian</h4>
       <Table
         columns={columns("tableInvoicePembelian")}
@@ -476,23 +521,34 @@ const Step3 = ({ formData, setFormData }) => {
       <Button
         type="primary"
         icon={<PlusOutlined />}
-        onClick={() => addRow("tableInvoicePembelian")}
-        style={{ marginTop: "8px", marginBottom: '12px' }}
+        onClick={() => 
+            addRow("tableInvoicePembelian")
+        }
+        style={{ marginTop: "8px", marginBottom: "12px" }}
+        disabled={isDisabled}
       >
-        Tambah Baris
+        Tambah Data
       </Button>
-    
+
       <Form.Item
         label="Note Invoice Pembelian"
         name="noteInvoice"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
+        getValueProps={(value) => ({
+          value: isDisabled ? [] : (value || []).join("\n"),
+        })}
+        getValueFromEvent={(e) => {
+          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
+          return lines.length > 0 ? lines : undefined;
+        }}
+        rules={[{ required: isDisabled ? false : true, message: "Aspek Pengadaan Barang/Bahan Baku wajib di isi!" }]}
       >
         <Input.TextArea
           placeholder="Masukkan Note"
           autoSize={{ minRows: 4, maxRows: 8 }}
+          disabled={isDisabled}
         />
       </Form.Item>
+
       <h4>Tabel Bukti Transaksi Pembelian</h4>
       <Table
         columns={columns2("tableBuktiTransaksiPembelian")}
@@ -507,10 +563,12 @@ const Step3 = ({ formData, setFormData }) => {
         type="primary"
         icon={<PlusOutlined />}
         onClick={() => addRow2("tableBuktiTransaksiPembelian")}
-        style={{ marginTop: "8px", marginBottom: '12px' }}
+        style={{ marginTop: "8px", marginBottom: "12px" }}
+        disabled={isDisabled}
       >
-        Tambah Baris
+        Tambah Data
       </Button>
+
       <h4>Tabel Hasil Verifikasi Suplayer bahan baku</h4>
       <Table
         columns={columns3("tableHasilVerifikasiSupplier")}
@@ -525,56 +583,67 @@ const Step3 = ({ formData, setFormData }) => {
         type="primary"
         icon={<PlusOutlined />}
         onClick={() => addRow3("tableHasilVerifikasiSupplier")}
-        style={{ marginTop: "8px", marginBottom: '12px' }}
+        style={{ marginTop: "8px", marginBottom: "12px" }}
+        disabled={isDisabled}
       >
-        Tambah Baris
+        Tambah Data
       </Button>
 
       <Form.Item
         label="Aspek Pemasaran/Distribusi"
         name="aspekPemasaranDistribusi"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
-      >
+        getValueProps={(value) => ({
+          value: isDisabled ? [] : (value || []).join("\n"), // Jika isDisabled true, value jadi kosong
+        })}
+        getValueFromEvent={(e) => {
+          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
+          return lines.length > 0 ? lines : undefined;
+        }}
+        rules={[{ required: isDisabled ? false : true, message: "Aspek Pemasaran/Distribusi wajib di isi!" }]}>
         <Input.TextArea
           placeholder="Masukkan Aspek Pemasaran/Distribusi"
           autoSize={{ minRows: 10, maxRows: 8 }}
+          disabled={isDisabled}
+          maxLength={500}
         />
       </Form.Item>
 
-      <Form.Item
-        label="Kontrak Kerja Yang Dimiliki"
-        name="kontrakKerjaDimiliki"
-        // rules={[{ required: true, message: "Harap masukkan nama debitur Anda!" }]}
-      >
-        <Input placeholder="Masukkan Kontrak Kerja Yang Dimiliki" />
+      <Form.Item label="Kontrak Kerja Yang Dimiliki" name="kontrakKerjaDimiliki" rules={[{ required: isDisabled ? false : true, message: "Kontrak Kerja Yang Dimiliki wajib di isi!" }]}>
+        <Input placeholder="Masukkan Kontrak Kerja Yang Dimiliki" disabled={isDisabled} />
       </Form.Item>
 
       <Form.Item
         label="Aspek Rencana Pengembangan Usaha"
         name="aspekRencanaPengembanganUsaha"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
+        getValueProps={(value) => ({
+          value: isDisabled ? '' : (value || []).join("\n"), // Jika isDisabled true, value jadi kosong
+        })}
+        getValueFromEvent={(e) => {
+          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
+          return lines.length > 0 ? lines : undefined;
+        }}
+        rules={[{ required: isDisabled ? false : true, message: "Aspek Rencana Pengembangan Usaha wajib di isi!" }]}
       >
         <Input.TextArea
           placeholder="Masukkan Aspek Rencana Pengembangan Usaha"
           autoSize={{ minRows: 4, maxRows: 8 }}
+          disabled={isDisabled}
+          maxLength={500}
         />
       </Form.Item>
+
       <h4>Foto Usaha</h4>
       <Upload
         customRequest={handleUpload}
-        fileList={fileList}
+        fileList={isDisabled ? [] : fileList}
         onRemove={handleRemove}
         multiple={false}
         maxCount={12}
         showUploadList={{ showRemoveIcon: true }}
         accept="image/*"
+        disabled={isDisabled}
       >
-        <Button
-          icon={isUploading ? <LoadingOutlined /> : <UploadOutlined />}
-          disabled={isUploading}
-        >
+        <Button icon={isUploading ? <LoadingOutlined /> : <UploadOutlined />} disabled={isUploading || isDisabled}>
           {isUploading ? "Uploading..." : "Upload Foto Usaha"}
         </Button>
       </Upload>
@@ -583,14 +652,15 @@ const Step3 = ({ formData, setFormData }) => {
         <div key={file.uid} style={{ marginTop: 10 }}>
           <Input
             placeholder={`Tambahkan deskripsi foto ${index + 1}`}
-            value={file.description}
+            value={isDisabled ? '' : file.description}
             onChange={(e) => handleDescriptionChange(index, e.target.value)}
+            disabled={isDisabled}
           />
         </div>
       ))}
-      <br></br>
-    </>
-  );
-};
+     <br></br>
+     </>
+   );
+ };
 
 export default Step3;

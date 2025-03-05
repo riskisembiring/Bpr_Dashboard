@@ -320,11 +320,16 @@ const Step7 = ({ formData, setFormData }) => {
         label="Analisa Repayment Capacity"
         name="analisaRepaymentCapacity"
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
+        getValueFromEvent={(e) => {
+          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
+          return lines.length > 0 ? lines : undefined;
+        }}
+        rules={[{ required: true, message: "Analisa Repayment Capacity wajib di isi!" }]}
       >
         <Input.TextArea
           placeholder="Masukkan Analisa Repayment Capacity"
           autoSize={{ minRows: 8, maxRows: 8 }}
+          maxLength={1000}
         />
       </Form.Item>
 
@@ -344,17 +349,22 @@ const Step7 = ({ formData, setFormData }) => {
         onClick={() => addRow("tableDataAgunan")}
         style={{ marginTop: "8px", marginBottom: "12px" }}
       >
-        Tambah Baris
+        Tambah Data
       </Button>
       <Form.Item
         label="Catatan Data Agunan"
         name="catatanDataAgunan"
         getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
+        getValueFromEvent={(e) => {
+          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
+          return lines.length > 0 ? lines : undefined;
+        }}
+        rules={[{ required: true, message: "Catatan Data Agunan wajib di isi!" }]}
       >
         <Input.TextArea
           placeholder="Masukkan Catatan Data Agunan"
           autoSize={{ minRows: 8, maxRows: 8 }}
+          maxLength={500}
         />
       </Form.Item>
       <h4>Foto Agunan</h4>

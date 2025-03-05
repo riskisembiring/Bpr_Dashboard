@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Table, Input, Button, Space, Form } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { NumericFormat } from "react-number-format";
@@ -52,19 +52,20 @@ const Step2 = ({ formData, setFormData }) => {
       dataIndex: "jenisKredit",
       key: "jenisKredit",
       render: (text, record) => (
-        <Input
-          value={record.jenisKredit}
-          placeholder="Masukkan Jenis Kredit"
+        <select
+          value={record.jenisKredit || ""}
           onChange={(e) =>
-            handleInputChange(
-              e.target.value,
-              record.key,
-              "jenisKredit",
-              tableKey
-            )
+            handleInputChange(e.target.value, record.key, "jenisKredit", tableKey)
           }
           className="responsive-input"
-        />
+        >
+          <option value="" disabled>
+            Pilih Jenis Kredit
+          </option>{" "}
+          <option value="kreditKonsumtif">Kredit Konsumtif</option>
+          <option value="modalUsaha">Modal Usaha</option>
+          <option value="kreditInvestasi">Kredit Investasi</option>
+        </select>
       ),
       width: 180,
     },
@@ -83,7 +84,7 @@ const Step2 = ({ formData, setFormData }) => {
               "plafond",
               tableKey
             )
-          } // Mengirimkan nilai dalam bentuk string
+          }
           prefix="Rp "
           thousandSeparator="."
           decimalSeparator=","
@@ -102,9 +103,14 @@ const Step2 = ({ formData, setFormData }) => {
       render: (text, record) => (
         <Input
           value={record.sukuBunga}
-          placeholder="Masukkan Suku Bunga"
+          placeholder="Masukkan Jenis Kredit"
           onChange={(e) =>
-            handleInputChange(e.target.value, record.key, "sukuBunga", tableKey)
+            handleInputChange(
+              e.target.value,
+              record.key,
+              "sukuBunga",
+              tableKey
+            )
           }
           className="responsive-input"
         />
@@ -116,14 +122,26 @@ const Step2 = ({ formData, setFormData }) => {
       dataIndex: "tenor",
       key: "tenor",
       render: (text, record) => (
-        <Input
-          value={record.tenor}
-          placeholder="Masukkan Tenor"
+        <select
+          value={record.tenor || ""}
           onChange={(e) =>
             handleInputChange(e.target.value, record.key, "tenor", tableKey)
           }
           className="responsive-input"
-        />
+        >
+          <option value="" disabled>
+            Pilih Tenor
+          </option>{" "}
+          <option value="3 Bulan">3 Bulan</option>
+          <option value="6 Bulan">6 Bulan</option>
+          <option value="12 Bulan">12 Bulan</option>
+          <option value="18 Bulan">18 Bulan</option>
+          <option value="24 Bulan">24 Bulan</option>
+          <option value="36 Bulan">36 Bulan</option>
+          <option value="48 Bulan">48 Bulan</option>
+          <option value="60 Bulan">60 Bulan</option>
+          <option value="120 Bulan">120 Bulan</option>
+        </select>
       ),
       width: 160,
     },
@@ -201,30 +219,39 @@ const Step2 = ({ formData, setFormData }) => {
 
   return (
     <div>
+      {/* Table */}
       <Table
         columns={columns("tableRingkasanPengajuanKredit")}
-        dataSource={data}
+        dataSource={formData.tableRingkasanPengajuanKredit}
         pagination={false}
         bordered
         style={{ marginBottom: "16px" }}
-        scroll={{ x: "max-content" }} // Mengizinkan scroll horizontal pada tabel
-        responsive // Membuat tabel responsif
-      />{" "}
+        scroll={{ x: "max-content" }}
+      />
+
+      {/* Button Tambah Baris */}
       <Button
         type="primary"
         icon={<PlusOutlined />}
-        onClick={() => addRow("tableRingkasanPengajuanKredit")}
-        style={{ marginTop: "8px", marginBottom: '12px' }}
+        onClick={() =>
+          addRow("tableRingkasanPengajuanKredit")
+        }
+        style={{ marginBottom: "12px" }}
       >
-        Tambah Baris
+        Tambah Data
       </Button>
+
+      {/* Form Item untuk TextArea */}
       <Form.Item
         label="Tujuan pengajuan kredit"
         name="tujuanPengajuanKredit"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
+        rules={[{ required: true, message: "Tujuan pengajuan kredit wajib diisi!" }]}
       >
-        <Input.TextArea placeholder="Masukkan Tujuan pengajuan kredit" autoSize={{ minRows: 6, maxRows: 8 }}/>
+        <Input.TextArea
+          placeholder="Masukkan Tujuan pengajuan kredit"
+          autoSize={{ minRows: 6, maxRows: 8 }}
+          maxLength={500}
+        />
       </Form.Item>
     </div>
   );

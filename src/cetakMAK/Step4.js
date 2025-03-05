@@ -1,92 +1,82 @@
 import React from "react";
-import { Table, Input, Button, Space, Form } from "antd";
+import { Collapse, Table, Input, Button, Form } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { NumericFormat } from "react-number-format";
 
-const Step4 = ({ formData, setFormData }) => {
-  const data = formData.tableRekapitulatif || [];
-  const data2 = formData.tableRekapitulatif2 || [];
+const { Panel } = Collapse;
 
-  const handleInputChange = (value, key, column, tableKey) => {
-    const newData = (tableKey === "tableRekapitulatif" ? data : data2).map(
-      (row) => {
-        if (row.key === key) {
-          return { ...row, [column]: value };
-        }
-        return row;
-      }
+const Step4 = ({ formData, setFormData }) => {
+  const slikTables = formData.slikTables || [];
+
+  const handleInputChange = (value, key, column, tableIndex) => {
+    const newTables = [...slikTables];
+    newTables[tableIndex].data = newTables[tableIndex].data.map((row) =>
+      row.key === key ? { ...row, [column]: value } : row
     );
-    setFormData({ ...formData, [tableKey]: newData });
+    setFormData({ ...formData, slikTables: newTables });
   };
 
-  const addRow = (tableKey) => {
-    const newRow = {
-      key: (
-        (tableKey === "tableRekapitulatif" ? data : data2).length + 1
-      ).toString(),
+  const addRow = (tableIndex) => {
+    const newTables = [...slikTables];
+    newTables[tableIndex].data.push({
+      key: (newTables[tableIndex].data.length + 1).toString(),
       namaBankLjk: "",
       plafon: "",
       bakiDebet: "",
       angsuran: "",
       kol: "",
       ket: "",
-    };
-    const newData = [
-      ...(tableKey === "tableRekapitulatif" ? data : data2),
-      newRow,
-    ];
-    setFormData({ ...formData, [tableKey]: newData });
+    });
+    setFormData({ ...formData, slikTables: newTables });
   };
 
-  const removeRow = (key, tableKey) => {
-    const newData = (tableKey === "tableRekapitulatif" ? data : data2).filter(
-      (row) => row.key !== key
-    );
-    setFormData({ ...formData, [tableKey]: newData });
+  const removeRow = (key, tableIndex) => {
+    const newTables = [...slikTables];
+    newTables[tableIndex].data = newTables[tableIndex].data.filter((row) => row.key !== key);
+    setFormData({ ...formData, slikTables: newTables });
   };
 
-  const columns = (tableKey) => [
+  const addSlikTable = () => {
+    setFormData({
+      ...formData,
+      slikTables: [...slikTables, { nama: "", data: [], catatan: [] }],
+    });
+  };
+
+  const handleNamaSlikChange = (value, tableIndex) => {
+    const newTables = [...slikTables];
+    newTables[tableIndex].nama = value;
+    setFormData({ ...formData, slikTables: newTables });
+  };
+
+  const handleCatatanChange = (value, tableIndex) => {
+    const newTables = [...slikTables];
+    newTables[tableIndex].catatan = value.split("\n");
+    setFormData({ ...formData, slikTables: newTables });
+  };
+
+  const columns = (tableIndex) => [
     {
       title: "Nama Bank / LJK",
       dataIndex: "namaBankLjk",
-      key: "namaBankLjk",
-      render: (text, record) => (
+      render: (_, record) => (
         <Input
           value={record.namaBankLjk}
           placeholder="Masukkan Nama Bank / LJK"
-          onChange={(e) =>
-            handleInputChange(
-              e.target.value,
-              record.key,
-              "namaBankLjk",
-              tableKey
-            )
-          }
-          className="responsive-input"
+          onChange={(e) => handleInputChange(e.target.value, record.key, "namaBankLjk", tableIndex)}
         />
       ),
     },
     {
       title: "Plafon",
       dataIndex: "plafon",
-      key: "plafon",
-      render: (text, record) => (
+      render: (_, record) => (
         <NumericFormat
-          value={String(record.plafon)}
+          value={record.plafon}
           placeholder="Masukkan Plafon"
-          onValueChange={(values) =>
-            handleInputChange(
-              String(values.value),
-              record.key,
-              "plafon",
-              tableKey
-            )
-          }
           thousandSeparator="."
-          decimalSeparator=","
-          allowNegative={false}
-          decimalScale={0}
-          fixedDecimalScale={false}
+          decimalSeparator="," 
+          onValueChange={(values) => handleInputChange(values.value, record.key, "plafon", tableIndex)}
           className="responsive-input"
         />
       ),
@@ -94,24 +84,13 @@ const Step4 = ({ formData, setFormData }) => {
     {
       title: "Baki Debet",
       dataIndex: "bakiDebet",
-      key: "bakiDebet",
-      render: (text, record) => (
+      render: (_, record) => (
         <NumericFormat
-          value={String(record.bakiDebet)}
+          value={record.bakiDebet}
           placeholder="Masukkan Baki Debet"
-          onValueChange={(values) =>
-            handleInputChange(
-              String(values.value),
-              record.key,
-              "bakiDebet",
-              tableKey
-            )
-          }
           thousandSeparator="."
-          decimalSeparator=","
-          allowNegative={false}
-          decimalScale={0}
-          fixedDecimalScale={false}
+          decimalSeparator="," 
+          onValueChange={(values) => handleInputChange(values.value, record.key, "bakiDebet", tableIndex)}
           className="responsive-input"
         />
       ),
@@ -119,24 +98,13 @@ const Step4 = ({ formData, setFormData }) => {
     {
       title: "Angsuran",
       dataIndex: "angsuran",
-      key: "angsuran",
-      render: (text, record) => (
+      render: (_, record) => (
         <NumericFormat
-          value={String(record.angsuran)}
+          value={record.angsuran}
           placeholder="Masukkan Angsuran"
-          onValueChange={(values) =>
-            handleInputChange(
-              String(values.value),
-              record.key,
-              "angsuran",
-              tableKey
-            )
-          }
           thousandSeparator="."
-          decimalSeparator=","
-          allowNegative={false}
-          decimalScale={0}
-          fixedDecimalScale={false}
+          decimalSeparator="," 
+          onValueChange={(values) => handleInputChange(values.value, record.key, "angsuran", tableIndex)}
           className="responsive-input"
         />
       ),
@@ -144,112 +112,83 @@ const Step4 = ({ formData, setFormData }) => {
     {
       title: "Kol.",
       dataIndex: "kol",
-      key: "kol",
-      render: (text, record) => (
+      render: (_, record) => (
         <Input
           value={record.kol}
           placeholder="Masukkan Kol."
-          onChange={(e) =>
-            handleInputChange(e.target.value, record.key, "kol", tableKey)
-          }
-          className="responsive-input"
+          onChange={(e) => handleInputChange(e.target.value, record.key, "kol", tableIndex)}
         />
       ),
     },
     {
       title: "Ket.",
       dataIndex: "ket",
-      key: "ket",
-      render: (text, record) => (
+      render: (_, record) => (
         <Input
           value={record.ket}
           placeholder="Masukkan Ket."
-          onChange={(e) =>
-            handleInputChange(e.target.value, record.key, "ket", tableKey)
-          }
-          className="responsive-input"
+          onChange={(e) => handleInputChange(e.target.value, record.key, "ket", tableIndex)}
         />
       ),
     },
     {
       title: "Aksi",
-      key: "aksi",
+
       render: (_, record) => (
-        <Space>
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => removeRow(record.key, tableKey)}
-          >
-            Hapus
-          </Button>
-        </Space>
+        <Button danger icon={<DeleteOutlined />} onClick={() => removeRow(record.key, tableIndex)}>
+          Hapus
+        </Button>
       ),
     },
   ];
 
   return (
     <div>
-      <h3>1. Rekapitulasi Slik</h3>
-      <Form.Item label="Nama Slik 1" name="namaSlik">
-        <Input placeholder="Masukkan Nama Slik 1" />
-      </Form.Item>
-      <h4>Tabel Rekapitulasi Slik 1</h4>
-      <Table
-        columns={columns("tableRekapitulatif")}
-        dataSource={data}
-        pagination={false}
-        bordered
-        style={{ marginBottom: "16px" }}
-        scroll={{ x: "max-content" }}
-        responsive
-      />
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => addRow("tableRekapitulatif")}
-        style={{ marginTop: "8px", marginBottom: '12px' }}
-      >
-        Tambah Baris
+      <h4>1. REKAPITULASI SLIK</h4>
+      <Button type="primary" icon={<PlusOutlined />} onClick={addSlikTable} style={{ marginBottom: "16px" }}>
+        Tambah SLIK
       </Button>
-      <Form.Item
-        label="Catatan Hasil SLIK"
-        name="catatanHasilSlik"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
-      >
-        <Input.TextArea placeholder="Masukkan catatan Hasil Slik" autoSize={{ minRows: 4, maxRows: 8 }}/>
-      </Form.Item>
 
-      <Form.Item label="Nama Slik 2" name="namaSlik2" style={{ marginTop: "24px" }}>
-        <Input placeholder="Masukkan Nama Slik 2" />
-      </Form.Item>
-      <h4>Tabel Rekapitulasi Slik 2</h4>
-      <Table
-        columns={columns("tableRekapitulatif2")}
-        dataSource={data2}
-        pagination={false}
-        bordered
-        style={{ marginBottom: "16px" }}
-        scroll={{ x: "max-content" }}
-        responsive
-      />
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => addRow("tableRekapitulatif2")}
-        style={{ marginTop: "8px", marginBottom: '12px' }}
-      >
-        Tambah Baris
-      </Button>
-      <Form.Item
-        label="Catatan Hasil SLIK"
-        name="catatanHasilSlik2"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
-        getValueFromEvent={(e) => e.target.value.split("\n")}
-      >
-        <Input.TextArea placeholder="Masukkan catatan Hasil Slik" autoSize={{ minRows: 6, maxRows: 8 }}/>
-      </Form.Item>
+      <Collapse accordion>
+        {slikTables.map((slik, index) => (
+          <Panel header={`SLIK ${index + 1}`} key={index}>
+            <Form.Item label={`Nama SLIK ${index + 1}`}>
+              <Input
+                value={slik.nama}
+                placeholder={`Masukkan Nama SLIK ${index + 1}`}
+                onChange={(e) => handleNamaSlikChange(e.target.value, index)}
+              />
+            </Form.Item>
+
+            <h4>Tabel Rekapitulasi SLIK {index + 1}</h4>
+            <Table
+              columns={columns(index)}
+              dataSource={slik.data}
+              pagination={false}
+              bordered
+              scroll={{ x: "max-content" }}
+            />
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => addRow(index)}
+              style={{ marginTop: "8px", marginBottom: "12px" }}
+            >
+              Tambah Data
+            </Button>
+
+            <Form.Item label="Catatan Hasil SLIK">
+              <Input.TextArea
+                value={(slik.catatan || []).join("\n")}
+                onChange={(e) => handleCatatanChange(e.target.value, index)}
+                placeholder="Masukkan Catatan Hasil SLIK"
+                autoSize={{ minRows: 4, maxRows: 8 }}
+              />
+            </Form.Item>
+          </Panel>
+        ))}
+      </Collapse>
+      <br></br>
     </div>
   );
 };

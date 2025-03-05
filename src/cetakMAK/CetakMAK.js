@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Typography, Table, Modal, Spin } from "antd";
 import moment from "moment";
 import { handleExportToPDF } from "./PdfDebitur";
+import { handleExportToExcel } from "./ExcelDebitur";
 import Step1 from "./Step1";
 import Step2 from "./Step2";
 import Step3 from "./Step3";
@@ -11,6 +12,7 @@ import Step6 from "./Step6";
 import Step7 from "./Step7";
 import Step8 from "./Step8";
 import "../styles/CetakMak.css";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -23,7 +25,7 @@ const CetakMak = () => {
   const [selectedRowKey, setSelectedRowKey] = useState(null);
   const [formStep, setFormStep] = useState(1);
   const [formData, setFormData] = useState({
-    invoiceInput: "",
+    invoiceanalisaUsahaPekerjaan: "",
     invoices: [],
     nominalInput: "",
     nominals: [],
@@ -34,6 +36,8 @@ const CetakMak = () => {
     photoUsaha: [],
     photoAgunan: [],
     businessPhotos: [],
+    analisaUsahaPekerjaan: [],
+    aspekPengadaanBarang: [],
   });
 
   useEffect(() => {
@@ -50,7 +54,7 @@ const CetakMak = () => {
         if (response.ok) {
           setDataDebitur(result.data);
           if (result.data.length > 0) {
-            setSelectedRowKey(result.data[0].nomorMak);
+            setSelectedRowKey(result.data[0].id);
           }
         } else {
           console.error("Failed to fetch data:", result);
@@ -73,13 +77,57 @@ const CetakMak = () => {
     );
   };
 
-  const handleNextStep = () => {
-    const values = form.getFieldsValue();
-    setFormData((prevData) => ({
-      ...prevData,
-      ...values,
-    }));
-    setFormStep(formStep + 1);
+  const handleNextStep = async () => {
+    console.log('test', formStep)
+    try {
+      await form.validateFields();
+      if (formStep === 2 && (!formData.tableRingkasanPengajuanKredit || formData.tableRingkasanPengajuanKredit.length === 0)) {
+        alert("Data Ringkasan Pengajuan Kredit tidak boleh kosong!");
+        return;
+      }
+      if (formStep === 3 && (!formData.tableInvoicePembelian || formData.tableInvoicePembelian.length === 0 && formData.selectedJob === "Karyawan")) {
+        alert("Data Invoice Pembelian tidak boleh kosong!");
+        return;
+      }
+      if (formStep === 3 && (!formData.tableBuktiTransaksiPembelian || formData.tableBuktiTransaksiPembelian.length === 0 && formData.selectedJob === "Karyawan")) {
+        alert("Data Bukti Transaksi Pembelian tidak boleh kosong!");
+        return;
+      }
+      if (formStep === 3 && (!formData.photoUsaha || formData.photoUsaha.length === 0 && formData.selectedJob === "Karyawan")) {
+        alert("Data Foto Usaha tidak boleh kosong!");
+        return;
+      }
+      if (formStep === 4 && (!formData.slikTables || formData.slikTables.length === 0 )) {
+        alert("Data Rekapitulasi Slik tidak boleh kosong!");
+        return;
+      }
+      if (formStep === 5 && (!formData.slikTables || formData.analisaList.length === 0 )) {
+        alert("Data Analisa Rekening Koran tidak boleh kosong!");
+        return;
+      }
+      if (formStep === 6 && (!formData.tableLabaRugiProforma || formData.tableLabaRugiProforma.length === 0 && formData.selectedJob === "Karyawan")) {
+        alert("Data Laporan Laba Rugi Proforma tidak boleh kosong!");
+        return;
+      }
+      if (formStep === 7 && (!formData.tableDataAgunan || formData.tableDataAgunan.length === 0)) {
+        alert("Data Agunan tidak boleh kosong!");
+        return;
+      }
+      if (formStep === 7 && (!formData.photoAgunan || formData.photoAgunan.length === 0)) {
+        alert("Data Foto Agunan tidak boleh kosong!");
+        return;
+      }
+      const values = form.getFieldsValue();
+      setFormData((prevData) => ({
+        ...prevData,
+        ...values,
+      }));
+  
+      // Pindah ke step berikutnya
+      setFormStep((prevStep) => prevStep + 1);
+    } catch (error) {
+      console.log("Validasi gagal:", error);
+    }
   };
 
   const handleBackStep = () => {
@@ -87,38 +135,141 @@ const CetakMak = () => {
   };
 
   const handleSave = async () => {
-    const values = form.getFieldsValue();
-    const updatedFormData = { ...formData, ...values };
-
     try {
-      const response = await fetch("https://api-nasnus.vercel.app/api/data-mak", {
-        method: "POST",
+      // Menjalankan validasi form sebelum lanjut
+      const values = await form.validateFields(); 
+  
+      const isEditMode = selectedRowKey !== null;
+    
+      const tanggalSubmit = !isEditMode ? dayjs().format("DD-MM-YYYY") : undefined;
+      const tanggalEdit = isEditMode ? dayjs().format("DD-MM-YYYY") : undefined;
+    
+      let updatedFormData = {
+        ...formData,
+        ...values, // Menggunakan values hasil validasi
+        aspekPengadaanBarang: formData.selectedJob !== "Karyawan" ? [] : formData.aspekPengadaanBarang || [],
+        tableInvoicePembelian: formData.selectedJob !== "Karyawan" ? [] : formData.tableInvoicePembelian || [],
+        noteInvoice: formData.selectedJob !== "Karyawan" ? [] : formData.noteInvoice || [],
+        tableBuktiTransaksiPembelian: formData.selectedJob !== "Karyawan" ? [] : formData.tableBuktiTransaksiPembelian || [],
+        tableHasilVerifikasiSupplier: formData.selectedJob !== "Karyawan" ? [] : formData.tableHasilVerifikasiSupplier || [],
+        aspekPemasaranDistribusi: formData.selectedJob !== "Karyawan" ? [] : formData.aspekPemasaranDistribusi || [],
+        kontrakKerjaDimiliki: formData.selectedJob !== "Karyawan" ? "" : formData.kontrakKerjaDimiliki || "",
+        aspekRencanaPengembanganUsaha: formData.selectedJob !== "Karyawan" ? [] : formData.aspekRencanaPengembanganUsaha || [],
+        photoUsaha: formData.selectedJob !== "Karyawan" ? [] : formData.photoUsaha || [],
+        tableLabaRugiProforma: formData.selectedJob !== "Karyawan" ? [] : formData.tableLabaRugiProforma || [],
+        tableNeracaProforma: formData.selectedJob !== "Karyawan" ? [] : formData.tableNeracaProforma || [],
+        ...(isEditMode ? { tanggalEdit } : { tanggalSubmit }),
+      };
+    
+      let url = "https://api-nasnus.vercel.app/api/data-mak"; // Default untuk POST
+      let method = "POST";
+    
+      if (isEditMode) {
+        url = `https://api-nasnus.vercel.app/api/update-mak/${selectedRowKey}`;
+        method = "PUT";
+        updatedFormData = { ...updatedFormData, id: selectedRowKey };
+      } else {
+        delete updatedFormData.id;
+      }
+    
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedFormData),
       });
-
+    
       const result = await response.json();
-
+    
       if (response.ok) {
-        setDataDebitur((prevData) => [...prevData, updatedFormData]);
+        if (isEditMode) {
+          setDataDebitur((prevData) =>
+            prevData.map((item) =>
+              item.id === selectedRowKey ? { ...item, ...updatedFormData } : item
+            )
+          );
+        } else {
+          const newData = { ...updatedFormData, id: result.id };
+          setDataDebitur((prevData) => [...prevData, newData]);
+        }
+    
         alert("Data berhasil disimpan!");
-        setShowModal(false);
+        clearData();
+        setSelectedRowKey(null);
       } else {
         alert("Error: " + result.message);
       }
     } catch (error) {
-      console.error("Error saving data:", error);
+      console.error("Validasi gagal atau terjadi kesalahan:", error);
       alert("Terjadi kesalahan saat menyimpan data!");
     }
+  };
+  
+  
+  const clearData = () => {
+    setShowModal(false);
+    form.resetFields();
+    setFormData((prev) => ({
+      ...prev,
+      invoiceInput: "",
+      invoices: [],
+      nominalInput: "",
+      nominals: [],
+      namaSupplierInput: "",
+      namaSuppliers: [],
+      userGoalInput: "",
+      userGoals: [],
+      photoUsaha: [],
+      tableRingkasanPengajuanKredit: [],
+      tableInvoicePembelian: [],
+      tableBuktiTransaksiPembelian: [],
+      tableHasilVerifikasiSupplier: [],
+      catatanHasilSlik: [],
+      slikTables: [],
+      analisaList: [],
+      tableLabaRugiProforma: [],
+      tableNeracaProforma: [],
+      tableDataAgunan: [],
+      photoAgunan: [],
+      tableData: [],
+    }));
+  };
+
+  const handleEdit = (record) => {
+    const formattedRecord = {
+      ...record,
+      tanggalMak: record.tanggalMak ? moment(record.tanggalMak) : null,
+      tanggalSubmit: record.tanggalSubmit ? moment(record.tanggalSubmit) : null,
+      tanggalEdit: record.tanggalEdit ? moment(record.tanggalEdit) : null,
+    };
+    form.setFieldsValue(formattedRecord);
+
+    setFormData({
+      ...record,
+    });
+
+    setFormStep(1);
+    setShowModal(true);
+    setSelectedRowKey(record.id);
   };
 
   const columns = [
     {
-      title: "Nama User",
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+      hidden: true,
+    },
+    {
+      title: "Nama Kredit Analis (CA)",
       dataIndex: "namaUser",
       key: "namaUser",
+    },
+    {
+      title: "Nama Marketing (AO)",
+      dataIndex: "namaAccOfficer",
+      key: "namaAccOfficer",
     },
     {
       title: "Nama Debitur",
@@ -136,10 +287,40 @@ const CetakMak = () => {
       key: "tanggalMak",
       render: (text) => moment(text).format("DD-MM-YYYY"),
     },
+    {
+      title: "Plafon",
+      dataIndex: "plafon",
+      key: "plafon",
+    },
+    // {
+    //   title: "Tanggal Submit",
+    //   dataIndex: "tanggalSubmit",
+    //   key: "tanggalSubmit",
+    //   render: (text) => moment(text).format("DD-MM-YYYY"),
+    // },
+    {
+      title: "Tanggal Edit",
+      dataIndex: "tanggalEdit",
+      key: "tanggalEdit",
+      render: (text) => moment(text).format("DD-MM-YYYY"),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <Button
+          type="primary"
+          onClick={() => handleEdit(record)}
+          style={{ fontSize: "14px" }}
+        >
+          Edit
+        </Button>
+      ),
+    },
   ];
 
   const onRowClick = (record) => {
-    setSelectedRowKey(record.nomorMak); // Store selected row key
+    setSelectedRowKey(record.id); // Store selected row key
   };
 
   const renderFormStep = () => {
@@ -182,18 +363,18 @@ const CetakMak = () => {
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: "right",
                     flexWrap: "wrap",
                     alignItems: "center",
                     marginBottom: "20px",
                   }}
                 >
-                  <Title
+                  {/* <Title
                     level={5}
                     style={{ flex: 1, fontSize: "16px", margin: 0 }}
                   >
                     Daftar Data Debitur
-                  </Title>
+                  </Title> */}
                   <div
                     style={{
                       display: "flex",
@@ -204,7 +385,11 @@ const CetakMak = () => {
                   >
                     <Button
                       type="primary"
-                      onClick={() => setShowModal(true)}
+                      onClick={() => {
+                        setSelectedRowKey(null);
+                        form.resetFields();
+                        setShowModal(true);
+                      }}
                       style={{
                         marginRight: "10px",
                         fontSize: "14px",
@@ -214,20 +399,38 @@ const CetakMak = () => {
                       Tambah Data
                     </Button>
                     <Button
-                      type="primary"
+                      type='primary'
                       onClick={() => {
                         if (selectedRowKey) {
                           const selectedRow = dataDebitur.find(
-                            (item) => item.nomorMak === selectedRowKey
+                            (item) => item.id === selectedRowKey
                           );
                           handleExportToPDF(selectedRow);
                         } else {
                           alert("Please select a row to export.");
                         }
                       }}
-                      style={{ fontSize: "14px", padding: "6px 12px" }}
+                      style={{ fontSize: "14px", padding: "6px 12px", backgroundColor: "#800000", borderColor: "#800000" }}
                     >
                       Export to PDF
+                    </Button>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        if (Array.isArray(dataDebitur)) {
+                          handleExportToExcel(dataDebitur);
+                        } else {
+                          alert("Data Debitur is not an array.");
+                        }
+                      }}
+                      style={{
+                        fontSize: "14px",
+                        padding: "6px 12px",
+                        marginLeft: "10px",
+                        backgroundColor: "#006400", borderColor: "#006400"
+                      }}
+                    >
+                      Export to Excel
                     </Button>
                   </div>
                 </div>
@@ -235,14 +438,22 @@ const CetakMak = () => {
                 <Table
                   columns={columns}
                   dataSource={dataDebitur}
-                  rowKey="nomorMak"
-                  pagination={false}
+                  rowKey="id"
                   onRow={(record) => ({
                     onClick: () => onRowClick(record),
+                    style: {
+                      backgroundColor: selectedRowKey === record.id ? "#e6f7ff" : "",
+                    },
                   })}
                   rowClassName={(record) =>
-                    record.nomorMak === selectedRowKey ? "selected-row" : ""
+                    record.id === selectedRowKey ? "selected-row" : ""
                   }
+                  pagination={{
+                    pageSize: 10,
+                    onChange: (page, pageSize) => {
+                      console.log(`Page: ${page}, PageSize: ${pageSize}`);
+                    },
+                  }}      
                 />
               </div>
 
@@ -284,35 +495,7 @@ const CetakMak = () => {
                       <>
                         <Button
                           onClick={() => {
-                            setShowModal(false);
-                            form.resetFields();
-                            setFormData((prev) => ({
-                              ...prev,
-                              invoiceInput: "",
-                              invoices: [],
-                              nominalInput: "",
-                              nominals: [],
-                              namaSupplierInput: "",
-                              namaSuppliers: [],
-                              userGoalInput: "",
-                              userGoals: [],
-                              photoUsaha: [],
-                              tableRingkasanPengajuanKredit: [],
-                              tableInvoicePembelian: [],
-                              tableBuktiTransaksiPembelian: [],
-                              tableHasilVerifikasiSupplier: [],
-                              tableRekapitulatif: [],
-                              tableRekapitulatif2: [],
-                              tableAnalisaRekKoran: [],
-                              tableAnalisaRekKoran2: [],
-                              tableAnalisaRekKoran3: [],
-                              tableLabaRugiProforma: [],
-                              tableNeracaProforma: [],
-                              tableDataAgunan: [],
-                              photoAgunan: [],
-                              tableData: [],
-                              signature: null,
-                            }));
+                            clearData();
                           }}
                         >
                           Cancel
@@ -335,37 +518,8 @@ const CetakMak = () => {
                       <>
                         <Button
                           onClick={() => {
-                            form.resetFields();
                             setFormStep(1);
-                            setShowModal(false);
-                            form.resetFields();
-                            setFormData((prev) => ({
-                              ...prev,
-                              invoiceInput: "",
-                              invoices: [],
-                              nominalInput: "",
-                              nominals: [],
-                              namaSupplierInput: "",
-                              namaSuppliers: [],
-                              userGoalInput: "",
-                              userGoals: [],
-                              photoUsaha: [],
-                              tableRingkasanPengajuanKredit: [],
-                              tableInvoicePembelian: [],
-                              tableBuktiTransaksiPembelian: [],
-                              tableHasilVerifikasiSupplier: [],
-                              tableRekapitulatif: [],
-                              tableRekapitulatif2: [],
-                              tableAnalisaRekKoran: [],
-                              tableAnalisaRekKoran2: [],
-                              tableAnalisaRekKoran3: [],
-                              tableLabaRugiProforma: [],
-                              tableNeracaProforma: [],
-                              tableDataAgunan: [],
-                              tableData: [],
-                              photoAgunan: [],
-                              signature: null,
-                            }));
+                            clearData();
                           }}
                         >
                           Cancel

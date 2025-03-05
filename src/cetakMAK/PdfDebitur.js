@@ -19,20 +19,20 @@ doc.text("DATA DEBITUR", 10, 38, { align: "left" });
 
 doc.setFontSize(8);
 const tableData = [
-  ["Nama Debitur", ":", selectedData?.namaDebitur || "N/A", "Jenis Pengajuan Kredit", ":", selectedData?.jenisPengajuanKredit || "N/A"],
-  ["Nomor MAK", ":", selectedData?.nomorMak || "N/A", "Nominal Pengajuan", ":", selectedData?.nominalPengajuan || "N/A"],
-  ["Tanggal MAK", ":", selectedData?.tanggalMak ? moment(selectedData.tanggalMak).format("DD-MM-YYYY") : "N/A", "Jenis Jaminan", ":", selectedData?.jenisJaminan || "N/A"],
-  ["Nama Account Officer", ":", selectedData?.namaAccOfficer || "N/A", "No. Telp Debitur", ":", selectedData?.noTelpDeb || "N/A"],
-  ["No. Telp Pasangan Debitur", ":", selectedData?.noTelpPasDeb || "N/A", "Alamat Sesuai KTP", ":", selectedData?.alamatSesuaiKtp || "N/A"],
-  ["Alamat Domisili (Jika Tidak Sesuai KTP)", ":", selectedData?.alamatDomisili || "N/A", "No. KTP", ":", selectedData?.noKtp || "N/A"],
-  ["No. NPWP", ":", selectedData?.noNpwp || "N/A", "Alamat Jaminan", ":", selectedData?.alamatJaminan || "N/A"],
-  ["Nama Perusahaan / Usaha", ":", selectedData?.namaPerusahaanUsaha || "N/A", "Alamat Perusahaan / Usaha", ":", selectedData?.alamatPerusahaanUsaha || "N/A", "Jenis Usaha", ":", selectedData?.jenisUsaha || "N/A"],
-  ["Status Tempat Tinggal", ":", selectedData?.statusTempatTinggal || "N/A", "Bentuk Usaha", ":", selectedData?.bentukUsaha || "N/A"],
-  ["Jenis Pekerjaan", ":", selectedData?.jenisPekerjaan || "N/A", "Lama Usaha", ":", selectedData?.lamaUsaha || "N/A"],
-  ["Jabatan", ":", selectedData?.jabatan || "N/A", "Lama Bekerja", ":", selectedData?.lamaBekerja || "N/A"],
-  ["Status Karyawan", ":", selectedData?.statusKaryawan || "N/A", "Status Tempat Usaha", ":", selectedData?.statusTempatUsaha || "N/A"],
-  ["Keterkaitan dengan BPR", ":", selectedData?.keterkaitandgnBpr || "N/A", "Status Pembiayaan", ":", selectedData?.statusPembiayaan || "N/A"],
-  ["Jenis Kredit", ":", selectedData?.jenisKredit || "N/A", "Tujuan Penggunaan Dana", ":", selectedData?.tujuanPenggunaanDana || "N/A"],
+  ["Nama Debitur", ":", selectedData?.namaDebitur || "", "Jenis Pengajuan Kredit", ":", selectedData?.jenisPengajuanKredit || ""],
+  ["Nomor MAK", ":", selectedData?.nomorMak || "", "Nominal Pengajuan", ":", selectedData?.nominalPengajuan || ""],
+  ["Tanggal MAK", ":", selectedData?.tanggalMak ? moment(selectedData.tanggalMak).format("DD-MM-YYYY") : "", "Jenis Jaminan", ":", selectedData?.jenisJaminan === 'Lainnya' ? selectedData?.jenisJaminanLainnya : selectedData?.jenisJaminan || ""],
+  ["Nama Account Officer", ":", selectedData?.namaAccOfficer || "", "No. Telp Debitur", ":", selectedData?.noTelpDeb || ""],
+  ["No. Telp Pasangan Debitur", ":", selectedData?.noTelpPasDeb || "", "Alamat Sesuai KTP", ":", selectedData?.alamatSesuaiKtp || ""],
+  ["Alamat Domisili (Jika Tidak Sesuai KTP)", ":", selectedData?.alamatDomisili || "", "No. KTP", ":", selectedData?.noKtp || ""],
+  ["No. NPWP", ":", selectedData?.noNpwp || "", "Alamat Jaminan", ":", selectedData?.alamatJaminan || ""],
+  ["Nama Perusahaan / Usaha", ":", selectedData?.namaPerusahaanUsaha || "", "Alamat Perusahaan / Usaha", ":", selectedData?.alamatPerusahaanUsaha || "", "Jenis Usaha", ":", selectedData?.jenisUsaha || ""],
+  ["Status Tempat Tinggal", ":", selectedData?.statusTempatTinggal || "", "Bentuk Usaha", ":", selectedData?.bentukUsaha || ""],
+  ["Jenis Pekerjaan", ":", selectedData?.jenisPekerjaan || "", "Lama Usaha", ":", selectedData?.lamaUsaha || ""],
+  ["Jabatan", ":", selectedData?.jabatan || "", "Lama Bekerja", ":", selectedData?.lamaBekerja || ""],
+  ["Status Karyawan", ":", selectedData?.statusKaryawan || "", "Status Tempat Usaha", ":", selectedData?.statusTempatUsaha || ""],
+  ["Keterkaitan dengan BPR", ":", selectedData?.keterkaitandgnBpr || "", "Status Pembiayaan", ":", selectedData?.statusPembiayaan || ""],
+  ["Jenis Kredit", ":", selectedData?.jenisKredit || "", "Tujuan Penggunaan Dana", ":", selectedData?.tujuanPenggunaanDana || ""],
 ];
 console.log("Tanggal MAK:", selectedData?.tanggalMAK);
 doc.autoTable({
@@ -178,7 +178,7 @@ doc.rect(10, startY - 5, boxWidth2, boxHeight2);
 doc.text(lines, 15, startY, { maxWidth: maxWidth });
 
 // Menambahkan "2. Analisa Usaha / Pekerjaan"
-const analysisStartY2 = startY + boxHeight2 + 2; // Jarak setelah kotak "Profil Debitur"
+const analysisStartY2 = startY + boxHeight2 + 0; // Jarak setelah kotak "Profil Debitur"
 doc.setFontSize(8);
 doc.text("2. Analisa Usaha / Pekerjaan", 8, analysisStartY2);
 
@@ -211,9 +211,10 @@ for (let i = 1; i <= totalPages; i++) {
   doc.setTextColor(previousTextColor); 
 }
 
-if (doc.lastAutoTable.finalY > 170) {
-  doc.addPage();
-}
+if (selectedData?.selectedJob === "Karyawan") {
+  if (doc.lastAutoTable.finalY > 170) {
+    doc.addPage();
+  }
 
 doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
 
@@ -301,7 +302,7 @@ const aspekPengadaanBarang2 = aspekPengadaanBarang
       doc.text(supplierLines, 145, rowY, { maxWidth: colWidths.supplier - 5 });
   
       // Garis pemisah antar baris
-      doc.line(10, rowY + rowHeightDynamic - 2, 200, rowY + rowHeightDynamic - 2);
+      doc.line(10, rowY + rowHeightDynamic - 4, 200, rowY + rowHeightDynamic - 4);
   
       // Update rowY dengan tinggi baris yang baru
       rowY += rowHeightDynamic;
@@ -545,6 +546,7 @@ for (let i = 1; i <= totalPages4; i++) {
   doc.text(`Halaman ${i}`, 190, 290, { align: "right" }); // Tambahkan teks
   doc.setTextColor(previousTextColor);
 }
+
 // Kemudian lanjutkan dengan penggunaan photoUsaha
 if (doc.lastAutoTable.finalY > 10) {
   doc.addPage();
@@ -561,7 +563,7 @@ doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
 doc.setLineWidth(0.5);
 doc.line(10, 30, 200, 30);
 
-let analysisStartY6 = 40; // Jarak awal untuk elemen berikutnya
+let analysisStartY6 = 38; // Jarak awal untuk elemen berikutnya
 
 // Menambahkan teks "FOTO USAHA"
 doc.setFontSize(8);
@@ -644,109 +646,111 @@ for (let i = 0; i < photoUsaha.length; i++) {
     doc.text(`Halaman ${i}`, 190, 290, { align: "right" }); // Tambahkan teks
     doc.setTextColor(previousTextColor);
   }
+}
 
-  if (doc.lastAutoTable.finalY > 170) {
+  if (doc.lastAutoTable?.finalY > 170) {
     doc.addPage();
+}
+
+// Menambahkan logo
+const logoPath = "/images/logo1.png";
+doc.addImage(logoPath, "PNG", 10, 10, 60, 20);
+
+// Menambahkan judul utama
+doc.setFontSize(14);
+doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
+
+// Menambahkan garis horizontal
+doc.setLineWidth(0.5);
+doc.line(10, 30, 200, 30);
+
+doc.setFontSize(10);
+doc.text("II. ANALISA KUANTITATIF", 10, 37); // Memulai dari posisi Y yang lebih kecil
+
+const slikTables = selectedData?.slikTables || [];
+
+slikTables.forEach((slik, index) => {
+  // Tetapkan posisi awal elemen berikutnya
+  let startY = index === 0 ? 45 : doc.lastAutoTable?.finalY + 2; // Beri jarak yang cukup
+
+  // Memeriksa jika perlu halaman baru
+  if (startY + 40 > 270) {
+      doc.addPage();
+      startY = 40; 
+      
+      doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
+
+// Menambahkan judul "MEMORANDUM ANALISA KREDIT"
+doc.setFontSize(14);
+doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
+
+// Menambahkan garis horizontal
+doc.setLineWidth(0.5);
+doc.line(10, 30, 200, 30);
+      // Reset posisi Y setelah halaman baru
   }
 
-  // Menambahkan logo
-  doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
-  
-  // Menambahkan judul "MEMORANDUM ANALISA KREDIT"
-  doc.setFontSize(14);
-  doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
-  
-  // Menambahkan garis horizontal
-  doc.setLineWidth(0.5);
-  doc.line(10, 30, 200, 30);
-  
-  // Menambahkan teks "II. ANALISA KUANTITATIF" sebelum tabel
+  // Menambahkan subjudul untuk setiap bagian
   doc.setFontSize(10);
-  doc.text("II. ANALISA KUANTITATIF", 10, 40);
-  
-  // Menambahkan teks "1. REKAPITULASI SLIK"
-  doc.setFontSize(8);
-  doc.text("1. REKAPITULASI SLIK", 10, 50);
-  
-  // Menambahkan teks dengan nama
-  doc.text("Nama : " + selectedData?.namaSlik || "", 10, 60);
-  
-  // Data dari selectedData?.tableRekapitulatif
-  const tableRekapitulatif = selectedData?.tableRekapitulatif || [];
-  
-  // Menyiapkan data untuk tabel berdasarkan tableRekapitulatif
+  doc.text(`${index + 1}. REKAPITULASI SLIK - ${slik.nama}`, 10, startY);
+
+  // Menambahkan informasi nama
+  doc.setFontSize(9);
+  doc.text(`Nama: ${slik.nama}`, 10, startY + 8);
+
+  // Memindahkan posisi awal tabel
+  startY += 15;
+
+  // Mendefinisikan data tabel
   const headers = ["No", "Nama Bank", "Plafon", "Baki Debet", "Angsuran", "Kol", "Ket."];
-  const data = tableRekapitulatif.map((item, index) => [
-    index + 1, // No
-    item.namaBankLjk || '', // Nama Bank
-    item.plafon ? parseInt(item.plafon.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Plafon
-    item.bakiDebet ? parseInt(item.bakiDebet.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Baki Debet
-    item.angsuran ? parseInt(item.angsuran.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Angsuran
-    item.kol || '', // Kol
-    item.ket || '' // Keterangan
+  const data = (slik.data || []).map((item, i) => [
+      i + 1,
+      item.namaBankLjk || "",
+      parseInt(item.plafon?.replace(/\./g, ""), 10)?.toLocaleString("id-ID") || "",
+      parseInt(item.bakiDebet?.replace(/\./g, ""), 10)?.toLocaleString("id-ID") || "",
+      parseInt(item.angsuran?.replace(/\./g, ""), 10)?.toLocaleString("id-ID") || "",
+      item.kol || "",
+      item.ket || ""
   ]);
-  
-  const cleanNumber = (value) => {
-    if (typeof value === 'string') {
-      return parseFloat(value.replace(/\./g, '')) || 0;
-    }
-    return parseFloat(value) || 0;
-  };
-  
-  // Hitung total dengan nilai asli (tanpa format)
+  console.log('data1', data)
+
+  // Hitung total
+  const cleanNumber = (value) => parseFloat(value?.replace(/\./g, "")) || 0;
   const totalPlafon = data.reduce((sum, row) => sum + cleanNumber(row[2]), 0);
   const totalBakiDebet = data.reduce((sum, row) => sum + cleanNumber(row[3]), 0);
   const totalAngsuran = data.reduce((sum, row) => sum + cleanNumber(row[4]), 0);
-  
+
+  // Menambahkan tabel ke PDF
   doc.autoTable({
-    head: [headers],
-    body: data,
-    startY: 65, // Menentukan posisi awal tabel
-    theme: 'grid', // Tabel dengan garis
-    headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
-    bodyStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
-    styles: { cellPadding: 2 },
-    foot: [
-      [
-        { content: 'Total', colSpan: 2, styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: totalPlafon.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: totalBakiDebet.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: totalAngsuran.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: '', colSpan: 2 } // Mengosongkan dua kolom terakhir
-      ]
-    ],
-    footStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontSize: 8, fontStyle: 'bold', lineColor: [0, 0, 0] } // Styling footer
+      head: [headers],
+      body: data,
+      startY: startY,
+      theme: "grid",
+      headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
+      bodyStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
+      styles: { cellPadding: 2 },
+      foot: [[
+          { content: "Total", colSpan: 2, styles: { halign: "right", fontStyle: "bold" } },
+          { content: totalPlafon.toLocaleString(), styles: { halign: "center", fontStyle: "bold" } },
+          { content: totalBakiDebet.toLocaleString(), styles: { halign: "center", fontStyle: "bold" } },
+          { content: totalAngsuran.toLocaleString(), styles: { halign: "center", fontStyle: "bold" } },
+          { content: "", colSpan: 2 }
+      ]],
+      footStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontSize: 8, fontStyle: "bold", lineColor: [0, 0, 0] }
   });
 
-// Menambahkan kotak "Catatan Hasil SLIK" di bawah tabel
-const tableBottom = doc.lastAutoTable.finalY + 8; // Posisi Y di bawah tabel
-const boxMargin = 7; // Margin untuk kotak
-const lineHeight = 5; // Tinggi per baris teks (dapat disesuaikan)
+  // Menambahkan catatan
+  let tableBottom = doc.lastAutoTable.finalY + 10;
+  let catatanText = slik.catatan?.join("\n") || "";
+  let maxWidth = 180;
+  let lineHeight = 1.2;
+  let numLines = doc.splitTextToSize(catatanText, maxWidth).length;
+  let boxHeight = numLines * 5 * lineHeight + 12;
 
-// Data catatan hasil SLIK dari selectedData
-const catatanHasilSlik = selectedData?.catatanHasilSlik || [];
+  // Menyesuaikan posisi untuk elemen berikutnya
+  doc.lastAutoTable.finalY = tableBottom + boxHeight + 20; // Simpan posisi terakhir
+});
 
-// Menggabungkan array catatan menjadi string dengan pemisah baris baru
-const catatanText = catatanHasilSlik.join('\n');
-
-// Menghitung jumlah baris teks
-const numLines = doc.splitTextToSize(catatanText, 180).length;
-
-// Menentukan tinggi kotak berdasarkan jumlah baris
-const boxHeight8 = numLines * lineHeight + boxMargin * 2; // Menyesuaikan tinggi kotak berdasarkan jumlah baris
-
-// Gambar kotak (box)
-doc.setLineWidth(0.5);
-doc.rect(10, tableBottom, 190, boxHeight8);
-
-// Menambahkan teks "Catatan Hasil SLIK:" di dalam kotak
-doc.setFontSize(8);
-doc.text("Catatan Hasil SLIK:", 15, tableBottom + 8);
-
-// Menambahkan teks catatan ke dalam kotak dengan batas lebar
-doc.setFontSize(8);
-doc.text(catatanText, 15, tableBottom + 15, { maxWidth: 180, lineHeightFactor: 1.2 });
-  
 const totalPages6 = doc.internal.getNumberOfPages();
 for (let i = 1; i <= totalPages6; i++) {
   doc.setPage(i); // Pindah ke halaman tertentu
@@ -757,434 +761,133 @@ for (let i = 1; i <= totalPages6; i++) {
   doc.setTextColor(previousTextColor);
 }
 
-  if (doc.lastAutoTable.finalY > 90) {
-    doc.addPage();
-  }
+if (doc.lastAutoTable && doc.lastAutoTable.finalY > 70) {
+  doc.addPage();
+}
 
-  // Menambahkan logo
-  doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
-  
-  // Menambahkan judul "MEMORANDUM ANALISA KREDIT"
-  doc.setFontSize(14);
-  doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
-  
-  // Menambahkan garis horizontal
-  doc.setLineWidth(0.5);
-  doc.line(10, 30, 200, 30);
-  
-  // Menambahkan teks dengan nama
+// Menambahkan logo
+doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
+
+// Menambahkan judul "MEMORANDUM ANALISA KREDIT"
+doc.setFontSize(14);
+doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
+
+// Menambahkan garis horizontal
+doc.setLineWidth(0.5);
+doc.line(10, 30, 200, 30);
+
+const analisaList = selectedData?.analisaList || [];
+
+analisaList.forEach((list, index) => {
+  if (index > 0) doc.addPage(); // Tambah halaman untuk data berikutnya
+// Menambahkan logo
+doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
+
+// Menambahkan judul "MEMORANDUM ANALISA KREDIT"
+doc.setFontSize(14);
+doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
+
+// Menambahkan garis horizontal
+doc.setLineWidth(0.5);
+doc.line(10, 30, 200, 30);
+
   doc.setFontSize(8);
-  doc.text("Nama : " + selectedData?.namaSlik2 || "", 10, 60);
-  
-  // Data dari selectedData?.tableRekapitulatif
-  const tableRekapitulatif2 = selectedData?.tableRekapitulatif2 || [];
-  
-  // Menyiapkan data untuk tabel berdasarkan tableRekapitulatif
-  const headers2 = ["No", "Nama Bank", "Plafon", "Baki Debet", "Angsuran", "Kol", "Ket."];
-  const data2 = tableRekapitulatif2.map((item, index) => [
-    index + 1, // No
-    item.namaBankLjk || '', // Nama Bank
-    item.plafon ? parseInt(item.plafon.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Plafon
-    item.bakiDebet ? parseInt(item.bakiDebet.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Baki Debet
-    item.angsuran ? parseInt(item.angsuran.replace(/\./g, ''), 10).toLocaleString("id-ID") : '', // Angsuran
-    item.kol || '', // Kol
-    item.ket || '' // Keterangan
+  doc.text(`2. ANALISA REKENING KORAN - ${index + 1}`, 10, 40);
+
+  doc.setFontSize(8);
+  doc.text(`Rekening Koran Bank   : ${list.rekeningKoranBank || "N/A"}`, 10, 47);
+  doc.text(`No. Rekening          : ${list.noRekening || "N/A"}`, 10, 55);
+  doc.text(`Atas Nama             : ${list.atasNama || "N/A"}`, 10, 63);
+  doc.text(`Periode               : ${list.periode || "N/A"}`, 10, 71);
+
+  const headers3 = ["BULAN", "MUTASI DEBET", "QTY", "MUTASI KREDIT", "QTY", "SALDO RATA-RATA"];
+  const data3 = (list.tableData	|| []).map((item) => [
+    item.bulan || '',
+    parseInt(item.mutasiDebet, 10).toLocaleString("id-ID") || '',
+    item.qty1 || '',
+    parseInt(item.mutasiKredit, 10).toLocaleString("id-ID") || '',
+    item.qty2 || '',
+    parseInt(item.saldoRataRata, 10).toLocaleString("id-ID") || '',
   ]);
-  
+  console.log('data2', data3)
 
-  const cleanNumber2 = (value) => {
-    if (typeof value === 'string') {
-      return parseFloat(value.replace(/\./g, '')) || 0;
-    }
-    return parseFloat(value) || 0;
-  };
-  
-  // Hitung total dengan nilai asli (tanpa format)
-  const totalPlafon2 = data2.reduce((sum, row) => sum + cleanNumber2(row[2]), 0);
-  const totalBakiDebet2 = data2.reduce((sum, row) => sum + cleanNumber2(row[3]), 0);
-  const totalAngsuran2 = data2.reduce((sum, row) => sum + cleanNumber2(row[4]), 0);
+  // Menghitung total dan rata-rata
+  const cleanNumber = (value) => parseFloat(value?.replace(/\./g, "")) || 0;
+  const totalMutasiDebet = data3.reduce((sum, row) => sum + cleanNumber(row[1]), 0);
+  const totalQtyDebet = data3.reduce((sum, row) => sum + cleanNumber(row[2]), 0);
+  const totalMutasiKredit = data3.reduce((sum, row) => sum + cleanNumber(row[3]), 0);
+  const totalQtyKredit = data3.reduce((sum, row) => sum + cleanNumber(row[4]), 0);
+  const totalSaldoRataRata = data3.reduce((sum, row) => sum + cleanNumber(row[5]), 0);
 
+  const totalRows = data3.length;
+  const avgMutasiDebet = totalRows > 0 ? totalMutasiDebet / totalRows : 0;
+  const avgQtyDebet = totalRows > 0 ? totalQtyDebet / totalRows : 0;
+  const avgMutasiKredit = totalRows > 0 ? totalMutasiKredit / totalRows : 0;
+  const avgQtyKredit = totalRows > 0 ? totalQtyKredit / totalRows : 0;
+  const avgSaldoRataRata = totalRows > 0 ? totalSaldoRataRata / totalRows : 0;
+
+  // Tambah tabel ke dokumen PDF
+  const tableStartY2 = 75;
   doc.autoTable({
-    head: [headers2],
-    body: data2,
-    startY: 65, // Menentukan posisi awal tabel
-    theme: 'grid', // Tabel dengan garis
+    head: [headers3],
+    body: data3,
+    startY: tableStartY2,
+    theme: 'grid',
     headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
     bodyStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
     styles: { cellPadding: 2 },
     foot: [
       [
-        { content: 'Total', colSpan: 2, styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: totalPlafon2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: totalBakiDebet2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: totalAngsuran2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: '', colSpan: 2 } // Mengosongkan dua kolom terakhir
+        { content: 'Total', colSpan: 1, styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: totalMutasiDebet.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: totalQtyDebet.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: totalMutasiKredit.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: totalQtyKredit.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: totalSaldoRataRata.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
+      ],
+      [
+        { content: 'Rata-rata', colSpan: 1, styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: avgMutasiDebet.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: avgQtyDebet.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: avgMutasiKredit.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: avgQtyKredit.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: avgSaldoRataRata.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } },
       ]
     ],
-    footStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontSize: 8, fontStyle: 'bold', lineColor: [0, 0, 0] } // Styling footer
+    footStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontSize: 8, fontStyle: 'bold', lineColor: [0, 0, 0] },
   });
 
-// Menambahkan kotak "Catatan Hasil SLIK" di bawah tabel
-const tableBottom2 = doc.lastAutoTable.finalY + 8; // Posisi Y di bawah tabel
-const boxMargin2 = 7; // Margin untuk kotak
-const lineHeight2 = 5; // Tinggi per baris teks (dapat disesuaikan)
+  // Tambahkan teks penjelasan setelah tabel
+  const explanationText = [
+    'Penjelasan Laporan Rekening koran :',
+    `• Total saldo dari mutasi debet rata-ratanya adalah ${avgMutasiDebet.toLocaleString()}`,
+    `• Total saldo dari mutasi kredit rata-ratanya adalah ${avgMutasiKredit.toLocaleString()}`,
+    `• Total saldo rata-rata per 6 bulan adalah ${avgSaldoRataRata.toLocaleString()}`,
+  ];
 
-// Data catatan hasil SLIK dari selectedData
-const catatanHasilSlik2 = selectedData?.catatanHasilSlik2 || [];
-
-// Menggabungkan array catatan menjadi string dengan pemisah baris baru
-const catatanText2 = catatanHasilSlik2.join('\n');
-
-// Menghitung jumlah baris teks
-const numLines2 = doc.splitTextToSize(catatanText2, 180).length;
-
-// Menentukan tinggi kotak berdasarkan jumlah baris
-const boxHeight9 = numLines2 * lineHeight2 + boxMargin2 * 2; // Menyesuaikan tinggi kotak berdasarkan jumlah baris
-
-// Gambar kotak (box)
-doc.setLineWidth(0.5);
-doc.rect(10, tableBottom2, 190, boxHeight9);
-
-// Menambahkan teks "Catatan Hasil SLIK:" di dalam kotak
-doc.setFontSize(8);
-doc.text("Catatan Hasil SLIK:", 15, tableBottom2 + 8);
-
-// Menambahkan teks catatan ke dalam kotak dengan batas lebar
-doc.setFontSize(8);
-doc.text(catatanText2, 15, tableBottom2 + 15, { maxWidth: 180, lineHeightFactor: 1.2 });
-
-const totalPages7 = doc.internal.getNumberOfPages();
-for (let i = 1; i <= totalPages7; i++) {
-  doc.setPage(i); // Pindah ke halaman tertentu
-  const previousTextColor = doc.getTextColor(); 
-  doc.setFontSize(8); // Atur ukuran font
-  doc.setTextColor(150); // Atur warna teks
-  doc.text(`Halaman ${i}`, 190, 290, { align: "right" }); // Tambahkan teks
-  doc.setTextColor(previousTextColor);
-}
-
-if (doc.lastAutoTable && doc.lastAutoTable.finalY > 70) {
-  doc.addPage();
-}
-
-// Menambahkan logo
-doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
-
-// Menambahkan judul "MEMORANDUM ANALISA KREDIT"
-doc.setFontSize(14);
-doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
-
-// Menambahkan garis horizontal
-doc.setLineWidth(0.5);
-doc.line(10, 30, 200, 30);
-
-doc.setFontSize(8);
-doc.text("2. ANALISA REKENING KORAN", 10, 40);
-
-doc.setFontSize(8);
-doc.text("Rekening Koran Bank   : " + (selectedData?.rekeningKoranBank || "N/A"), 10, 47);
-doc.text("No. Rekening          : " + (selectedData?.noRekening || "N/A"), 10, 55);
-doc.text("Atas Nama             : " + (selectedData?.atasNama || "N/A"), 10, 63);
-doc.text("Periode               : " + (selectedData?.periode || "N/A"), 10, 71);
-
-// Menyiapkan data untuk tabel berdasarkan selectedData?.tableAnalisaRekKoran
-const tableAnalisaRekKoran = selectedData?.tableAnalisaRekKoran || [];
-const headers3 = ["BULAN", "MUTASI DEBET", "QTY", "MUTASI KREDIT", "QTY", "SALDO RATA-RATA"];
-const data3 = tableAnalisaRekKoran.map((item) => [
-  item.bulan || '', // BULAN
-  parseInt(item.mutasiDebet, 10).toLocaleString("id-ID") || '',
-  item.qty1 || '', // Qty Debet
-  parseInt(item.mutasiKredit, 10).toLocaleString("id-ID") || '',
-  item.qty2 || '', // Qty Kredit
-  parseInt(item.saldoRataRata, 10).toLocaleString("id-ID") || '',
-]);
-
-// Menghitung total untuk setiap kolom yang diinginkan setelah mengonversi nilai string menjadi angka
-const totalMutasiDebet = data3.reduce((sum, row) => sum + parseFloat(row[1] || 0), 0);
-const totalQtyDebet = data3.reduce((sum, row) => sum + parseFloat(row[2] || 0), 0);
-const totalMutasiKredit = data3.reduce((sum, row) => sum + parseFloat(row[3] || 0), 0);
-const totalQtyKredit = data3.reduce((sum, row) => sum + parseFloat(row[4] || 0), 0);
-const totalSaldoRataRata = data3.reduce((sum, row) => sum + parseFloat(row[5] || 0), 0);
-
-// Menghitung rata-rata untuk setiap kolom
-const totalRows = data3.length;
-const avgMutasiDebet = totalRows > 0 ? totalMutasiDebet / totalRows : 0;
-const avgQtyDebet = totalRows > 0 ? totalQtyDebet / totalRows : 0;
-const avgMutasiKredit = totalRows > 0 ? totalMutasiKredit / totalRows : 0;
-const avgQtyKredit = totalRows > 0 ? totalQtyKredit / totalRows : 0;
-const avgSaldoRataRata = totalRows > 0 ? totalSaldoRataRata / totalRows : 0;
-
-// Menambahkan tabel ke dalam dokumen PDF
-const tableStartY2 = 75; // Posisi tabel mulai
-doc.autoTable({
-  head: [headers3],
-  body: data3,
-  startY: tableStartY2,
-  theme: 'grid',
-  headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
-  bodyStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
-  styles: { cellPadding: 2 },
-  foot: [
-    // Total per kolom
-    [
-      { content: 'Total', colSpan: 1, styles: { halign: 'right', fontStyle: 'bold' } }, // Label "Total"
-      { content: totalMutasiDebet.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Mutasi Debet
-      { content: totalQtyDebet.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Qty Debet
-      { content: totalMutasiKredit.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Mutasi Kredit
-      { content: totalQtyKredit.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Qty Kredit
-      { content: totalSaldoRataRata.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Saldo Rata-rata
-    ],
-    // Rata-rata per kolom
-    [
-      { content: 'Rata-rata', colSpan: 1, styles: { halign: 'right', fontStyle: 'bold' } }, // Label "Rata-rata"
-      { content: avgMutasiDebet.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Mutasi Debet
-      { content: avgQtyDebet.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Qty Debet
-      { content: avgMutasiKredit.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Mutasi Kredit
-      { content: avgQtyKredit.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Qty Kredit
-      { content: avgSaldoRataRata.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Saldo Rata-rata
-    ]
-  ],
-  footStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontSize: 8, fontStyle: 'bold', lineColor: [0, 0, 0] },
+  const textStartY = doc.lastAutoTable.finalY + 6;
+  doc.setFontSize(8);
+  doc.setFont('helvetica');
+  explanationText.forEach((line, index) => {
+    doc.text(line, 10, textStartY + (index * 6));
+  });
 });
 
-const explanationText = [
-  'Penjelasan Laporan Rekening koran :',
-  '• Total saldo dari mutase debet untuk rata-ratanya adalah ' + avgMutasiDebet.toLocaleString(),
-  '• Total saldo dari mutase kredit untuk rata-ratanya adalah ' + avgMutasiKredit.toLocaleString(),
-  '• Total saldo rata-rata per 6 bulan adalah ' + avgSaldoRataRata.toLocaleString(),
-];
-
-const textStartY = doc.lastAutoTable.finalY + 6; // Start text 10 units below the table
-doc.setFontSize(8);
-doc.setFont('helvetica');
-explanationText.forEach((line, index) => {
-  doc.text(line, 10, textStartY + (index * 6)); // Adjust text line spacing
-});
-
+// Tambahkan nomor halaman ke semua halaman
 const totalPages8 = doc.internal.getNumberOfPages();
 for (let i = 1; i <= totalPages8; i++) {
-  doc.setPage(i); // Pindah ke halaman tertentu
-  const previousTextColor = doc.getTextColor(); 
-  doc.setFontSize(8); // Atur ukuran font
-  doc.setTextColor(150); // Atur warna teks
+  doc.setPage(i);
+  const previousTextColor = doc.getTextColor();
+  doc.setFontSize(8);
+  doc.setTextColor(150);
   doc.text(`Halaman ${i}`, 190, 290, { align: "right" }); // Tambahkan teks
   doc.setTextColor(previousTextColor);
 }
 
-if (doc.lastAutoTable && doc.lastAutoTable.finalY > 70) {
-  doc.addPage();
-}
-
-// Menambahkan logo
-doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
-
-// Menambahkan judul "MEMORANDUM ANALISA KREDIT"
-doc.setFontSize(14);
-doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
-
-// Menambahkan garis horizontal
-doc.setLineWidth(0.5);
-doc.line(10, 30, 200, 30);
-
-doc.setFontSize(8);
-doc.text("Rekening Koran Bank   : " + (selectedData?.rekeningKoranBank2 || "N/A"), 10, 40);
-doc.text("No. Rekening          : " + (selectedData?.noRekening2 || "N/A"), 10, 48);
-doc.text("Atas Nama             : " + (selectedData?.atasNama2 || "N/A"), 10, 56);
-doc.text("Periode               : " + (selectedData?.periode2 || "N/A"), 10, 64);
-
-// Menyiapkan data untuk tabel berdasarkan selectedData?.tableAnalisaRekKoran
-const tableAnalisaRekKoran2 = selectedData?.tableAnalisaRekKoran2 || [];
-const headers4 = ["BULAN", "MUTASI DEBET", "QTY", "MUTASI KREDIT", "QTY", "SALDO RATA-RATA"];
-const data4 = tableAnalisaRekKoran2.map((item) => [
-  item.bulan || '', // BULAN
-  item.mutasiDebet || '0', // MUTASI DEBET
-  item.qty1 || '0', // Qty Debet
-  item.mutasiKredit || '0', // MUTASI KREDIT
-  item.qty2 || '0', // Qty Kredit
-  item.saldoRataRata || '0', // SALDO
-]);
-
-// Menghitung total untuk setiap kolom yang diinginkan setelah mengonversi nilai string menjadi angka
-const totalMutasiDebet2 = data4.reduce((sum, row) => sum + parseFloat(row[1] || 0), 0);
-const totalQtyDebet2 = data4.reduce((sum, row) => sum + parseFloat(row[2] || 0), 0);
-const totalMutasiKredit2 = data4.reduce((sum, row) => sum + parseFloat(row[3] || 0), 0);
-const totalQtyKredit2 = data4.reduce((sum, row) => sum + parseFloat(row[4] || 0), 0);
-const totalSaldoRataRata2 = data4.reduce((sum, row) => sum + parseFloat(row[5] || 0), 0);
-
-// Menghitung rata-rata untuk setiap kolom
-const totalRows2 = data4.length;
-const avgMutasiDebet2 = totalRows2 > 0 ? totalMutasiDebet2 / totalRows2 : 0;
-const avgQtyDebet2 = totalRows2 > 0 ? totalQtyDebet2 / totalRows2 : 0;
-const avgMutasiKredit2 = totalRows2 > 0 ? totalMutasiKredit2 / totalRows2 : 0;
-const avgQtyKredit2 = totalRows2 > 0 ? totalQtyKredit2 / totalRows2 : 0;
-const avgSaldoRataRata2 = totalRows2 > 0 ? totalSaldoRataRata2 / totalRows2 : 0;
-
-// Menambahkan tabel ke dalam dokumen PDF
-const tableStartY4 = 68; // Posisi tabel mulai
-doc.autoTable({
-  head: [headers4],
-  body: data4,
-  startY: tableStartY4,
-  theme: 'grid',
-  headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
-  bodyStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
-  styles: { cellPadding: 2 },
-  foot: [
-    // Total per kolom
-    [
-      { content: 'Total', colSpan: 1, styles: { halign: 'right', fontStyle: 'bold' } }, // Label "Total"
-      { content: totalMutasiDebet2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Mutasi Debet
-      { content: totalQtyDebet2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Qty Debet
-      { content: totalMutasiKredit2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Mutasi Kredit
-      { content: totalQtyKredit2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Qty Kredit
-      { content: totalSaldoRataRata2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Saldo Rata-rata
-    ],
-    // Rata-rata per kolom
-    [
-      { content: 'Rata-rata', colSpan: 1, styles: { halign: 'right', fontStyle: 'bold' } }, // Label "Rata-rata"
-      { content: avgMutasiDebet2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Mutasi Debet
-      { content: avgQtyDebet2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Qty Debet
-      { content: avgMutasiKredit2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Mutasi Kredit
-      { content: avgQtyKredit2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Qty Kredit
-      { content: avgSaldoRataRata2.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Saldo Rata-rata
-    ]
-  ],
-  footStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontSize: 8, fontStyle: 'bold', lineColor: [0, 0, 0] },
-});
-
-const explanationText3 = [
-  'Penjelasan Laporan Rekening koran :',
-  '• Total saldo dari mutase debet untuk rata-ratanya adalah ' + avgMutasiDebet2.toLocaleString(),
-  '• Total saldo dari mutase kredit untuk rata-ratanya adalah ' + avgMutasiKredit2.toLocaleString(),
-  '• Total saldo rata-rata per 6 bulan adalah ' + avgSaldoRataRata2.toLocaleString(),
-];
-
-const textStartY2 = doc.lastAutoTable.finalY + 6; // Start text 10 units below the table
-doc.setFontSize(8);
-doc.setFont('helvetica');
-explanationText3.forEach((line, index) => {
-  doc.text(line, 10, textStartY2 + (index * 6)); // Adjust text line spacing
-});
-
-const totalPages9 = doc.internal.getNumberOfPages();
-for (let i = 1; i <= totalPages9; i++) {
-  doc.setPage(i); // Pindah ke halaman tertentu
-  const previousTextColor = doc.getTextColor(); 
-  doc.setFontSize(8); // Atur ukuran font
-  doc.setTextColor(150); // Atur warna teks
-  doc.text(`Halaman ${i}`, 190, 290, { align: "right" }); // Tambahkan teks
-  doc.setTextColor(previousTextColor);
-}
-
-if (doc.lastAutoTable && doc.lastAutoTable.finalY > 70) {
-  doc.addPage();
-}
-
-// Menambahkan logo
-doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
-
-// Menambahkan judul "MEMORANDUM ANALISA KREDIT"
-doc.setFontSize(14);
-doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
-
-// Menambahkan garis horizontal
-doc.setLineWidth(0.5);
-doc.line(10, 30, 200, 30);
-
-doc.setFontSize(8);
-doc.text("Rekening Koran Bank   : " + (selectedData?.rekeningKoranBank3 || "N/A"), 10, 40);
-doc.text("No. Rekening          : " + (selectedData?.noRekening3 || "N/A"), 10, 48);
-doc.text("Atas Nama             : " + (selectedData?.atasNama3 || "N/A"), 10, 56);
-doc.text("Periode               : " + (selectedData?.periode3 || "N/A"), 10, 64);
-
-// Menyiapkan data untuk tabel berdasarkan selectedData?.tableAnalisaRekKoran
-const tableAnalisaRekKoran3 = selectedData?.tableAnalisaRekKoran3 || [];
-const headers5 = ["BULAN", "MUTASI DEBET", "QTY", "MUTASI KREDIT", "QTY", "SALDO RATA-RATA"];
-const data5 = tableAnalisaRekKoran3.map((item) => [
-  item.bulan || '', // BULAN
-  item.mutasiDebet || '0', // MUTASI DEBET
-  item.qty1 || '0', // Qty Debet
-  item.mutasiKredit || '0', // MUTASI KREDIT
-  item.qty2 || '0', // Qty Kredit
-  item.saldoRataRata || '0', // SALDO
-]);
-
-// Menghitung total untuk setiap kolom yang diinginkan setelah mengonversi nilai string menjadi angka
-const totalMutasiDebet3 = data5.reduce((sum, row) => sum + parseFloat(row[1] || 0), 0);
-const totalQtyDebet3 = data5.reduce((sum, row) => sum + parseFloat(row[2] || 0), 0);
-const totalMutasiKredit3 = data5.reduce((sum, row) => sum + parseFloat(row[3] || 0), 0);
-const totalQtyKredit3 = data5.reduce((sum, row) => sum + parseFloat(row[4] || 0), 0);
-const totalSaldoRataRata3 = data5.reduce((sum, row) => sum + parseFloat(row[5] || 0), 0);
-
-// Menghitung rata-rata untuk setiap kolom
-const totalRows3 = data5.length;
-const avgMutasiDebet3 = totalRows3 > 0 ? totalMutasiDebet3 / totalRows3 : 0;
-const avgQtyDebet3 = totalRows3 > 0 ? totalQtyDebet3 / totalRows3 : 0;
-const avgMutasiKredit3 = totalRows3 > 0 ? totalMutasiKredit3 / totalRows3 : 0;
-const avgQtyKredit3 = totalRows3 > 0 ? totalQtyKredit3 / totalRows3 : 0;
-const avgSaldoRataRata3 = totalRows3 > 0 ? totalSaldoRataRata3 / totalRows3 : 0;
-
-// Menambahkan tabel ke dalam dokumen PDF
-const tableStartY3 = 68; // Posisi tabel mulai
-doc.autoTable({
-  head: [headers5],
-  body: data5,
-  startY: tableStartY3,
-  theme: 'grid',
-  headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
-  bodyStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontSize: 8, lineWidth: 0.2, lineColor: [0, 0, 0] },
-  styles: { cellPadding: 2 },
-  foot: [
-    // Total per kolom
-    [
-      { content: 'Total', colSpan: 1, styles: { halign: 'right', fontStyle: 'bold' } }, // Label "Total"
-      { content: totalMutasiDebet3.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Mutasi Debet
-      { content: totalQtyDebet3.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Qty Debet
-      { content: totalMutasiKredit3.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Mutasi Kredit
-      { content: totalQtyKredit3.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Qty Kredit
-      { content: totalSaldoRataRata3.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Total Saldo Rata-rata
-    ],
-    // Rata-rata per kolom
-    [
-      { content: 'Rata-rata', colSpan: 1, styles: { halign: 'right', fontStyle: 'bold' } }, // Label "Rata-rata"
-      { content: avgMutasiDebet3.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Mutasi Debet
-      { content: avgQtyDebet3.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Qty Debet
-      { content: avgMutasiKredit3.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Mutasi Kredit
-      { content: avgQtyKredit3.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Qty Kredit
-      { content: avgSaldoRataRata3.toLocaleString(), styles: { halign: 'center', fontStyle: 'bold' } }, // Rata-rata Saldo Rata-rata
-    ]
-  ],
-  footStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontSize: 8, fontStyle: 'bold', lineColor: [0, 0, 0] },
-});
-
-const explanationText2 = [
-  'Penjelasan Laporan Rekening koran :',
-  '• Total saldo dari mutase debet untuk rata-ratanya adalah ' + avgMutasiDebet2.toLocaleString(),
-  '• Total saldo dari mutase kredit untuk rata-ratanya adalah ' + avgMutasiKredit2.toLocaleString(),
-  '• Total saldo rata-rata per 6 bulan adalah ' + avgSaldoRataRata2.toLocaleString(),
-];
-
-const textStartY3 = doc.lastAutoTable.finalY + 6; // Start text 10 units below the table
-doc.setFontSize(8);
-doc.setFont('helvetica');
-explanationText2.forEach((line, index) => {
-  doc.text(line, 10, textStartY3 + (index * 6)); // Adjust text line spacing
-});
-
-const totalPages10 = doc.internal.getNumberOfPages();
-for (let i = 1; i <= totalPages10; i++) {
-  doc.setPage(i); // Pindah ke halaman tertentu
-  const previousTextColor = doc.getTextColor(); 
-  doc.setFontSize(8); // Atur ukuran font
-  doc.setTextColor(150); // Atur warna teks
-  doc.text(`Halaman ${i}`, 190, 290, { align: "right" }); // Tambahkan teks
-  doc.setTextColor(previousTextColor);
-}
-
-// Jika tabel melebihi batas Y tertentu, tambahkan halaman baru
-if (doc.lastAutoTable.finalY > 70) {
-  doc.addPage();
-}
+if (selectedData?.selectedJob === "Karyawan") {
+  if (doc.lastAutoTable.finalY > 10) {
+    doc.addPage();
+  }
 
 // Tambahkan gambar logo
 doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
@@ -1300,10 +1003,13 @@ for (let i = 1; i <= totalPages11; i++) {
     doc.text(`Halaman ${i}`, 190, 290, { align: "right" }); // Tambahkan teks
     doc.setTextColor(previousTextColor);
   }
+}
+const finalY = Math.max(doc.lastAutoTable.finalY || 0, 194.01333333333332);
+console.log('1', finalY);
 
-  if (doc.lastAutoTable.finalY > 10) {
-    doc.addPage();
-  }
+if (finalY > 90) {  // Cek apakah butuh halaman baru
+  doc.addPage();
+}
   
   doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
   
@@ -1315,7 +1021,7 @@ for (let i = 1; i <= totalPages11; i++) {
   
   // Add "2. Analisa Repayment Capacity Berdasarkan Laporan Keuangan Proforma" text
   doc.setFontSize(8);
-  doc.text("2. Analisa Repayment Capacity Berdasarkan Laporan Keuangan Proforma", 10, doc.lastAutoTable.finalY - 16);
+  doc.text("2. Analisa Repayment Capacity Berdasarkan Laporan Keuangan Proforma", 10, finalY - 158);
   
   // Value from analisaRepaymentCapacity
   const analisaRepaymentCapacity = selectedData?.analisaRepaymentCapacity || "";
@@ -1325,7 +1031,7 @@ for (let i = 1; i <= totalPages11; i++) {
   
   // Draw a box for the content
   const boxX = 10; // Starting X position
-  const boxY = doc.lastAutoTable.finalY - 13; // Starting Y position, adjusted from lastAutoTable's final Y
+  const boxY = finalY - 154; // Starting Y position, adjusted from lastAutoTable's final Y
   const boxWidth8 = 190; // Width of the box
   
   // Calculate the height dynamically based on the content's line count
@@ -1362,11 +1068,11 @@ const tableDataAgunan = selectedData?.tableDataAgunan || []; // Data for the tab
 
 const data8 = tableDataAgunan.map((item, index) => [
   item.jenisAgunan || '',
-  item.noDokumen || '0',
+  item.noDokumen || '',
   item.namaPemilikDanHubDebitur || '',
-  item.luasTanahBangunan || '0',
-  item.nilaiPasar || '0',
-  item.nilaiLikuiditas || '0',
+  item.luasTanahBangunan || '',
+  item.nilaiPasar || '',
+  item.nilaiLikuiditas || '',
   item.petugasAppraisal || '',
   item.KetAgunan || ''
 ]);
@@ -1406,7 +1112,7 @@ doc.autoTable({
 });
 
 // Add "Catatan Data Agunan:" below the table
-const notesStartY = doc.lastAutoTable.finalY + 8; // Position text below the table
+const notesStartY = finalY + 8; // Position text below the table
 doc.setFontSize(8);
 doc.setTextColor(0); // Black color
 doc.text("Catatan Data Agunan:", 8, notesStartY);
@@ -1427,7 +1133,10 @@ for (let i = 1; i <= totalPages13; i++) {
   doc.setTextColor(previousTextColor);
 }
 
-if (doc.lastAutoTable.finalY > 10) {
+const finalY2 = Math.max(doc.lastAutoTable.finalY || 0, 100.31583333333333);
+console.log('2', finalY2);
+
+if (finalY2 > 90) {  // Cek apakah butuh halaman baru
   doc.addPage();
 }
 
@@ -1503,7 +1212,7 @@ for (let i = 0; i < photoAgunan.length; i++) {
       x,
       y,
       photoWidth2,
-      photoHeight
+      photoHeight2
     );
   }
 }
@@ -1518,9 +1227,12 @@ for (let i = 0; i < photoAgunan.length; i++) {
     doc.setTextColor(previousTextColor);
   }
 
-if (doc.lastAutoTable.finalY > 10) {
-  doc.addPage();
-}
+  const finalY3 = Math.max(doc.lastAutoTable.finalY || 0, 100.31583333333333);
+  console.log('3', finalY3);
+  
+  if (finalY3 > 10) {
+    doc.addPage();
+  }
 
 doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
 doc.setFontSize(14);
@@ -1529,7 +1241,7 @@ doc.setLineWidth(0.5);
 doc.line(10, 30, 200, 30);
 
 const textX = 10;
-const textY = doc.lastAutoTable.finalY - 70;
+const textY = doc.lastAutoTable.finalY - 55;
 doc.setFontSize(8);
 doc.text("4. Legalitas Usaha / Pekerjaan", textX, textY);
 
@@ -1541,7 +1253,7 @@ const boxHeight11 = 10 + 5 * (selectedData?.legalitasUsaha?.length || 1);
 // Menggambar box
 doc.rect(boxX2, boxY2, boxWidth9, boxHeight11);
 
-let yText = boxY2 + 8;
+let yText = boxY2 + 6;
 const lineHeight3 = 3; 
 doc.setFontSize(8);
 
@@ -1555,38 +1267,54 @@ selectedData?.legalitasUsaha?.forEach(item => {
 });
 
 // Adding section 5
-const section5Y = yText + 10;  // Adjust position below the previous section
+const section5Y = yText + 8;  // Adjust position below the previous section
 doc.setFontSize(8);
 doc.text("5. Kesimpulan & Rekomendasi", textX, section5Y);
 
-// Adding subheading 'a. Faktor Positif' inside the box and drawing the box around it
 const gapBeforeBox = 2;
 const subheadingY = section5Y + gapBeforeBox;
 const boxY3 = subheadingY + 3;  // Box starts right after the subheading
-const boxHeight12 = 3 + 5 * (selectedData?.faktorPositif?.length || 1); // Height adjusts based on content
+
+// Menghitung total tinggi teks dalam kotak
+const lineHeight4 = 4; // Sesuaikan dengan ukuran teks
+let totalLines = 1; // Awalnya minimal 1 baris jika kosong
+
+if (selectedData?.faktorPositif?.length) {
+  totalLines = selectedData.faktorPositif.reduce((acc, item) => {
+    const text = item === "" ? "/" : item;
+    const wrappedText = doc.splitTextToSize(text, boxWidth9 - 10);
+    return acc + wrappedText.length; // Menambahkan jumlah baris teks yang di-wrap
+  }, 0);
+}
+
+const boxHeight12 = 10 + (lineHeight4 * totalLines); // Tinggi kotak disesuaikan secara dinamis
+
+// Menggambar kotak dengan tinggi yang sudah dihitung
 doc.rect(boxX2, boxY3, boxWidth9, boxHeight12);
 
-let yTextFaktorPositif = boxY3 + 8; // Starting position for the text inside the box
+let yTextFaktorPositif = boxY3 + 7; // Mulai dari posisi dalam kotak
 
+// Menambahkan subheading
 doc.text("a. Faktor Positif", boxX2 + 5, yTextFaktorPositif);
-yTextFaktorPositif += lineHeight3;  // Adjusting y position after subheading
+yTextFaktorPositif += lineHeight4; // Pindah ke baris berikutnya setelah subheading
 
-// Adding Faktor Positif values inside the box
+// Menambahkan teks faktor positif ke dalam kotak
 selectedData?.faktorPositif?.forEach(item => {
   const text = item === "" ? "/" : item;
   const wrappedText = doc.splitTextToSize(text, boxWidth9 - 10);
+  
   wrappedText.forEach(line => {
     doc.text(line, boxX2 + 5, yTextFaktorPositif);
-    yTextFaktorPositif += lineHeight3;
+    yTextFaktorPositif += lineHeight4;
   });
 });
 
-const section6Y = yTextFaktorPositif + 5;  // Menyesuaikan posisi di bawah bagian sebelumnya
+const section6Y = yTextFaktorPositif - 2;  // Menyesuaikan posisi di bawah bagian sebelumnya
 
 const gapBeforeBox2 = 2;
 const subheadingY2 = section6Y + gapBeforeBox2;
 const boxY4 = subheadingY2 + 3;  // Box dimulai tepat setelah subjudul
-const boxHeight13 = 5 + 5 * (selectedData?.faktorNegatifMitigasi?.length || 1); // Tinggi box disesuaikan berdasarkan konten
+const boxHeight13 = 7 + 5 * (selectedData?.faktorNegatifMitigasi?.length || 1); // Tinggi box disesuaikan berdasarkan konten
 doc.rect(boxX2, boxY4, boxWidth9, boxHeight13);
 
 let yTextFaktorNegatif = boxY4 + 6; // Posisi awal untuk teks di dalam box
@@ -1726,7 +1454,7 @@ doc.line(boxX2 + columnWidth, tableY, boxX2 + columnWidth, tableY + tableHeight)
 // Garis horizontal untuk baris
 for (let i = 1; i < maxRows2; i++) {
   const y = tableY + i * rowHeight2;
-  doc.line(boxX2, y, boxX2 + boxWidth9, y);
+  doc.line(boxX2, y + 2, boxX2 + boxWidth9, y + 2);
 }
 
 // Isi kolom kiri
@@ -1744,7 +1472,7 @@ strukturKreditDataRight.forEach((item, index) => {
 });
 
 
-  if (doc.lastAutoTable.finalY > 10) {
+  if (finalY > 10) {
     doc.addPage();
   }
   

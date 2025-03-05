@@ -1,107 +1,107 @@
-import React from "react";
-import { Table, Input, Button, Space, Form } from "antd";
+import React, { useState } from "react";
+import { Table, Input, Button, Form, Collapse } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { NumericFormat } from "react-number-format";
 
+const { Panel } = Collapse;
+
 const Step5 = ({ formData, setFormData }) => {
-  const data = formData.tableAnalisaRekKoran || [];
-  const data2 = formData.tableAnalisaRekKoran2 || [];
-  const data3 = formData.tableAnalisaRekKoran3 || [];
+  const [analisaList, setAnalisaList] = useState(
+    formData.analisaList || [
+      // {
+      //   key: "1",
+      //   rekeningKoranBank: "",
+      //   noRekening: "",
+      //   atasNama: "",
+      //   periode: "",
+      //   tableData: [],
+      // },
+    ]
+  );
 
-  const handleInputChange = (value, key, column, tableKey) => {
-    let newData;
-    if (tableKey === "tableAnalisaRekKoran") {
-      newData = data;
-    } else if (tableKey === "tableAnalisaRekKoran2") {
-      newData = data2;
-    } else if (tableKey === "tableAnalisaRekKoran3") {
-      newData = data3;
-    }
-    const updatedData = newData.map((row) => {
-      if (row.key === key) {
-        return { ...row, [column]: value };
+  const handleInputChange = (value, analisaKey, rowKey, column) => {
+    const updatedList = analisaList.map((analisa) => {
+      if (analisa.key === analisaKey) {
+        const updatedData = analisa.tableData.map((row) =>
+          row.key === rowKey ? { ...row, [column]: value } : row
+        );
+        return { ...analisa, tableData: updatedData };
       }
-      return row;
+      return analisa;
     });
-    setFormData({ ...formData, [tableKey]: updatedData });
+    setAnalisaList(updatedList);
+    setFormData({ ...formData, analisaList: updatedList });
   };
 
-  const addRow = (tableKey) => {
-    let targetData;
-    if (tableKey === "tableAnalisaRekKoran") {
-      targetData = data;
-    } else if (tableKey === "tableAnalisaRekKoran2") {
-      targetData = data2;
-    } else if (tableKey === "tableAnalisaRekKoran3") {
-      targetData = data3;
-    } else {
-      return;
-    }
-    const newRow = {
-      key: (targetData.length + 1).toString(),
-      bulan: "",
-      mutasiDebet: "",
-      qty1: "",
-      mutasiKredit: "",
-      qty2: "",
-      saldoRataRata: "",
+  const addAnalisa = () => {
+    const newKey = (analisaList.length + 1).toString();
+    const newAnalisa = {
+      key: newKey,
+      rekeningKoranBank: "",
+      noRekening: "",
+      atasNama: "",
+      periode: "",
+      tableData: [],
     };
-    const newData = [...targetData, newRow];
-    setFormData({ ...formData, [tableKey]: newData });
+    const updatedList = [...analisaList, newAnalisa];
+    setAnalisaList(updatedList);
+    setFormData({ ...formData, analisaList: updatedList });
   };
 
-  const removeRow = (key, tableKey) => {
-    let targetData;
-    if (tableKey === "tableAnalisaRekKoran") {
-      targetData = data;
-    } else if (tableKey === "tableAnalisaRekKoran2") {
-      targetData = data2;
-    } else if (tableKey === "tableAnalisaRekKoran3") {
-      targetData = data3;
-    } else {
-      return;
-    }
-    const newData = targetData.filter((row) => row.key !== key);
-    setFormData({ ...formData, [tableKey]: newData });
+  const addRow = (analisaKey) => {
+    const updatedList = analisaList.map((analisa) => {
+      if (analisa.key === analisaKey) {
+        const newRow = {
+          key: (analisa.tableData.length + 1).toString(),
+          bulan: "",
+          mutasiDebet: "",
+          qty1: "",
+          mutasiKredit: "",
+          qty2: "",
+          saldoRataRata: "",
+        };
+        return { ...analisa, tableData: [...analisa.tableData, newRow] };
+      }
+      return analisa;
+    });
+    setAnalisaList(updatedList);
+    setFormData({ ...formData, analisaList: updatedList });
   };
 
-  const columns = (tableKey) => [
+  const removeRow = (analisaKey, rowKey) => {
+    const updatedList = analisaList.map((analisa) => {
+      if (analisa.key === analisaKey) {
+        const filteredData = analisa.tableData.filter((row) => row.key !== rowKey);
+        return { ...analisa, tableData: filteredData };
+      }
+      return analisa;
+    });
+    setAnalisaList(updatedList);
+    setFormData({ ...formData, analisaList: updatedList });
+  };
+
+  const columns = (analisaKey) => [
     {
       title: "Bulan",
       dataIndex: "bulan",
-      key: "bulan",
       render: (text, record) => (
         <Input
           value={record.bulan}
           placeholder="Masukkan Bulan"
-          onChange={(e) =>
-            handleInputChange(e.target.value, record.key, "bulan", tableKey)
-          }
-          className="responsive-input"
+          onChange={(e) => handleInputChange(e.target.value, analisaKey, record.key, "bulan")}
         />
       ),
     },
     {
       title: "Mutasi Debet",
       dataIndex: "mutasiDebet",
-      key: "mutasiDebet",
       render: (text, record) => (
         <NumericFormat
-          value={String(record.mutasiDebet)}
+          value={record.mutasiDebet}
           placeholder="Masukkan Mutasi Debet"
-          onValueChange={(values) =>
-            handleInputChange(
-              String(values.value),
-              record.key,
-              "mutasiDebet",
-              tableKey
-            )
-          }
           thousandSeparator="."
-          decimalSeparator=","
-          allowNegative={false}
-          decimalScale={0}
-          fixedDecimalScale={false}
+          decimalSeparator="," 
+          onValueChange={(values) => handleInputChange(values.value, analisaKey, record.key, "mutasiDebet")}
           className="responsive-input"
         />
       ),
@@ -109,24 +109,13 @@ const Step5 = ({ formData, setFormData }) => {
     {
       title: "Qty",
       dataIndex: "qty1",
-      key: "qty1",
       render: (text, record) => (
         <NumericFormat
-          value={String(record.qty1)}
+          value={record.qty1}
           placeholder="Masukkan Qty"
-          onValueChange={(values) =>
-            handleInputChange(
-              String(values.value),
-              record.key,
-              "qty1",
-              tableKey
-            )
-          }
           thousandSeparator="."
-          decimalSeparator=","
-          allowNegative={false}
-          decimalScale={0}
-          fixedDecimalScale={false}
+          decimalSeparator="," 
+          onValueChange={(values) => handleInputChange(values.value, analisaKey, record.key, "qty1")}
           className="responsive-input"
         />
       ),
@@ -134,24 +123,13 @@ const Step5 = ({ formData, setFormData }) => {
     {
       title: "Mutasi Kredit",
       dataIndex: "mutasiKredit",
-      key: "mutasiKredit",
       render: (text, record) => (
         <NumericFormat
-          value={String(record.mutasiKredit)}
+          value={record.mutasiKredit}
           placeholder="Masukkan Mutasi Kredit"
-          onValueChange={(values) =>
-            handleInputChange(
-              String(values.value),
-              record.key,
-              "mutasiKredit",
-              tableKey
-            )
-          }
           thousandSeparator="."
-          decimalSeparator=","
-          allowNegative={false}
-          decimalScale={0}
-          fixedDecimalScale={false}
+          decimalSeparator="," 
+          onValueChange={(values) => handleInputChange(values.value, analisaKey, record.key, "mutasiKredit")}
           className="responsive-input"
         />
       ),
@@ -159,166 +137,123 @@ const Step5 = ({ formData, setFormData }) => {
     {
       title: "Qty",
       dataIndex: "qty2",
-      key: "qty2",
       render: (text, record) => (
         <NumericFormat
-        value={String(record.qty2)}
-        placeholder="Masukkan Qty"
-        onValueChange={(values) =>
-          handleInputChange(
-            String(values.value),
-            record.key,
-            "qty2",
-            tableKey
-          )
-        }
-        thousandSeparator="."
-        decimalSeparator=","
-        allowNegative={false}
-        decimalScale={0}
-        fixedDecimalScale={false}
-        className="responsive-input"
-      />
+          value={record.qty2}
+          placeholder="Masukkan Qty"
+          thousandSeparator="."
+          decimalSeparator="," 
+          onValueChange={(values) => handleInputChange(values.value, analisaKey, record.key, "qty2")}
+          className="responsive-input"
+        />
       ),
     },
     {
       title: "Saldo Rata-Rata",
       dataIndex: "saldoRataRata",
-      key: "saldoRataRata",
       render: (text, record) => (
         <NumericFormat
-        value={String(record.saldoRataRata)}
-        placeholder="Masukkan Saldo Rata-Rata"
-        onValueChange={(values) =>
-          handleInputChange(
-            String(values.value),
-            record.key,
-            "saldoRataRata",
-            tableKey
-          )
-        }
-        thousandSeparator="."
-        decimalSeparator=","
-        allowNegative={false}
-        decimalScale={0}
-        fixedDecimalScale={false}
-        className="responsive-input"
-      />
+          value={record.saldoRataRata}
+          placeholder="Masukkan Saldo Rata-Rata"
+          thousandSeparator="."
+          decimalSeparator="," 
+          onValueChange={(values) => handleInputChange(values.value, analisaKey, record.key, "saldoRataRata")}
+          className="responsive-input"
+        />
       ),
     },
     {
       title: "Aksi",
-      key: "aksi",
       render: (_, record) => (
-        <Space>
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => removeRow(record.key, tableKey)}
-          >
-            Hapus
-          </Button>
-        </Space>
+        <Button danger icon={<DeleteOutlined />} onClick={() => removeRow(analisaKey, record.key)}>
+          Hapus
+        </Button>
       ),
     },
   ];
 
   return (
     <div>
-      <h3>1. Analisa Rekening Koran</h3>
-      <h4>Analisa 1</h4>
-      <Form.Item label="Rekening Koran Bank" name="rekeningKoranBank">
-        <Input placeholder="Masukkan Rekening Koran Bank" />
-      </Form.Item>
-      <Form.Item label="No. Rekening" name="noRekening">
-        <Input placeholder="Masukkan No. Rekening" />
-      </Form.Item>
-      <Form.Item label="Atas Nama" name="atasNama">
-        <Input placeholder="Masukkan Atas Nama" />
-      </Form.Item>
-      <Form.Item label="Periode" name="periode">
-        <Input placeholder="Masukkan Periode" />
-      </Form.Item>
-      <h3>Tabel Analisa Rekening Koran 1</h3>
-      <Table
-        columns={columns("tableAnalisaRekKoran")}
-        dataSource={data}
-        pagination={false}
-        bordered
-        style={{ marginBottom: "16px" }}
-        scroll={{ x: "max-content" }}
-        responsive
-      />
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => addRow("tableAnalisaRekKoran")}
-        style={{ marginTop: "8px" }}
-      >
-        Tambah Baris
+      <h4>2. ANALISA REKENING KORAN</h4>
+      <Button type="primary" icon={<PlusOutlined />} onClick={addAnalisa} style={{ marginBottom: "16px" }}>
+        Tambah Analisa
       </Button>
-      <h4>Analisa 2</h4>
-      <Form.Item label="Rekening Koran Bank" name="rekeningKoranBank2">
-        <Input placeholder="Masukkan Rekening Koran Bank" />
-      </Form.Item>
-      <Form.Item label="No. Rekening" name="noRekening2">
-        <Input placeholder="Masukkan No. Rekening" />
-      </Form.Item>
-      <Form.Item label="Atas Nama" name="atasNama2">
-        <Input placeholder="Masukkan Atas Nama" />
-      </Form.Item>
-      <Form.Item label="Periode" name="periode2">
-        <Input placeholder="Masukkan Periode" />
-      </Form.Item>
-      <h3>Tabel Analisa Rekening Koran 2</h3>
-      <Table
-        columns={columns("tableAnalisaRekKoran2")}
-        dataSource={data2}
-        pagination={false}
-        bordered
-        style={{ marginBottom: "16px" }}
-        scroll={{ x: "max-content" }}
-        responsive
-      />
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => addRow("tableAnalisaRekKoran2")}
-        style={{ marginTop: "8px" }}
-      >
-        Tambah Baris
-      </Button>
-      <h4>Analisa 3</h4>
-      <Form.Item label="Rekening Koran Bank" name="rekeningKoranBank3">
-        <Input placeholder="Masukkan Rekening Koran Bank" />
-      </Form.Item>
-      <Form.Item label="No. Rekening" name="noRekening3">
-        <Input placeholder="Masukkan No. Rekening" />
-      </Form.Item>
-      <Form.Item label="Atas Nama" name="atasNama3">
-        <Input placeholder="Masukkan Atas Nama" />
-      </Form.Item>
-      <Form.Item label="Periode" name="periode3">
-        <Input placeholder="Masukkan Periode" />
-      </Form.Item>
-      <h3>Tabel Analisa Rekening Koran 3</h3>
-      <Table
-        columns={columns("tableAnalisaRekKoran3")}
-        dataSource={data3}
-        pagination={false}
-        bordered
-        style={{ marginBottom: "16px" }}
-        scroll={{ x: "max-content" }}
-        responsive
-      />
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => addRow("tableAnalisaRekKoran3")}
-        style={{ marginTop: "8px" }}
-      >
-        Tambah Baris
-      </Button>
+      <Collapse accordion>
+        {analisaList.map((analisa) => (
+          <Panel header={`Analisa ${analisa.key}`} key={analisa.key}>
+            <Form layout="vertical">
+              <Form.Item label="Rekening Koran Bank">
+                <Input
+                  value={analisa.rekeningKoranBank}
+                  placeholder="Masukkan Rekening Koran Bank"
+                  onChange={(e) => {
+                    const updatedList = analisaList.map((item) =>
+                      item.key === analisa.key ? { ...item, rekeningKoranBank: e.target.value } : item
+                    );
+                    setAnalisaList(updatedList);
+                    setFormData({ ...formData, analisaList: updatedList });
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="No. Rekening">
+                <Input
+                  value={analisa.noRekening}
+                  placeholder="Masukkan No. Rekening"
+                  onChange={(e) => {
+                    const updatedList = analisaList.map((item) =>
+                      item.key === analisa.key ? { ...item, noRekening: e.target.value } : item
+                    );
+                    setAnalisaList(updatedList);
+                    setFormData({ ...formData, analisaList: updatedList });
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Atas Nama">
+                <Input
+                  value={analisa.atasNama}
+                  placeholder="Masukkan Atas Nama"
+                  onChange={(e) => {
+                    const updatedList = analisaList.map((item) =>
+                      item.key === analisa.key ? { ...item, atasNama: e.target.value } : item
+                    );
+                    setAnalisaList(updatedList);
+                    setFormData({ ...formData, analisaList: updatedList });
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Periode">
+                <Input
+                  value={analisa.periode}
+                  placeholder="Masukkan Periode"
+                  onChange={(e) => {
+                    const updatedList = analisaList.map((item) =>
+                      item.key === analisa.key ? { ...item, periode: e.target.value } : item
+                    );
+                    setAnalisaList(updatedList);
+                    setFormData({ ...formData, analisaList: updatedList });
+                  }}
+                />
+              </Form.Item>
+            </Form>
+            <Table
+              columns={columns(analisa.key)}
+              dataSource={analisa.tableData}
+              pagination={false}
+              bordered
+              scroll={{ x: "max-content" }}
+            />
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => addRow(analisa.key)}
+              style={{ marginTop: "8px" }}
+            >
+              Tambah Data
+            </Button>
+          </Panel>
+        ))}
+      </Collapse>
+      <br></br>
     </div>
   );
 };
