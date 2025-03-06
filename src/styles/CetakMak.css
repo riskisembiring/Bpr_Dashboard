@@ -55,6 +55,13 @@
     border-right: none;
   }
 
+  .header-user-container {
+    display: flex;
+    align-items: center;        /* Vertikal center */
+    justify-content: center;     /* Horizontal center */
+    gap: 20px;                  /* Jarak antar tombol */
+  }
+
   @media (max-width: 768px) {
     .ant-typography {
       font-size: 14px; /* Mengurangi ukuran font untuk tampilan mobile */
@@ -70,6 +77,12 @@
       display: flex;
       flex-direction: column;
       width: 100%;
+    }
+    .header-user-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px; /* Lebih kecil pada layar mobile */
     }
   }
   

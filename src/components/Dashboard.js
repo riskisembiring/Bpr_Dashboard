@@ -13,7 +13,7 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    navigate("/"); 
+    navigate("/");
   };
 
   const handleMenuClick = (key, path) => {
@@ -56,12 +56,14 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
             {
               key: "2-2-1",
               label: "Deposito",
-              onClick: () => handleMenuClick("2-2-1", "/dashboard/menu/efiling/deposito"),
+              onClick: () =>
+                handleMenuClick("2-2-1", "/dashboard/menu/efiling/deposito"),
             },
             {
               key: "2-2-2",
               label: "Kredit",
-              onClick: () => handleMenuClick("2-2-2", "/dashboard/menu/efiling/kredit"),
+              onClick: () =>
+                handleMenuClick("2-2-2", "/dashboard/menu/efiling/kredit"),
             },
           ],
         },
@@ -91,11 +93,13 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
       onClick: () => handleMenuClick("3", "/dashboard/about-us"),
     },
   ];
-  
 
   const userMenu = (
     <Menu>
-      <Menu.Item key="profile" onClick={() => handleMenuClick("1", "/dashboard/profile")}>
+      <Menu.Item
+        key="profile"
+        onClick={() => handleMenuClick("1", "/dashboard/profile")}
+      >
         Profile
       </Menu.Item>
       <Menu.Item key="logout" onClick={showLogoutModal} danger>
@@ -124,13 +128,24 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
             <img
               src="/images/logo.png"
               alt="Logo"
-              style={{ height: "25px", objectFit: "contain", marginTop: "20px", marginRight: "20px" }}
+              style={{
+                height: "25px",
+                objectFit: "contain",
+                marginTop: "20px",
+                marginRight: "20px",
+              }}
             />
           </div>
           <div className="header-user">
             <Dropdown overlay={userMenu} trigger={["click"]}>
               <div className="header-user-container">
-                <UserOutlined style={{ fontSize: "18px", marginRight: "8px", cursor: "pointer" }} />
+                <UserOutlined
+                  style={{
+                    fontSize: "18px",
+                    marginRight: "8px",
+                    cursor: "pointer",
+                  }}
+                />
                 <h2
                   style={{
                     display: "inline",
@@ -139,7 +154,22 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
                     cursor: "pointer",
                   }}
                 >
-                  {userRole === "collector" ? "C" : userRole === "direksi" ? "D" : "V"}
+                  {(() => {
+                    switch (userRole) {
+                      case "collector":
+                        return "C";
+                      case "direksi":
+                        return "D";
+                      case "marketing":
+                        return "AO";
+                      case "adminKredit":
+                        return "A";
+                      case "analisis":
+                        return "CA";
+                      default:
+                        return "V"; // Default jika tidak ada yang cocok
+                    }
+                  })()}
                 </h2>
               </div>
             </Dropdown>
@@ -163,7 +193,14 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
 
         {/* Footer */}
         <Footer className="footer">
-          ©2025 Created by <a href="https://riskisembiring.github.io/Portfolio/" target="_blank" rel="noopener noreferrer">Riski Sahputra Sembiring</a>
+          ©2025 Created by{" "}
+          <a
+            href="https://riskisembiring.github.io/Portfolio/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Riski Sahputra Sembiring
+          </a>
         </Footer>
 
         {/* Logout Confirmation Modal */}

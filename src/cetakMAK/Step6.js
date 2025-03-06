@@ -5,7 +5,7 @@ import { NumericFormat } from "react-number-format";
 const Step6 = ({ formData, setFormData, tableKey }) => {
   const data = formData.tableLabaRugiProforma || [];
   const data2 = formData.tableNeracaProforma || [];
-  const isDisabled = formData.jenisPekerjaanDebt === "Wiraswasta" || formData.jenisPekerjaanDebt === "BackToBack";
+  const isDisabled = formData.jenisPekerjaanDebt === "Karyawan" || formData.jenisPekerjaanDebt === "BackToBack";
 
   const defaultLabaRugi = [
     { key: "1", deskripsi: "Penjualan", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },

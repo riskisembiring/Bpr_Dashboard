@@ -19,20 +19,20 @@ doc.text("DATA DEBITUR", 10, 38, { align: "left" });
 
 doc.setFontSize(8);
 const tableData = [
-  ["Nama Debitur", ":", selectedData?.namaDebitur || "", "Jenis Pengajuan Kredit", ":", selectedData?.jenisPengajuanKredit || ""],
-  ["Nomor MAK", ":", selectedData?.nomorMak || "", "Nominal Pengajuan", ":", selectedData?.nominalPengajuan || ""],
-  ["Tanggal MAK", ":", selectedData?.tanggalMak ? moment(selectedData.tanggalMak).format("DD-MM-YYYY") : "", "Jenis Jaminan", ":", selectedData?.jenisJaminan === 'Lainnya' ? selectedData?.jenisJaminanLainnya : selectedData?.jenisJaminan || ""],
-  ["Nama Account Officer", ":", selectedData?.namaAccOfficer || "", "No. Telp Debitur", ":", selectedData?.noTelpDeb || ""],
-  ["No. Telp Pasangan Debitur", ":", selectedData?.noTelpPasDeb || "", "Alamat Sesuai KTP", ":", selectedData?.alamatSesuaiKtp || ""],
-  ["Alamat Domisili (Jika Tidak Sesuai KTP)", ":", selectedData?.alamatDomisili || "", "No. KTP", ":", selectedData?.noKtp || ""],
-  ["No. NPWP", ":", selectedData?.noNpwp || "", "Alamat Jaminan", ":", selectedData?.alamatJaminan || ""],
-  ["Nama Perusahaan / Usaha", ":", selectedData?.namaPerusahaanUsaha || "", "Alamat Perusahaan / Usaha", ":", selectedData?.alamatPerusahaanUsaha || "", "Jenis Usaha", ":", selectedData?.jenisUsaha || ""],
-  ["Status Tempat Tinggal", ":", selectedData?.statusTempatTinggal || "", "Bentuk Usaha", ":", selectedData?.bentukUsaha || ""],
-  ["Jenis Pekerjaan", ":", selectedData?.jenisPekerjaan || "", "Lama Usaha", ":", selectedData?.lamaUsaha || ""],
-  ["Jabatan", ":", selectedData?.jabatan || "", "Lama Bekerja", ":", selectedData?.lamaBekerja || ""],
-  ["Status Karyawan", ":", selectedData?.statusKaryawan || "", "Status Tempat Usaha", ":", selectedData?.statusTempatUsaha || ""],
-  ["Keterkaitan dengan BPR", ":", selectedData?.keterkaitandgnBpr || "", "Status Pembiayaan", ":", selectedData?.statusPembiayaan || ""],
-  ["Jenis Kredit", ":", selectedData?.jenisKredit || "", "Tujuan Penggunaan Dana", ":", selectedData?.tujuanPenggunaanDana || ""],
+  ["Nama Debitur", ":", selectedData?.namaDebitur || "-", "Jenis Pengajuan Kredit", ":", selectedData?.jenisPengajuanKredit || "-"],
+  ["Nomor MAK", ":", selectedData?.nomorMak || "-", "Nominal Pengajuan", ":", selectedData?.nominalPengajuan || "-"],
+  ["Tanggal MAK", ":", selectedData?.tanggalMak ? moment(selectedData.tanggalMak).format("DD-MM-YYYY") : "-", "Jenis Jaminan", ":", selectedData?.jenisJaminan === 'Lainnya' ? selectedData?.jenisJaminanLainnya : selectedData?.jenisJaminan || "-"],
+  ["Nama Account Officer", ":", selectedData?.namaAccOfficer || "-", "No. Telp Debitur", ":", selectedData?.noTelpDeb || "-"],
+  ["No. Telp Pasangan Debitur", ":", selectedData?.noTelpPasDeb || "-", "Alamat Sesuai KTP", ":", selectedData?.alamatSesuaiKtp || "-"],
+  ["Alamat Domisili (Jika Tidak Sesuai KTP)", ":", selectedData?.alamatDomisili || "-", "No. KTP", ":", selectedData?.noKtp || "-"],
+  ["No. NPWP", ":", selectedData?.noNpwp || "-", "Alamat Jaminan", ":", selectedData?.alamatJaminan || "-"],
+  ["Nama Perusahaan / Usaha", ":", selectedData?.namaPerusahaanUsaha || "-", "Alamat Perusahaan / Usaha", ":", selectedData?.alamatPerusahaanUsaha || "-", "Jenis Usaha", ":", selectedData?.jenisUsaha || "-"],
+  ["Status Tempat Tinggal", ":", selectedData?.statusTempatTinggal || "-", "Bentuk Usaha", ":", selectedData?.bentukUsaha || "-"],
+  ["Jenis Pekerjaan", ":", selectedData?.jenisPekerjaan || "-", "Lama Usaha", ":", selectedData?.lamaUsaha || "-"],
+  ["Jabatan", ":", selectedData?.jabatan || "-", "Lama Bekerja", ":", selectedData?.lamaBekerja || "-"],
+  ["Status Karyawan", ":", selectedData?.statusKaryawan || "-", "Status Tempat Usaha", ":", selectedData?.statusTempatUsaha || "-"],
+  ["Keterkaitan dengan BPR", ":", selectedData?.keterkaitandgnBpr || "-", "Status Pembiayaan", ":", selectedData?.statusPembiayaan || "-"],
+  ["Jenis Kredit", ":", selectedData?.jenisKredit || "-", "Tujuan Penggunaan Dana", ":", selectedData?.tujuanPenggunaanDana || "-"],
 ];
 console.log("Tanggal MAK:", selectedData?.tanggalMAK);
 doc.autoTable({
@@ -211,7 +211,7 @@ for (let i = 1; i <= totalPages; i++) {
   doc.setTextColor(previousTextColor); 
 }
 
-if (selectedData?.selectedJob === "Karyawan") {
+if (selectedData?.selectedJob === "Wiraswasta") {
   if (doc.lastAutoTable.finalY > 170) {
     doc.addPage();
   }
@@ -884,7 +884,7 @@ for (let i = 1; i <= totalPages8; i++) {
   doc.setTextColor(previousTextColor);
 }
 
-if (selectedData?.selectedJob === "Karyawan") {
+if (selectedData?.selectedJob === "Wiraswasta") {
   if (doc.lastAutoTable.finalY > 10) {
     doc.addPage();
   }

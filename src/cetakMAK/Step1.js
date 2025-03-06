@@ -318,12 +318,12 @@ const Step1 = ({ form }) => {
               label="Jenis Pekerjaan"
               name="jenisPekerjaan"
               normalize={(value) => value?.toUpperCase() || ""}
-              rules={[
-                {
-                  required: true,
-                  message: "Jenis Pekerjaan wajib diisi",
-                },
-              ]}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Jenis Pekerjaan wajib diisi",
+              //   },
+              // ]}
             >
               <Input placeholder="Masukkan jenis pekerjaan" />
             </Form.Item>
@@ -332,32 +332,35 @@ const Step1 = ({ form }) => {
               label="Jabatan"
               name="jabatan"
               normalize={(value) => value?.toUpperCase() || ""}
-              rules={[
-                {
-                  required: true,
-                  message: "Jabatan wajib diisi",
-                },
-              ]}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Jabatan wajib diisi",
+              //   },
+              // ]}
             >
               <Input placeholder="Masukkan Jabatan" />
             </Form.Item>
 
-            <Form.Item label="Lama Bekerja" name="lamaBekerja" rules={[
-                {
-                  required: true,
-                  message: "Lama Bekerja wajib diisi",
-                },
-              ]}>
+            <Form.Item label="Lama Bekerja" name="lamaBekerja" 
+            // rules={[
+            //     {
+            //       required: true,
+            //       message: "Lama Bekerja wajib diisi",
+            //     },
+            //   ]}
+              >
               <Input placeholder="Masukkan lama bekerja" />
             </Form.Item>
 
             <Form.Item label="Status Karyawan" name="statusKaryawan"
-            rules={[
-              {
-                required: true,
-                message: "Status Karyawan wajib dipilih",
-              },
-            ]}>
+            // rules={[
+            //   {
+            //     required: true,
+            //     message: "Status Karyawan wajib dipilih",
+            //   },
+            // ]}
+            >
               <Radio.Group>
                 <Radio value="Karyawan Tetap">Karyawan Tetap</Radio>
                 <Radio value="Kontrak">Kontrak</Radio>
@@ -573,33 +576,37 @@ const Step1 = ({ form }) => {
               label="Jenis Usaha"
               name="jenisUsaha"
               normalize={(value) => value?.toUpperCase() || ""}
-              rules={[
-                {
-                  required: true,
-                  message: "Jenis Usaha wajib di isi",
-                },
-              ]}>
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Jenis Usaha wajib di isi",
+              //   },
+              // ]}
+              >
               <Input placeholder="Masukkan jenis Usaha" />
             </Form.Item>
 
             <Form.Item label="Bentuk Usaha" name="bentukUsaha" normalize={(value) => value?.toUpperCase() || ""} 
-            rules={[
-              {
-                required: true,
-                message: "Bentuk Usaha wajib di isi",
-              },
-            ]}>
+            // rules={[
+            //   {
+            //     required: true,
+            //     message: "Bentuk Usaha wajib di isi",
+            //   },
+            // ]}
+            >
               <Input
                 placeholder="Masukkan Bentuk Usaha"
               />
             </Form.Item>
 
-            <Form.Item label="Lama Usaha" name="lamaUsaha" rules={[
-                {
-                  required: true,
-                  message: "Lama Usaha wajib di isi",
-                },
-              ]}>
+            <Form.Item label="Lama Usaha" name="lamaUsaha" 
+            // rules={[
+            //     {
+            //       required: true,
+            //       message: "Lama Usaha wajib di isi",
+            //     },
+            //   ]}
+              >
               <Input placeholder="Masukkan Lama Usaha" />
             </Form.Item>
 
@@ -607,12 +614,13 @@ const Step1 = ({ form }) => {
               label="Status Tempat Usaha"
               name="statusTempatUsaha"
               normalize={(value) => value?.toUpperCase() || ""}
-              rules={[
-                {
-                  required: true,
-                  message: "Status Tempat Usaha wajib dipilih",
-                },
-              ]}>
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Status Tempat Usaha wajib dipilih",
+              //   },
+              // ]}
+              >
               <Input placeholder="Masukkan Status Tempat Usaha" />
             </Form.Item>
           </Card>
