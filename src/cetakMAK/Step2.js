@@ -135,11 +135,14 @@ const Step2 = ({ formData, setFormData }) => {
           <option value="3 Bulan">3 Bulan</option>
           <option value="6 Bulan">6 Bulan</option>
           <option value="12 Bulan">12 Bulan</option>
-          <option value="18 Bulan">18 Bulan</option>
           <option value="24 Bulan">24 Bulan</option>
           <option value="36 Bulan">36 Bulan</option>
           <option value="48 Bulan">48 Bulan</option>
           <option value="60 Bulan">60 Bulan</option>
+          <option value="72 Bulan">72 Bulan</option>
+          <option value="84 Bulan">84 Bulan</option>
+          <option value="96 Bulan">96 Bulan</option>
+          <option value="108 Bulan">108 Bulan</option>
           <option value="120 Bulan">120 Bulan</option>
         </select>
       ),
@@ -245,7 +248,20 @@ const Step2 = ({ formData, setFormData }) => {
       <Form.Item
         label="Tujuan pengajuan kredit"
         name="tujuanPengajuanKredit"
-        rules={[{ required: true, message: "Tujuan pengajuan kredit wajib diisi!" }]}
+        getValueProps={(value) => ({ value: Array.isArray(value) ? value.join("\n") : value })}
+        getValueFromEvent={(e) => e.target.value.split("\n")} // Jangan filter di sini
+        rules={[
+          {
+            required: true,
+            message: "Tujuan pengajuan kredit wajib di isi!",
+            validator: (_, value) => {
+              const filteredLines = value.filter((line) => line.trim() !== "");
+              return filteredLines.length > 0
+                ? Promise.resolve()
+                : Promise.reject(new Error("Tujuan pengajuan kredit wajib di isi!"));
+            },
+          },
+        ]}
       >
         <Input.TextArea
           placeholder="Masukkan Tujuan pengajuan kredit"

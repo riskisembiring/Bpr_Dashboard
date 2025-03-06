@@ -492,11 +492,10 @@ const Step3 = ({ formData, setFormData }) => {
           placeholder="Masukkan Analisa Usaha / Pekerjaan"
           autoSize={{ minRows: 6, maxRows: 8 }}
           maxLength={700}
-          defaultValue="123"
         />
       </Form.Item>
 
-      <Form.Item label="Aspek Pengadaan Barang/Bahan Baku?" name="jenisPekerjaanDebt" 
+      <Form.Item label="Aspek Pengadaan Barang/Bahan Baku?" name="jenisPekerjaanDebt"
       rules={[{ required: true, message: "Aspek Pengadaan Barang/Bahan Baku wajib di isi!" }]}>
         <Radio.Group onChange={handleJobChange} value={selectedJob}>
           <Radio value="Karyawan">Karyawan</Radio>
