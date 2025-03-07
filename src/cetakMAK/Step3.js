@@ -347,12 +347,6 @@ const Step3 = ({ formData, setFormData }) => {
   ];
 
   useEffect(() => {
-    if (!formData?.selectedJob) {
-      setSelectedJob("Wiraswasta");
-    }
-  }, [formData]);
-
-  useEffect(() => {
     const initialFileList = (formData.photoUsaha || []).map((item, index) => ({
       uid: index.toString(),
       name: item.url.split("/").pop(),
@@ -501,7 +495,7 @@ const Step3 = ({ formData, setFormData }) => {
         />
       </Form.Item>
 
-      <Form.Item label="Aspek Pengadaan Barang/Bahan Baku?" name="jenisPekerjaanDebt"
+      <Form.Item label="Aspek Pengadaan Barang/Bahan Baku?" name="aspekPengadaanBarang1"
       rules={[{ required: true, message: "Aspek Pengadaan Barang/Bahan Baku wajib di isi!" }]}>
         <Radio.Group onChange={handleJobChange} value={selectedJob}>
           <Radio value="Karyawan">Karyawan</Radio>

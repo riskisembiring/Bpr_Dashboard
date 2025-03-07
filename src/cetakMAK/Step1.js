@@ -490,8 +490,8 @@ const Step1 = ({ form }) => {
               },
             ]}>
             <Radio.Group>
-              <Radio value="karyawan">Karyawan</Radio>
-              <Radio value="wiraswasta">Wiraswasta</Radio>
+              <Radio value="Karyawan">Karyawan</Radio>
+              <Radio value="Wiraswasta">Wiraswasta</Radio>
               <Radio value="Profesi">Profesi</Radio>
             </Radio.Group>
           </Form.Item>
@@ -506,8 +506,8 @@ const Step1 = ({ form }) => {
               },
             ]}>
             <Radio.Group>
-              <Radio value="karyawan">Karyawan</Radio>
-              <Radio value="wiraswasta">Wiraswasta</Radio>
+              <Radio value="Karyawan">Karyawan</Radio>
+              <Radio value="Wiraswasta">Wiraswasta</Radio>
               <Radio value="TidakBekerja">Tidak Bekerja</Radio>
               <Radio value="Profesi">Profesi</Radio>
             </Radio.Group>
