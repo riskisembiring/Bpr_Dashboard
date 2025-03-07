@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Row, Col, Card, DatePicker, Radio, Checkbox } from "antd";
 import { NumericFormat } from "react-number-format";
+import moment from "moment";
 
 const Step1 = ({ form }) => {
   const [nominal, setNominal] = useState("");
@@ -122,6 +123,9 @@ const Step1 = ({ form }) => {
               format="DD-MM-YYYY"
               placeholder="Pilih tanggal MAK"
               style={{ width: "100%" }}
+              disabledDate={(current) => {
+                return current && current > moment().endOf("day"); // Nonaktifkan tanggal setelah hari ini
+              }}
             />
           </Form.Item>
 

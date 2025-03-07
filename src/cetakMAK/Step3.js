@@ -538,7 +538,7 @@ const Step3 = ({ formData, setFormData }) => {
       <h4>Tabel Invoice Pembelian</h4>
       <Table
         columns={columns("tableInvoicePembelian")}
-        dataSource={data}
+        dataSource={isDisabled ? [] : data}
         pagination={false}
         bordered
         style={{ marginBottom: "16px" }}
@@ -590,7 +590,7 @@ const Step3 = ({ formData, setFormData }) => {
       <h4>Tabel Bukti Transaksi Pembelian</h4>
       <Table
         columns={columns2("tableBuktiTransaksiPembelian")}
-        dataSource={data3}
+        dataSource={isDisabled? [] : data3}
         pagination={false}
         bordered
         style={{ marginBottom: "16px" }}
@@ -610,7 +610,7 @@ const Step3 = ({ formData, setFormData }) => {
       <h4>Tabel Hasil Verifikasi Suplayer bahan baku</h4>
       <Table
         columns={columns3("tableHasilVerifikasiSupplier")}
-        dataSource={data5}
+        dataSource={isDisabled? [] : data5}
         pagination={false}
         bordered
         style={{ marginBottom: "16px" }}
@@ -658,7 +658,10 @@ const Step3 = ({ formData, setFormData }) => {
         />
       </Form.Item>
 
-      <Form.Item label="Kontrak Kerja Yang Dimiliki" name="kontrakKerjaDimiliki" rules={[{ required: isDisabled ? false : true, message: "Kontrak Kerja Yang Dimiliki wajib di isi!" }]}>
+      <Form.Item label="Kontrak Kerja Yang Dimiliki" name="kontrakKerjaDimiliki" getValueProps={(value) => ({
+          value: isDisabled ? "" : value,
+        })}
+      rules={[{ required: isDisabled ? false : true, message: "Kontrak Kerja Yang Dimiliki wajib di isi!" }]}>
         <Input placeholder="Masukkan Kontrak Kerja Yang Dimiliki" disabled={isDisabled} />
       </Form.Item>
 
@@ -710,14 +713,16 @@ const Step3 = ({ formData, setFormData }) => {
       </Upload>
 
       {fileList.map((file, index) => (
-        <div key={file.uid} style={{ marginTop: 10 }}>
-          <Input
-            placeholder={`Tambahkan deskripsi foto ${index + 1}`}
-            value={isDisabled ? '' : file.description}
-            onChange={(e) => handleDescriptionChange(index, e.target.value)}
-            disabled={isDisabled}
-          />
-        </div>
+        !isDisabled && (
+          <div key={file.uid} style={{ marginTop: 10 }}>
+            <Input
+              placeholder={`Tambahkan deskripsi foto ${index + 1}`}
+              value={file.description}
+              onChange={(e) => handleDescriptionChange(index, e.target.value)}
+              disabled={isDisabled}
+            />
+          </div>
+        )
       ))}
      <br></br>
      </>
