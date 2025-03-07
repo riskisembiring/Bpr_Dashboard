@@ -505,35 +505,33 @@ const Step3 = ({ formData, setFormData }) => {
       </Form.Item>
 
       <Form.Item
-        label="Aspek Pengadaan Barang/Bahan Baku"
-        name="aspekPengadaanBarang"
-        getValueProps={(value) => ({
-          value: isDisabled ? "" : Array.isArray(value) ? value.join("\n") : value,
-        })}
-        getValueFromEvent={(e) => e.target.value.split("\n")} // Jangan hapus baris kosong di sini
-        rules={[
-          {
-            required: !isDisabled,
-            message: "Aspek Pengadaan Barang/Bahan Baku wajib di isi!",
-            validator: (_, value) => {
-              if (isDisabled) {
-                return Promise.resolve();
-              }
-              const filteredLines = value.filter((line) => line.trim() !== "");
-              return filteredLines.length > 0
-                ? Promise.resolve()
-                : Promise.reject(new Error("Aspek Pengadaan Barang/Bahan Baku wajib di isi!"));
-            },
+      label="Aspek Pengadaan Barang/Bahan Baku"
+      name="aspekPengadaanBarang"
+      getValueProps={(value) => ({
+        value: isDisabled ? "" : Array.isArray(value) ? value.join("\n") : value,
+      })}
+      getValueFromEvent={(e) => e.target.value.split("\n")}
+      rules={[
+        {
+          validator: (_, value) => {
+            if (isDisabled) {
+              return Promise.resolve(); // Tidak ada validasi jika isDisabled === true
+            }
+            const filteredLines = value?.filter((line) => line.trim() !== "");
+            return filteredLines.length > 0
+              ? Promise.resolve()
+              : Promise.reject(new Error("Aspek Pengadaan Barang/Bahan Baku wajib di isi!"));
           },
-        ]}
-      >
-        <Input.TextArea
-          placeholder="Masukkan Aspek Pengadaan Barang/Bahan Baku"
-          autoSize={{ minRows: 6, maxRows: 8 }}
-          maxLength={500}
-          disabled={isDisabled}
-        />
-      </Form.Item>
+        },
+      ]}
+    >
+      <Input.TextArea
+        placeholder="Masukkan Aspek Pengadaan Barang/Bahan Baku"
+        autoSize={{ minRows: 6, maxRows: 8 }}
+        maxLength={500}
+        disabled={isDisabled}
+      />
+    </Form.Item>
 
       <h4>Tabel Invoice Pembelian</h4>
       <Table

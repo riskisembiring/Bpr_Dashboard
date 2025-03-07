@@ -91,36 +91,32 @@ const CetakMak = () => {
       }
       if (
         formStep === 3 &&
-        (!formData.tableInvoicePembelian ||
-          (formData.tableInvoicePembelian.length === 0 &&
-            formData.selectedJob === "Wiraswasta"))
+        formData.selectedJob === "Wiraswasta" &&
+        (!formData.tableInvoicePembelian || formData.tableInvoicePembelian.length === 0)
       ) {
         alert("Data Invoice Pembelian tidak boleh kosong!");
         return;
       }
       if (
         formStep === 3 &&
-        (!formData.tableBuktiTransaksiPembelian ||
-          (formData.tableBuktiTransaksiPembelian.length === 0 &&
-            formData.selectedJob === "Wiraswasta"))
+        formData.selectedJob === "Wiraswasta" &&
+        (!formData.tableBuktiTransaksiPembelian || formData.tableBuktiTransaksiPembelian.length === 0)
       ) {
         alert("Bukti Transaksi Pembelian tidak boleh kosong!");
         return;
       }
       if (
         formStep === 3 &&
-        (!formData.tableHasilVerifikasiSupplier ||
-          (formData.tableHasilVerifikasiSupplier.length === 0 &&
-            formData.selectedJob === "Wiraswasta"))
+        formData.selectedJob === "Wiraswasta" &&
+        (!formData.tableHasilVerifikasiSupplier || formData.tableHasilVerifikasiSupplier.length === 0)
       ) {
-        alert("Data Hasil Verifikasi Suplayer bahan baku tidak boleh kosong!");
+        alert("Hasil Verifikasi Supplier tidak boleh kosong!");
         return;
       }
       if (
         formStep === 3 &&
-        (!formData.photoUsaha ||
-          (formData.photoUsaha.length === 0 &&
-            formData.selectedJob === "Wiraswasta"))
+        formData.selectedJob === "Wiraswasta" &&
+        (!formData.photoUsaha || formData.photoUsaha.length === 0)
       ) {
         alert("Data Foto Usaha tidak boleh kosong!");
         return;
@@ -141,11 +137,10 @@ const CetakMak = () => {
       }
       if (
         formStep === 6 &&
-        (!formData.tableLabaRugiProforma ||
-          (formData.tableLabaRugiProforma.length === 0 &&
-            formData.selectedJob === "Wiraswasta"))
+        formData.selectedJob === "Wiraswasta" &&
+        (!formData.tableLabaRugiProforma || formData.tableLabaRugiProforma.length === 0)
       ) {
-        alert("Data Laporan Laba Rugi Proforma tidak boleh kosong!");
+        alert("Data Foto Usaha tidak boleh kosong!");
         return;
       }
       if (
