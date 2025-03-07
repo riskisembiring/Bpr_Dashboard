@@ -304,6 +304,7 @@ const CetakMak = () => {
       tableDataAgunan: [],
       photoAgunan: [],
       tableData: [],
+      selectedJob: null,
     }));
   };
 
