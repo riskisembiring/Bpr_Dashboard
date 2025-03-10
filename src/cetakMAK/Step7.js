@@ -319,10 +319,12 @@ const Step7 = ({ formData, setFormData }) => {
       <Form.Item
         label="Analisa Repayment Capacity"
         name="analisaRepaymentCapacity"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value.join('\n') : value,
+        })}
         getValueFromEvent={(e) => {
-          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
-          return lines.length > 0 ? lines : undefined;
+          const value = e.target.value;
+          return value ? value.split('\n') : undefined;
         }}
         rules={[{ required: true, message: "Analisa Repayment Capacity wajib di isi!" }]}
       >
@@ -330,6 +332,7 @@ const Step7 = ({ formData, setFormData }) => {
           placeholder="Masukkan Analisa Repayment Capacity"
           autoSize={{ minRows: 8, maxRows: 8 }}
           maxLength={1000}
+          showCount
         />
       </Form.Item>
 
@@ -354,17 +357,19 @@ const Step7 = ({ formData, setFormData }) => {
       <Form.Item
         label="Catatan Data Agunan"
         name="catatanDataAgunan"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value.join('\n') : value,
+        })}
         getValueFromEvent={(e) => {
-          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
-          return lines.length > 0 ? lines : undefined;
+          const value = e.target.value;
+          return value ? value.split('\n') : undefined;
         }}
-        rules={[{ required: true, message: "Catatan Data Agunan wajib di isi!" }]}
       >
         <Input.TextArea
           placeholder="Masukkan Catatan Data Agunan"
           autoSize={{ minRows: 8, maxRows: 8 }}
           maxLength={500}
+          showCount
         />
       </Form.Item>
       <h4>Foto Agunan</h4>
@@ -391,6 +396,8 @@ const Step7 = ({ formData, setFormData }) => {
             placeholder={`Tambahkan deskripsi foto ${index + 1}`}
             value={file.description}
             onChange={(e) => handleDescriptionChange(index, e.target.value)}
+            maxLength={30}
+            showCount
           />
         </div>
       ))}

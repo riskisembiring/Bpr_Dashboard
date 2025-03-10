@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Table, Input, Button, Space, Form } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { NumericFormat } from "react-number-format";
@@ -267,6 +267,7 @@ const Step2 = ({ formData, setFormData }) => {
           placeholder="Masukkan Tujuan pengajuan kredit"
           autoSize={{ minRows: 6, maxRows: 8 }}
           maxLength={500}
+          showCount
         />
       </Form.Item>
     </div>

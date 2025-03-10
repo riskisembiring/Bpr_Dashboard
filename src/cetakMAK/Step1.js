@@ -94,7 +94,7 @@ const Step1 = ({ form }) => {
               },
             ]}
           >
-            <Input placeholder="Masukkan Nama Debitur" />
+            <Input placeholder="Masukkan Nama Debitur" maxLength={50}/>
           </Form.Item>
 
           <Form.Item
@@ -108,7 +108,7 @@ const Step1 = ({ form }) => {
               },
             ]}
           >
-            <Input placeholder="Masukkan nomor MAK" />
+            <Input placeholder="Masukkan nomor MAK" maxLength={50}/>
           </Form.Item>
 
           <Form.Item label="Tanggal MAK" name="tanggalMak" 
@@ -140,7 +140,7 @@ const Step1 = ({ form }) => {
               },
             ]}
           >
-            <Input placeholder="Masukkan nama Account Officer" />
+            <Input placeholder="Masukkan nama Account Officer" maxLength={50}/>
           </Form.Item>
 
           <Form.Item
@@ -232,7 +232,7 @@ const Step1 = ({ form }) => {
               },
             ]}
           >
-            <Input placeholder="Masukkan alamat Sesuai KTP" />
+            <Input placeholder="Masukkan alamat Sesuai KTP" maxLength={200}/>
           </Form.Item>
 
           <Form.Item
@@ -301,7 +301,7 @@ const Step1 = ({ form }) => {
                   event.preventDefault();
                 }
               }}
-              maxLength={15}
+              maxLength={50}
             />
           </Form.Item>
 
@@ -322,48 +322,24 @@ const Step1 = ({ form }) => {
               label="Jenis Pekerjaan"
               name="jenisPekerjaan"
               normalize={(value) => value?.toUpperCase() || ""}
-              // rules={[
-              //   {
-              //     required: true,
-              //     message: "Jenis Pekerjaan wajib diisi",
-              //   },
-              // ]}
             >
-              <Input placeholder="Masukkan jenis pekerjaan" />
+              <Input placeholder="Masukkan jenis pekerjaan" maxLength={50}/>
             </Form.Item>
 
             <Form.Item
               label="Jabatan"
               name="jabatan"
               normalize={(value) => value?.toUpperCase() || ""}
-              // rules={[
-              //   {
-              //     required: true,
-              //     message: "Jabatan wajib diisi",
-              //   },
-              // ]}
             >
-              <Input placeholder="Masukkan Jabatan" />
+              <Input placeholder="Masukkan Jabatan" maxLength={50}/>
             </Form.Item>
 
             <Form.Item label="Lama Bekerja" name="lamaBekerja" 
-            // rules={[
-            //     {
-            //       required: true,
-            //       message: "Lama Bekerja wajib diisi",
-            //     },
-            //   ]}
               >
-              <Input placeholder="Masukkan lama bekerja" />
+              <Input placeholder="Masukkan lama bekerja" maxLength={50}/>
             </Form.Item>
 
             <Form.Item label="Status Karyawan" name="statusKaryawan"
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: "Status Karyawan wajib dipilih",
-            //   },
-            // ]}
             >
               <Radio.Group>
                 <Radio value="Karyawan Tetap">Karyawan Tetap</Radio>
@@ -526,6 +502,7 @@ const Step1 = ({ form }) => {
             <Input
               placeholder="Masukkan alamat domisili"
               disabled={sameAddress} // Nonaktifkan input jika checkbox dicentang
+              maxLength={200}
             />
           </Form.Item>
 
@@ -546,6 +523,7 @@ const Step1 = ({ form }) => {
             <Input
               placeholder="Masukkan Alamat Jaminan"
               disabled={sameAddressDom}
+              maxLength={200}
             />
           </Form.Item>
 
@@ -559,7 +537,7 @@ const Step1 = ({ form }) => {
                 message: "Nama Perusahaan/Usaha wajib di isi",
               },
             ]}>
-            <Input placeholder="Masukkan Nama Perusahaan/Usaha" />
+            <Input placeholder="Masukkan Nama Perusahaan/Usaha" maxLength={50}/>
           </Form.Item>
 
           <Form.Item
@@ -572,7 +550,7 @@ const Step1 = ({ form }) => {
                 message: "Alamat Perusahaan/Usaha wajib di isi",
               },
             ]}>
-            <Input placeholder="Masukkan Alamat Perusahaan/Usaha" />
+            <Input placeholder="Masukkan Alamat Perusahaan/Usaha" maxLength={200}/>
           </Form.Item>
 
           <Card title="Data Usaha" bordered style={{ width: "100%" }}>
@@ -580,52 +558,29 @@ const Step1 = ({ form }) => {
               label="Jenis Usaha"
               name="jenisUsaha"
               normalize={(value) => value?.toUpperCase() || ""}
-              // rules={[
-              //   {
-              //     required: true,
-              //     message: "Jenis Usaha wajib di isi",
-              //   },
-              // ]}
               >
               <Input placeholder="Masukkan jenis Usaha" />
             </Form.Item>
 
             <Form.Item label="Bentuk Usaha" name="bentukUsaha" normalize={(value) => value?.toUpperCase() || ""} 
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: "Bentuk Usaha wajib di isi",
-            //   },
-            // ]}
             >
               <Input
                 placeholder="Masukkan Bentuk Usaha"
+                maxLength={50}
               />
             </Form.Item>
 
             <Form.Item label="Lama Usaha" name="lamaUsaha" 
-            // rules={[
-            //     {
-            //       required: true,
-            //       message: "Lama Usaha wajib di isi",
-            //     },
-            //   ]}
               >
-              <Input placeholder="Masukkan Lama Usaha" />
+              <Input placeholder="Masukkan Lama Usaha" maxLength={50}/>
             </Form.Item>
 
             <Form.Item
               label="Status Tempat Usaha"
               name="statusTempatUsaha"
               normalize={(value) => value?.toUpperCase() || ""}
-              // rules={[
-              //   {
-              //     required: true,
-              //     message: "Status Tempat Usaha wajib dipilih",
-              //   },
-              // ]}
               >
-              <Input placeholder="Masukkan Status Tempat Usaha" />
+              <Input placeholder="Masukkan Status Tempat Usaha" maxLength={50}/>
             </Form.Item>
           </Card>
 
@@ -639,7 +594,7 @@ const Step1 = ({ form }) => {
                 message: "Tujuan Penggunaan Dana wajib di isi",
               },
             ]}>
-            <Input placeholder="Masukkan Tujuan Penggunaan Dana" />
+            <Input placeholder="Masukkan Tujuan Penggunaan Dana" maxLength={30}/>
           </Form.Item>
         </Col>
       </Row>

@@ -16,92 +16,106 @@ const Step8 = ({ formData, setFormData }) => {
       <Form.Item
         label="Legalitas Usaha / Pekerjaan"
         name="legalitasUsaha"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value.join('\n') : value,
+        })}
         getValueFromEvent={(e) => {
-          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
-          return lines.length > 0 ? lines : undefined;
-      }}
+          const value = e.target.value;
+          return value ? value.split('\n') : undefined;
+        }}
         rules={[{ required: true, message: "Legalitas Usaha / Pekerjaan wajib di isi!" }]}
       >
-        <Input.TextArea placeholder="Legalitas Usaha / Pekerjaan" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={300}/>
+        <Input.TextArea placeholder="Legalitas Usaha / Pekerjaan" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={500} showCount/>
       </Form.Item>
       <h3>5. Kesimpulan & Rekomendasi</h3>
       <Form.Item
         label="Faktor Positif"
         name="faktorPositif"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value.join('\n') : value,
+        })}
         getValueFromEvent={(e) => {
-          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
-          return lines.length > 0 ? lines : undefined;
-      }}
+          const value = e.target.value;
+          return value ? value.split('\n') : undefined;
+        }}
         rules={[{ required: true, message: "Faktor Positif wajib di isi!" }]}
       >
-        <Input.TextArea placeholder="Masukkan Legalitas Faktor Positif" autoSize={{ minRows: 4, maxRows: 8 }}/>
+        <Input.TextArea placeholder="Masukkan Legalitas Faktor Positif" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={500} showCount/>
       </Form.Item>
 
       <Form.Item
         label="Faktor Negatif & Mitigasi"
         name="faktorNegatifMitigasi"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value.join('\n') : value,
+        })}
         getValueFromEvent={(e) => {
-          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
-          return lines.length > 0 ? lines : undefined;
-      }}
+          const value = e.target.value;
+          return value ? value.split('\n') : undefined;
+        }}
         rules={[{ required: true, message: "Faktor Negatif & Mitigasi wajib di isi!" }]}
       >
-        <Input.TextArea placeholder="Masukkan Faktor Faktor Negatif & Mitigasi" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={300}/>
+        <Input.TextArea placeholder="Masukkan Faktor Faktor Negatif & Mitigasi" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={500} showCount/>
       </Form.Item>
 
       <Form.Item
         label="Rekomendasi"
         name="rekomendasi"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value.join('\n') : value,
+        })}
         getValueFromEvent={(e) => {
-          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
-          return lines.length > 0 ? lines : undefined;
+          const value = e.target.value;
+          return value ? value.split('\n') : undefined;
         }}
         rules={[{ required: true, message: "Rekomendasi wajib di isi!" }]}
       >
-        <Input.TextArea placeholder="Masukkan Rekomendasi" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={100}/>
+        <Input.TextArea placeholder="Masukkan Rekomendasi" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={500} showCount/>
       </Form.Item>
 
       <Form.Item
         label="Persyaratan Sebelum Akad"
         name="persyaratanSebelumAkad"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value.join('\n') : value,
+        })}
         getValueFromEvent={(e) => {
-          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
-          return lines.length > 0 ? lines : undefined;
+          const value = e.target.value;
+          return value ? value.split('\n') : undefined;
         }}
         rules={[{ required: true, message: "Persyaratan Sebelum Akad wajib di isi!" }]}
       >
-        <Input.TextArea placeholder="Masukkan Persyaratan Sebelum Akad" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={100}/>
+        <Input.TextArea placeholder="Masukkan Persyaratan Sebelum Akad" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={500} showCount/>
       </Form.Item>
 
       <Form.Item
         label="Persyaratan Saat Akad"
         name="persyaratanSaatAkad"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value.join('\n') : value,
+        })}
         getValueFromEvent={(e) => {
-          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
-          return lines.length > 0 ? lines : undefined;
+          const value = e.target.value;
+          return value ? value.split('\n') : undefined;
         }}
         rules={[{ required: true, message: "Persyaratan Saat Akad wajib di isi!" }]}
       >
-        <Input.TextArea placeholder="Masukkan Persyaratan Saat Akad" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={100}/>
+        <Input.TextArea placeholder="Masukkan Persyaratan Saat Akad" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={500} showCount/>
       </Form.Item>
 
       <Form.Item
         label="Deviasi"
         name="deviasi"
-        getValueProps={(value) => ({ value: (value || []).join("\n") })}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value.join('\n') : value,
+        })}
         getValueFromEvent={(e) => {
-          const lines = e.target.value.split("\n").filter((line) => line.trim() !== "");
-          return lines.length > 0 ? lines : undefined;
+          const value = e.target.value;
+          return value ? value.split('\n') : undefined;
         }}
         rules={[{ required: true, message: "Deviasi wajib di isi!" }]}
       >
-        <Input.TextArea placeholder="Masukkan Deviasi" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={100}/>
+        <Input.TextArea placeholder="Masukkan Deviasi" autoSize={{ minRows: 4, maxRows: 8 }} maxLength={500} showCount/>
       </Form.Item>
 
       <h3>6. Struktur Kredit</h3>
@@ -132,7 +146,7 @@ const Step8 = ({ formData, setFormData }) => {
               message: "Bunga wajib dipilih",
             },
           ]}>
-            <Input placeholder="Masukkan Bunga" maxLength={100}/>
+            <Input placeholder="Masukkan Bunga" maxLength={100} showCount/>
           </Form.Item>
         </div>
         <div className="form-item">
@@ -142,7 +156,7 @@ const Step8 = ({ formData, setFormData }) => {
               message: "Tenor wajib dipilih",
             },
           ]}>
-            <Input placeholder="Masukkan Tenor" maxLength={100}/>
+            <Input placeholder="Masukkan Tenor" maxLength={100} showCount/>
           </Form.Item>
         </div>
         <div className="form-item">

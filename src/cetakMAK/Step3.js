@@ -467,6 +467,7 @@ const Step3 = ({ formData, setFormData }) => {
         placeholder="Masukkan Profil Debitur"
         autoSize={{ minRows: 6, maxRows: 8 }}
         maxLength={700}
+        showCount
       />
     </Form.Item>
 
@@ -492,6 +493,7 @@ const Step3 = ({ formData, setFormData }) => {
           placeholder="Masukkan Analisa Usaha / Pekerjaan"
           autoSize={{ minRows: 6, maxRows: 8 }}
           maxLength={700}
+          showCount
         />
       </Form.Item>
 
@@ -532,6 +534,7 @@ const Step3 = ({ formData, setFormData }) => {
           autoSize={{ minRows: 6, maxRows: 8 }}
           maxLength={500}
           disabled={isDisabled}
+          showCount
         />
       </Form.Item>
 
@@ -584,6 +587,7 @@ const Step3 = ({ formData, setFormData }) => {
           placeholder="Masukkan Note"
           autoSize={{ minRows: 4, maxRows: 8 }}
           disabled={isDisabled}
+          showCount
         />
       </Form.Item>
 
@@ -655,6 +659,7 @@ const Step3 = ({ formData, setFormData }) => {
           autoSize={{ minRows: 10, maxRows: 8 }}
           disabled={isDisabled}
           maxLength={500}
+          showCount
         />
       </Form.Item>
 
@@ -693,6 +698,7 @@ const Step3 = ({ formData, setFormData }) => {
           autoSize={{ minRows: 4, maxRows: 8 }}
           disabled={isDisabled}
           maxLength={500}
+          showCount
         />
       </Form.Item>
 
@@ -720,6 +726,8 @@ const Step3 = ({ formData, setFormData }) => {
               value={file.description}
               onChange={(e) => handleDescriptionChange(index, e.target.value)}
               disabled={isDisabled}
+              maxLength={30}
+              showCount
             />
           </div>
         )

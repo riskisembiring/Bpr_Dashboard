@@ -186,6 +186,7 @@ const Step5 = ({ formData, setFormData }) => {
                 <Input
                   value={analisa.rekeningKoranBank}
                   placeholder="Masukkan Rekening Koran Bank"
+                  maxLength={50}
                   onChange={(e) => {
                     const updatedList = analisaList.map((item) =>
                       item.key === analisa.key ? { ...item, rekeningKoranBank: e.target.value } : item
@@ -199,6 +200,7 @@ const Step5 = ({ formData, setFormData }) => {
                 <Input
                   value={analisa.noRekening}
                   placeholder="Masukkan No. Rekening"
+                  maxLength={50}
                   onChange={(e) => {
                     const updatedList = analisaList.map((item) =>
                       item.key === analisa.key ? { ...item, noRekening: e.target.value } : item
@@ -212,6 +214,7 @@ const Step5 = ({ formData, setFormData }) => {
                 <Input
                   value={analisa.atasNama}
                   placeholder="Masukkan Atas Nama"
+                  maxLength={50}
                   onChange={(e) => {
                     const updatedList = analisaList.map((item) =>
                       item.key === analisa.key ? { ...item, atasNama: e.target.value } : item
@@ -225,6 +228,7 @@ const Step5 = ({ formData, setFormData }) => {
                 <Input
                   value={analisa.periode}
                   placeholder="Masukkan Periode"
+                  maxLength={50}
                   onChange={(e) => {
                     const updatedList = analisaList.map((item) =>
                       item.key === analisa.key ? { ...item, periode: e.target.value } : item

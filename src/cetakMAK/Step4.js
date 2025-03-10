@@ -157,6 +157,7 @@ const Step4 = ({ formData, setFormData }) => {
                 value={slik.nama}
                 placeholder={`Masukkan Nama SLIK ${index + 1}`}
                 onChange={(e) => handleNamaSlikChange(e.target.value, index)}
+                maxLength={50}
               />
             </Form.Item>
 
@@ -183,6 +184,8 @@ const Step4 = ({ formData, setFormData }) => {
                 onChange={(e) => handleCatatanChange(e.target.value, index)}
                 placeholder="Masukkan Catatan Hasil SLIK"
                 autoSize={{ minRows: 4, maxRows: 8 }}
+                maxLength={1000}
+                showCount
               />
             </Form.Item>
           </Panel>
