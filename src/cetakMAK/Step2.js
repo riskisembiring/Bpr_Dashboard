@@ -270,6 +270,7 @@ const Step2 = ({ formData, setFormData }) => {
           showCount
         />
       </Form.Item>
+      <br></br>
     </div>
   );
 };

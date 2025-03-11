@@ -1117,11 +1117,32 @@ doc.setFontSize(8);
 doc.setTextColor(0); // Black color
 doc.text("Catatan Data Agunan:", 8, notesStartY);
 
-// Add the notes from selectedData?.catatanDataAgunan
+// Prepare the notes text
 const catatanDataAgunan = selectedData?.catatanDataAgunan || [];
 const formattedNotes = catatanDataAgunan.map(note => (note === "" ? "\n" : note)).join("\n");
+
+// Bungkus teks agar tidak melewati batas kanan halaman
+const pageWidth = doc.internal.pageSize.getWidth();
+const marginLeft = 10;
+const marginRight = 10;
+const maxTextWidth = pageWidth - marginLeft - marginRight;
+
+const wrappedNotes = doc.splitTextToSize(formattedNotes, maxTextWidth);
 const notesY = notesStartY + 5; // Position the notes below the label
-doc.text(formattedNotes, 10, notesY);
+
+// Cek apakah teks melebihi panjang halaman
+let currentY = notesY;
+const lineHeight = 4;
+
+wrappedNotes.forEach(line => {
+  // Jika currentY melebihi batas bawah halaman, buat halaman baru
+  if (currentY > doc.internal.pageSize.getHeight() - 10) {
+    doc.addPage();
+    currentY = 10; // Reset posisi Y di halaman baru
+  }
+  doc.text(line, marginLeft, currentY);
+  currentY += lineHeight;
+});
   
 const totalPages13 = doc.internal.getNumberOfPages();
 for (let i = 1; i <= totalPages13; i++) {
