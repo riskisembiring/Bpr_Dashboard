@@ -513,21 +513,21 @@ const Step3 = ({ formData, setFormData }) => {
           value: isDisabled ? "" : Array.isArray(value) ? value.join("\n") : value,
         })}
         getValueFromEvent={(e) => e.target.value.split("\n")} // Jangan hapus baris kosong di sini
-        rules={[
-          {
-            required: !isDisabled,
-            message: "Aspek Pengadaan Barang/Bahan Baku wajib di isi!",
-            validator: (_, value) => {
-              if (isDisabled) {
-                return Promise.resolve();
-              }
-              const filteredLines = value.filter((line) => line.trim() !== "");
-              return filteredLines.length > 0
-                ? Promise.resolve()
-                : Promise.reject(new Error("Aspek Pengadaan Barang/Bahan Baku wajib di isi!"));
-            },
-          },
-        ]}
+        // rules={[
+        //   {
+        //     required: !isDisabled,
+        //     message: "Aspek Pengadaan Barang/Bahan Baku wajib di isi!",
+        //     validator: (_, value) => {
+        //       if (isDisabled) {
+        //         return Promise.resolve();
+        //       }
+        //       const filteredLines = value.filter((line) => line.trim() !== "");
+        //       return filteredLines.length > 0
+        //         ? Promise.resolve()
+        //         : Promise.reject(new Error("Aspek Pengadaan Barang/Bahan Baku wajib di isi!"));
+        //     },
+        //   },
+        // ]}
       >
         <Input.TextArea
           placeholder="Masukkan Aspek Pengadaan Barang/Bahan Baku"
@@ -567,21 +567,21 @@ const Step3 = ({ formData, setFormData }) => {
           value: isDisabled ? "" : Array.isArray(value) ? value.join("\n") : value,
         })}
         getValueFromEvent={(e) => e.target.value.split("\n")} // Jangan hapus baris kosong di sini
-        rules={[
-          {
-            required: !isDisabled,
-            message: "Note Invoice Pembelian wajib di isi!",
-            validator: (_, value) => {
-              if (isDisabled) {
-                return Promise.resolve();
-              }
-              const filteredLines = value.filter((line) => line.trim() !== "");
-              return filteredLines.length > 0
-                ? Promise.resolve()
-                : Promise.reject(new Error("Note Invoice Pembelian wajib di isi!"));
-            },
-          },
-        ]}
+        // rules={[
+        //   {
+        //     required: !isDisabled,
+        //     message: "Note Invoice Pembelian wajib di isi!",
+        //     validator: (_, value) => {
+        //       if (isDisabled) {
+        //         return Promise.resolve();
+        //       }
+        //       const filteredLines = value.filter((line) => line.trim() !== "");
+        //       return filteredLines.length > 0
+        //         ? Promise.resolve()
+        //         : Promise.reject(new Error("Note Invoice Pembelian wajib di isi!"));
+        //     },
+        //   },
+        // ]}
       >
         <Input.TextArea
           placeholder="Masukkan Note"
@@ -638,21 +638,21 @@ const Step3 = ({ formData, setFormData }) => {
           value: isDisabled ? "" : Array.isArray(value) ? value.join("\n") : value,
         })}
         getValueFromEvent={(e) => e.target.value.split("\n")} // Jangan hapus baris kosong di sini
-        rules={[
-          {
-            required: !isDisabled,
-            message: "Aspek Pemasaran/Distribusi di isi!",
-            validator: (_, value) => {
-              if (isDisabled) {
-                return Promise.resolve();
-              }
-              const filteredLines = value.filter((line) => line.trim() !== "");
-              return filteredLines.length > 0
-                ? Promise.resolve()
-                : Promise.reject(new Error("Aspek Pemasaran/Distribusi di isi!"));
-            },
-          },
-        ]}
+        // rules={[
+        //   {
+        //     required: !isDisabled,
+        //     message: "Aspek Pemasaran/Distribusi di isi!",
+        //     validator: (_, value) => {
+        //       if (isDisabled) {
+        //         return Promise.resolve();
+        //       }
+        //       const filteredLines = value.filter((line) => line.trim() !== "");
+        //       return filteredLines.length > 0
+        //         ? Promise.resolve()
+        //         : Promise.reject(new Error("Aspek Pemasaran/Distribusi di isi!"));
+        //     },
+        //   },
+        // ]}
       >
         <Input.TextArea
           placeholder="Masukkan Aspek Pemasaran/Distribusi"
@@ -665,8 +665,8 @@ const Step3 = ({ formData, setFormData }) => {
 
       <Form.Item label="Kontrak Kerja Yang Dimiliki" name="kontrakKerjaDimiliki" getValueProps={(value) => ({
           value: isDisabled ? "" : value,
-        })}
-      rules={[{ required: isDisabled ? false : true, message: "Kontrak Kerja Yang Dimiliki wajib di isi!" }]}>
+        })}>
+      {/* rules={[{ required: isDisabled ? false : true, message: "Kontrak Kerja Yang Dimiliki wajib di isi!" }]}> */}
         <Input placeholder="Masukkan Kontrak Kerja Yang Dimiliki" disabled={isDisabled} />
       </Form.Item>
 
@@ -677,21 +677,21 @@ const Step3 = ({ formData, setFormData }) => {
           value: isDisabled ? "" : Array.isArray(value) ? value.join("\n") : value,
         })}
         getValueFromEvent={(e) => e.target.value.split("\n")} // Jangan hapus baris kosong di sini
-        rules={[
-          {
-            required: !isDisabled,
-            message: "Aspek Rencana Pengembangan Usaha di isi!",
-            validator: (_, value) => {
-              if (isDisabled) {
-                return Promise.resolve();
-              }
-              const filteredLines = value.filter((line) => line.trim() !== "");
-              return filteredLines.length > 0
-                ? Promise.resolve()
-                : Promise.reject(new Error("Aspek Rencana Pengembangan Usaha di isi!"));
-            },
-          },
-        ]}
+        // rules={[
+        //   {
+        //     required: !isDisabled,
+        //     message: "Aspek Rencana Pengembangan Usaha di isi!",
+        //     validator: (_, value) => {
+        //       if (isDisabled) {
+        //         return Promise.resolve();
+        //       }
+        //       const filteredLines = value.filter((line) => line.trim() !== "");
+        //       return filteredLines.length > 0
+        //         ? Promise.resolve()
+        //         : Promise.reject(new Error("Aspek Rencana Pengembangan Usaha di isi!"));
+        //     },
+        //   },
+        // ]}
       >
         <Input.TextArea
           placeholder="Masukkan Aspek Rencana Pengembangan Usaha"

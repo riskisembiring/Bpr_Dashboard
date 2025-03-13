@@ -89,30 +89,30 @@ const CetakMak = () => {
         alert("Data Ringkasan Pengajuan Kredit tidak boleh kosong!");
         return;
       }
-      if (
-        formStep === 3 &&
-        formData.selectedJob === "Wiraswasta" &&
-        (!formData.tableInvoicePembelian || formData.tableInvoicePembelian.length === 0)
-      ) {
-        alert("Data Invoice Pembelian tidak boleh kosong!");
-        return;
-      }
-      if (
-        formStep === 3 &&
-        formData.selectedJob === "Wiraswasta" &&
-        (!formData.tableBuktiTransaksiPembelian || formData.tableBuktiTransaksiPembelian.length === 0)
-      ) {
-        alert("Bukti Transaksi Pembelian tidak boleh kosong!");
-        return;
-      }
-      if (
-        formStep === 3 &&
-        formData.selectedJob === "Wiraswasta" &&
-        (!formData.tableHasilVerifikasiSupplier || formData.tableHasilVerifikasiSupplier.length === 0)
-      ) {
-        alert("Hasil Verifikasi Supplier tidak boleh kosong!");
-        return;
-      }
+      // if (
+      //   formStep === 3 &&
+      //   formData.selectedJob === "Wiraswasta" &&
+      //   (!formData.tableInvoicePembelian || formData.tableInvoicePembelian.length === 0)
+      // ) {
+      //   alert("Data Invoice Pembelian tidak boleh kosong!");
+      //   return;
+      // }
+      // if (
+      //   formStep === 3 &&
+      //   formData.selectedJob === "Wiraswasta" &&
+      //   (!formData.tableBuktiTransaksiPembelian || formData.tableBuktiTransaksiPembelian.length === 0)
+      // ) {
+      //   alert("Bukti Transaksi Pembelian tidak boleh kosong!");
+      //   return;
+      // }
+      // if (
+      //   formStep === 3 &&
+      //   formData.selectedJob === "Wiraswasta" &&
+      //   (!formData.tableHasilVerifikasiSupplier || formData.tableHasilVerifikasiSupplier.length === 0)
+      // ) {
+      //   alert("Hasil Verifikasi Supplier tidak boleh kosong!");
+      //   return;
+      // }
       if (
         formStep === 3 &&
         formData.selectedJob === "Wiraswasta" &&
