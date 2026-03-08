@@ -1,5 +1,7 @@
 import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Button, Form, Typography, message } from 'antd';
+import axios from "axios";
+import FormData from 'form-data';
 
 const { Title } = Typography;
 
@@ -22,22 +24,62 @@ const CameraCapture = forwardRef(({ handleFileChange, handleBase64 }, ref) => {
       });
   };
 
-  const captureImage = () => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL('image/png');
-    const base64Data = dataUrl.split(',')[1];
+const captureImage = async () => {
+  const canvas = canvasRef.current;
+  const context = canvas.getContext("2d");
+
+  context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+
+  const dataUrl = canvas.toDataURL("image/png");
   
-    // Mengecek apakah gambar adalah base64
-    console.log("Base64 image:", base64Data);
-    console.log(":", dataUrl);
+  // Set preview image
+  setImage(dataUrl);
   
-    setImage(dataUrl);
-    setFileName(`CapturedImage_${new Date().getTime()}.png`);
-    handleFileChange(`CapturedImage_${new Date().getTime()}.png`); // Pastikan data URL base64 dikirim ke parent
-    handleBase64(base64Data);
-  };
+  // Generate filename
+  const newFileName = `CapturedImage_${Date.now()}.png`;
+  setFileName(newFileName);
+
+  const blob = await (await fetch(dataUrl)).blob();
+
+  console.log("Blob size:", blob.size);
+
+  const formData = new FormData();
+  formData.append("file", blob, newFileName);
+  formData.append("fileName", newFileName);
+  formData.append("folder", "bprNasnus");
+
+  try {
+    // Use proxy - requests to /api/* will be forwarded to https://api-nasnus.vercel.app
+    const response = await axios.post(
+      "/api/upload",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    console.log("Upload response:", response.data);
+
+    if (response.data && response.data.data) {
+      // Get the URL from response
+      const uploadedUrl = response.data.data;
+      message.success("Foto berhasil diupload");
+      
+      // Call the callback with the uploaded URL if provided
+      if (handleFileChange) {
+        handleFileChange(uploadedUrl);
+      }
+    } else {
+      message.error("Format respons tidak valid");
+    }
+
+  } catch (error) {
+    console.error("Upload error:", error.response?.data || error.message);
+    message.error("Upload gagal: " + (error.response?.data?.message || error.message));
+  }
+};
 
   const stopCamera = () => {
     const stream = videoRef.current?.srcObject;
@@ -157,8 +199,12 @@ const CameraCapture = forwardRef(({ handleFileChange, handleBase64 }, ref) => {
     </div>
   </Form.Item>
 )}
-<canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
-
+  <canvas
+    ref={canvasRef}
+    width={640}
+    height={480}
+    style={{ display: "none" }}
+  ></canvas>
     </div>
   );
 });

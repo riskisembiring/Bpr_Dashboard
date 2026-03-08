@@ -252,8 +252,14 @@ const Collection = ({ userRole }) => {
     setCurrentRecord((prev) => ({ ...prev, foto }));
   };
 
-  const handleBase64 = (fotoBase64) => {
-    setCurrentRecord((prev) => ({ ...prev, fotoBase64 }));
+  const handleBase64 = (foto) => {
+    setCurrentRecord((prev) => ({ ...prev, foto }));
+  };
+
+  const handleImageKitUrl = (imageKitUrl) => {
+    // Store the ImageKit URL in the foto field
+    setCurrentRecord((prev) => ({ ...prev, foto: imageKitUrl }));
+    console.log('ImageKit URL received in Collection:', imageKitUrl);
   };
 //       const updatedData = data.map((item) =>
 //         item.key === record.key ? { ...item, catatan: value } : item
@@ -460,16 +466,26 @@ const handleCancel = async () => {
     // },
     {
       title: "Foto",
-      dataIndex: "fotoBase64", 
-      key: "fotoBase64",
+      dataIndex: "foto", 
+      key: "foto",
       render: (text) => {
-        const base64WithPrefix = `data:image/png;base64,${text}`;
+        // Check if foto is an ImageKit URL (starts with http/https) or base64
+        let imageSrc;
+        if (text && (text.startsWith('http://') || text.startsWith('https://'))) {
+          // ImageKit URL - use directly
+          imageSrc = text;
+        } else if (text) {
+          // Base64 - add prefix
+          imageSrc = `data:image/png;base64,${text}`;
+        } else {
+          return <span>-</span>;
+        }
         return (
           <img
-            src={base64WithPrefix}
-            alt="fotoBase64"
+            src={imageSrc}
+            alt="foto"
             style={{ width: "70px", height: "auto", borderRadius: "8px", cursor: "pointer" }}
-            onClick={() => handleImageClick(base64WithPrefix)} // Tangkap event klik
+            onClick={() => handleImageClick(imageSrc)}
           />
         );
       },
@@ -715,7 +731,7 @@ const handleCancel = async () => {
             </Form.Item>
 
             {/* Camera Component */}
-            <CameraCapture ref={cameraRef} handleFileChange={handleFileChange} handleBase64={handleBase64} />
+            <CameraCapture ref={cameraRef} handleFileChange={handleFileChange} handleBase64={handleBase64} handleImageKitUrl={handleImageKitUrl} />
 
             {/* Location Component */}
             <Location ref={locationRef} updateLocation={updateLocation} nameLocation={nameLocation} nama form={form}/>
