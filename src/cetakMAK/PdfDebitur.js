@@ -164,7 +164,7 @@ doc.text("1. Profil Debitur", 8, analysisStartY1);
 
 const profilDebitur = selectedData?.profilDebitur || "Tidak ada informasi";
 const startY = analysisStartY1 + 8;
-const textDimensions = doc.getTextDimensions(profilDebitur);
+// const textDimensions = doc.getTextDimensions(profilDebitur);
 
 // Menentukan lebar dan pemecahan teks agar kotak sesuai
 const boxWidth2 = 190;
@@ -190,7 +190,7 @@ const formattedText = analisaUsahaPekerjaan
 
 // Menentukan dimensi teks untuk analisaUsahaPekerjaan
 const boxWidth3 = 190;
-const lines2 = doc.splitTextToSize("LATAR BELAKANG & AKTIVITAS USAHA\n" + "\n" + formattedText, boxWidth3 - 10);
+const lines2 = doc.splitTextToSize("LATAR BELAKANG & AKTIVITAS USAHA\n\n" + formattedText, boxWidth3 - 10);
 
 // Menyesuaikan tinggi kotak berdasarkan jumlah baris
 const boxHeight3 = lines2.length * 5 + 10; // Sesuaikan tinggi kotak berdasarkan jumlah baris
@@ -344,7 +344,7 @@ namaToko.forEach(nama => {
 
 // Posisi awal untuk tabel kedua (di bawah tabel pertama)
 const table2StartY = Math.max(rowY + 20, noteStartY + noteHeight + 10);
-const colWidths2 = { no: 12, namaToko: 90, nominalBelanja: 80 };
+// const colWidths2 = { no: 12, namaToko: 90, nominalBelanja: 80 };
 
 // Tambahkan teks sebelum tabel kedua
 doc.setFontSize(8);
@@ -521,7 +521,7 @@ doc.rect(10, startY5, boxWidth7, boxHeight7);
 // Menambahkan teks konten di dalam kotak
 doc.text(lines5, 15, startYContent2);
 
-const startY6 = startY5 + boxHeight7 + 15; // Mengatur jarak dari kotak sebelumnya
+// const startY6 = startY5 + boxHeight7 + 15; // Mengatur jarak dari kotak sebelumnya
 
 doc.addImage("/images/logo1.png", "PNG", 10, 10, 60, 20);
 
@@ -531,7 +531,7 @@ doc.text("MEMORANDUM ANALISA KREDIT", 200, 25, { align: "right" });
 doc.setLineWidth(0.5);
 doc.line(10, 30, 200, 30);
 
-const analysisStartY4 = analysisStartY + 3;
+// const analysisStartY4 = analysisStartY + 3;
 doc.setFontSize(8);
 
  // Deklarasikan businessPhotos sebelum digunakan
@@ -1079,7 +1079,7 @@ const data8 = tableDataAgunan.map((item, index) => [
 
 // Set the table position
 const tableStartY5 = dataAgunanY + 5; // Start the table below the text
-const tableWidth = boxWidth8; // Same width as the previous box
+// const tableWidth = boxWidth8; // Same width as the previous box
 
 // Add the table headers8
 doc.autoTable({

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Table, Input } from "antd";
 import { NumericFormat } from "react-number-format";
 
@@ -7,7 +7,7 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
   const data2 = formData.tableNeracaProforma || [];
   const isDisabled = formData.jenisPekerjaanDebt === "Karyawan" || formData.jenisPekerjaanDebt === "BackToBack";
 
-  const defaultLabaRugi = [
+  const defaultLabaRugi = useMemo(() => [
     { key: "1", deskripsi: "Penjualan", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
     { key: "2", deskripsi: "COGS / HPP", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
     { key: "3", deskripsi: "Laba (Rugi) Kotor", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
@@ -29,9 +29,9 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
     { key: "21", deskripsi: "Biaya Rumah Tangga", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
     { key: "22", deskripsi: "Pendapatan lain-lain", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
     { key: "23", deskripsi: "Laba (Rugi) Bersih", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
-  ];
+  ], []);
 
-  const defaultNeraca = [
+  const defaultNeraca = useMemo(() => [
     { key: "1", deskripsi: "AKTIVA", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
     { key: "2", deskripsi: "AKTIVA LANCAR", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
     { key: "3", deskripsi: "Kas dan Bank", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
@@ -52,17 +52,19 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
     { key: "18", deskripsi: "Laba Tahun Berjalan", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
     { key: "19", deskripsi: "TOTAL HUTANG + MODAL", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
     { key: "20", deskripsi: "Check Balance", nominalPeriode: "", persenPeriode: "", nominalProyeksi: "", persenProyeksi: "" },
-  ];
+  ], []);
 
   // Set data default saat komponen pertama kali dimount
-  useEffect(() => {
+    useEffect(() => {
     if (!formData.tableLabaRugiProforma || formData.tableLabaRugiProforma.length === 0) {
       setFormData((prev) => ({ ...prev, tableLabaRugiProforma: defaultLabaRugi }));
     }
+
     if (!formData.tableNeracaProforma || formData.tableNeracaProforma.length === 0) {
       setFormData((prev) => ({ ...prev, tableNeracaProforma: defaultNeraca }));
     }
-  }, [setFormData, formData]);
+
+  }, [formData, setFormData, defaultLabaRugi, defaultNeraca]);
 
   const handleInputChange = (value, key, column, tableKey) => {
     if (isDisabled) return; // Mencegah perubahan jika disabled
@@ -71,24 +73,6 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
     );
     setFormData({ ...formData, [tableKey]: newData });
   };
-
-  // const addRow = (tableKey) => {
-  //   const newRow = {
-  //     key: ((tableKey === "tableLabaRugiProforma" ? data : data2).length + 1).toString(),
-  //     deskripsi: "Deskripsi Baru", // Deskripsi default ketika menambahkan baris
-  //     nominalPeriode: "",
-  //     persenPeriode: "",
-  //     nominalProyeksi: "",
-  //     persenProyeksi: "",
-  //   };
-  //   const newData = [...(tableKey === "tableLabaRugiProforma" ? data : data2), newRow];
-  //   setFormData({ ...formData, [tableKey]: newData });
-  // };
-
-  // const removeRow = (key, tableKey) => {
-  //   const newData = (tableKey === "tableLabaRugiProforma" ? data : data2).filter((row) => row.key !== key);
-  //   setFormData({ ...formData, [tableKey]: newData });
-  // };
 
   const columns = (tableKey) => [
     {
@@ -209,9 +193,6 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
         style={{ marginBottom: "16px" }}
         scroll={{ x: "max-content" }}
       />
-      {/* <Button type="primary" icon={<PlusOutlined />} onClick={() => addRow("tableLabaRugiProforma")} style={{ marginTop: "8px" }}>
-        Tambah Baris
-      </Button> */}
 
       <h4>b. Laporan Neraca Proforma</h4>
       <Table
@@ -222,9 +203,6 @@ const Step6 = ({ formData, setFormData, tableKey }) => {
         style={{ marginBottom: "16px" }}
         scroll={{ x: "max-content" }}
       />
-      {/* <Button type="primary" icon={<PlusOutlined />} onClick={() => addRow("tableNeracaProforma")} style={{ marginTop: "8px" }}>
-        Tambah Baris
-      </Button> */}
     </div>
   );
 };

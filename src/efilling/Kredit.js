@@ -88,7 +88,7 @@ const Kredit = () => {
         const result = await response.json();
         message.success(result.message || "Data berhasil disimpan!");
       } else {
-        const error = await response.json();
+        // const error = await response.json();
         message.error("Gagal menyimpan data!");
       }
     } catch (error) {
