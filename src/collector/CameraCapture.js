@@ -1,7 +1,7 @@
 import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Button, Form, Typography, message } from 'antd';
 import axios from "axios";
-import FormData from 'form-data';
+// import FormData from 'form-data';
 
 const { Title } = Typography;
 
@@ -51,7 +51,7 @@ const captureImage = async () => {
   try {
     // Use proxy - requests to /api/* will be forwarded to https://api-nasnus.vercel.app
     const response = await axios.post(
-      "/api/upload",
+      "https://api-nasnus.vercel.app/api/upload",
       formData,
       {
         headers: {
