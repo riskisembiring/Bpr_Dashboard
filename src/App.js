@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
+import VerifyEmailOTP from "./components/VerifyEmailOTP";
 import DashboardLayout from "./components/Dashboard";
 import Profile from "./components/Profile";
 import Collection from "./collector/Collection";
@@ -10,7 +13,7 @@ import Kredit from "./efilling/Kredit";
 import PengajuanKreditAo from "./pengajuanKreditAo/PengajuanKreditMarketingAo";
 import PengajuanKreditAk from "./pengajuanKreditAk/PengajuanKreditMarketingAk";
 import CetakMAK from "./cetakMAK/CetakMAK";
-import AboutUs from "./components/AboutUs";
+import StatistikData from "./components/StatistikData";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -37,7 +40,21 @@ const App = () => {
         {/* Route Register */}
         <Route path="/register" element={<Register />} />
 
-        {/* Route Dashboard Layout */}
+        {/* Route Forgot Password */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        {/* Route Reset Password */}
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Route Email OTP Verification */}
+        <Route path="/verify-email-otp" element={
+          <VerifyEmailOTP 
+            setIsAuthenticated={setIsAuthenticated} 
+            setUserRole={setUserRole} 
+          />
+        } />
+
+        {/* Route Dashboard Layout with profile check */}
         <Route
           path="/dashboard/*"
           element={
@@ -56,17 +73,9 @@ const App = () => {
           <Route path="menu/collection" element={<Collection userRole={userRole} />} />
           <Route path="menu/efiling/deposito" element={<Deposito />} />
           <Route path="menu/efiling/kredit" element={<Kredit />} />
-          {/* Rute dinamis berdasarkan userRole */}
-            {userRole === "marketing" ? (
-              <Route path="menu/pengajuanKreditAo" element={<PengajuanKreditAo />} />
-            ) : userRole === "adminKredit" ? (
-              <Route path="menu/pengajuanKreditAk" element={<PengajuanKreditAk />} />
-            ) : (
-              // Default jika userRole tidak cocok
-              <Route path="*" element={<Navigate to="/not-authorized" replace />} />
-            )}
-          <Route path="menu/cetakMAK" element={<CetakMAK />} />
-          <Route path="about-us" element={<AboutUs />} />
+          <Route path="menu/pengajuankredit" element={<PengajuanKreditAk />} />
+          <Route path="menu/cetakMAK" element={<CetakMAK userRole={userRole} />} />
+          <Route path="statistik-data" element={<StatistikData userRole={userRole} />} />
         </Route>
 
         {/* Route default untuk Dashboard ke Profile */}
@@ -80,3 +89,4 @@ const App = () => {
 };
 
 export default App;
+

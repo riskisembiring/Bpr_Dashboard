@@ -1,0 +1,29 @@
+.update-steps {
+  margin-bottom: 32px;
+}
+
+.profile-container {
+  padding: 24px;
+  background: #fff;
+  min-height: 80vh;
+}
+
+.profile-header {
+  text-align: center;
+  color: #1890ff;
+  margin-bottom: 32px;
+}
+
+.ant-card {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 16px;
+  }
+  
+  .update-steps .ant-steps-item-title {
+    font-size: 14px;
+  }
+}

@@ -70,16 +70,8 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
         {
           key: "2-3",
           label: "Pengajuan Kredit",
-          onClick: () => {
-            const targetPath =
-              userRole === "marketing"
-                ? "/dashboard/menu/pengajuanKreditAo"
-                : userRole === "adminKredit"
-                ? "/dashboard/menu/pengajuanKreditAk"
-                : "/not-authorized"; // Default jika role tidak cocok
-            handleMenuClick("2-3", targetPath);
+          onClick: () => handleMenuClick("2-3", "/dashboard/menu/pengajuankredit"),
           },
-        },
         {
           key: "2-4",
           label: "Cetak MAK",
@@ -89,8 +81,8 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
     },
     {
       key: "3",
-      label: "About Us",
-      onClick: () => handleMenuClick("3", "/dashboard/about-us"),
+      label: "Statistik Data",
+      onClick: () => handleMenuClick("3", "/dashboard/statistik-data"),
     },
   ];
 
@@ -126,7 +118,7 @@ const DashboardLayout = ({ setIsAuthenticated, userRole }) => {
         <Header className="header">
           <div className="header-logo">
             <img
-              src="/images/logo.png"
+              src="/logo.png"
               alt="Logo"
               style={{
                 height: "25px",

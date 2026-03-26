@@ -1,20 +1,51 @@
 /* Soft blue background styling */
 .login-container {
-    background: linear-gradient(to right, #d3e9f7, #a9cbe7); /* Soft gradient from light blue to soft blue */
+    background-image: url('../../public/bprBackground.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    width: 100%;
+  }
+
+  /* Responsive for mobile */
+  @media (max-width: 768px) {
+    .login-container {
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .login-card {
+      width: 100%;
+      max-width: 350px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .login-container {
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .login-card {
+      width: 100%;
+      max-width: 300px;
+    }
   }
   
   /* Styling for the login card */
   .login-card {
     width: 100%;
     max-width: 400px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: rgba(255, 255, 255, 0.9); /* Slight transparency for card */
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
   }
   
   /* Styling for the "Daftar di sini" link */
@@ -23,27 +54,60 @@
     margin-top: 15px;
   }
   
-  /* Add some modern button effects */
+  /* Button effects */
   .ant-btn-primary {
-    background-color: #1890ff;
-    border-color: #1890ff;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    height: 50px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
   }
   
   .ant-btn-primary:hover {
-    background-color: #40a9ff;
-    border-color: #40a9ff;
-    transform: translateY(-2px); /* Add hover effect */
+    background: linear-gradient(135deg, #719ffa 0%, #7ea1ff 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
   }
   
   /* Form input styling */
   .ant-input, .ant-input-password {
-    border-radius: 5px;
-    padding: 10px;
+    border-radius: 8px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
   }
   
-  /* Additional form spacing */
+  .ant-input:focus, .ant-input-password:focus {
+    border-color: rgba(102,126,234,0.8);
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+  }
+
+  /* Form spacing */
   .ant-form-item {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
-  
+
+  /* Link styling */
+  .forgot-password-link {
+    text-align: center;
+    margin: 12px 0;
+  }
+
+  .forgot-password-link a {
+    color: #667eea;
+    font-weight: 500;
+  }
+
+  .forgot-password-link a:hover {
+    color: #5a67d8;
+  }
+
+  /* Card title */
+  .ant-card-head-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d3748;
+  }
+

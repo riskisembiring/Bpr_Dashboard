@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Table, Button, Modal, Input, Form, Select, Radio, message, Spin, Typography } from "antd";
+import { Table, Button, Modal, Input, Form, Select, Radio, message, Spin, Popconfirm, Alert } from "antd";
 import ExportToExcel from "./ExportToExcel";
 import CameraCapture from "./CameraCapture";
 import Location from "./Location";
@@ -11,7 +11,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 
 const { Option } = Select;
-const { Title } = Typography;
+// const { Title } = Typography;
 
 const Collection = ({ userRole }) => {
   const [data, setData] = useState([]);
@@ -232,9 +232,9 @@ const Collection = ({ userRole }) => {
           : item
       );  
       setData(updatedData);
-  
+
       // Kirim perubahan ke server menggunakan API
-      await fetch(`https://api-nasnus.vercel.app/api/data/${selectedId}`, {
+      await fetch(`https://api-nasnus.vercel.app/api/data/${record.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -370,6 +370,44 @@ const handleCancel = async () => {
       return; // Jika validasi gagal, hentikan eksekusi
     }
   };
+
+  const handleCleanupOldImages = async () => {
+    const hide = message.loading('Membersihkan Data lama...', 0);
+    try {
+      const [imagekitRes, dataRes] = await Promise.all([
+        fetch('https://api-nasnus.vercel.app/api/delete-imagekit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        }),
+        fetch('https://api-nasnus.vercel.app/api/cleanup-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+      ]);
+
+      const imagekitResult = await imagekitRes.json();
+      const dataResult = await dataRes.json();
+
+      let msg = 'Pembersihan selesai!\n';
+      if (imagekitRes.ok && imagekitResult.deletedCount > 0) {
+        msg += `🖼️ ImageKit: ${imagekitResult.deletedCount} foto lama terhapus\n`;
+      }
+      if (dataRes.ok && Object.values(dataResult.results || {}).reduce((a, b) => a + b, 0) > 0) {
+        msg += `📄 Data: ${Object.values(dataResult.results || {}).reduce((a, b) => a + b, 0)} dokumen lama terhapus`;
+      } else {
+        msg += 'Tidak ada data lama ditemukan';
+      }
+
+      message.success(msg);
+    } catch (error) {
+      message.error('❌ Gagal cleanup - cek console');
+      console.error('Cleanup error:', error);
+    } finally {
+      hide();
+    }
+  };
+
+
   const filteredData = userRole === 'direksi'
   ? data.filter((item) =>
       searchText === "" || 
@@ -585,6 +623,26 @@ const handleCancel = async () => {
 
         {/* Button Export to Excel */}
         <ExportToExcel data={data} disabled={userRole === "collector"} />
+        
+        {/* Cleanup Old Images Button - Admin/Verifikator */}
+        <Popconfirm
+          title="Yakin ingin menghapus?"
+          description="Data yang lebih lama dari 3 bulan akan dihapus secara permanen."
+          onConfirm={handleCleanupOldImages}
+          okText="Ya, hapus"
+          cancelText="Batal"
+        >
+          <Button
+            type="dashed"
+            danger
+            disabled={userRole !== "direksi" && userRole !== "verifikator"}
+            loading={false}
+            icon={<span>🧹</span>}
+            style={{ marginLeft: "2px" }}
+          >
+            Bersihkan data 3 Bulan lalu
+          </Button>
+        </Popconfirm>
       </div>
     </div>
 
@@ -754,14 +812,30 @@ const handleCancel = async () => {
       )}
       </>
        ) : (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <Title level={4}>User '{userRole}' tidak memiliki akses untuk membuka menu ini!</Title>
-          <div style={{ fontSize: "30px" }}>😞</div>
+        <div className="error-container" style={{ textAlign: "center", marginTop: "20px" }}>
+          <Alert
+            message="Akses Ditolak"
+            description={`User '${getRoleDisplayName(userRole)}' tidak memiliki akses untuk membuka menu ini!`}
+            type="error"
+            showIcon
+          />
         </div>
       )}
     </div>
 
   );
+};
+
+const getRoleDisplayName = (role) => {
+  const knownRoles = {
+    collector: 'Collector',
+    marketing: 'Marketing AO',
+    adminKredit: 'Admin Kredit',
+    analisis: 'Analisis',
+    direksi: 'Direksi',
+    verifikator: 'Verifikator',
+  };
+  return knownRoles[role] || role.charAt(0).toUpperCase() + role.slice(1);
 };
 
 export default Collection;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Typography, Table, Modal, Spin } from "antd";
+import { Form, Button, Table, Modal, Spin, Alert, message } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { handleExportToPDF } from "./PdfDebitur";
 import { handleExportToExcel } from "./ExcelDebitur";
@@ -14,14 +15,13 @@ import Step8 from "./Step8";
 import "../styles/CetakMak.css";
 import dayjs from "dayjs";
 
-const { Title } = Typography;
+// const { Title } = Typography;
 
-const CetakMak = () => {
+const CetakMak = ({ userRole }) => {
   const [form] = Form.useForm();
   const [dataDebitur, setDataDebitur] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [userRole, setUserRole] = useState(null);
   const [selectedRowKey, setSelectedRowKey] = useState(null);
   const [formStep, setFormStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -41,9 +41,7 @@ const CetakMak = () => {
   });
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    setUserRole(role); // Simpan user role di state
-
+    
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -326,6 +324,53 @@ const CetakMak = () => {
     setSelectedRowKey(record.id);
   };
 
+  const handleDelete = async (record) => {
+    Modal.confirm({
+      title: 'Konfirmasi Hapus',
+      content: `Apakah Anda yakin ingin menghapus data MAK "${record.namaDebitur}"?`,
+      okText: 'Hapus',
+      okType: 'danger',
+      cancelText: 'Batal',
+      onOk: async () => {
+        try {
+          setIsLoading(true);
+
+          const response = await fetch(`https://api-nasnus.vercel.app/api/delete-mak`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: record.id
+            }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            setDataDebitur(prevData =>
+              prevData.filter(item => item.id !== record.id)
+            );
+
+            if (selectedRowKey === record.id) {
+              setSelectedRowKey(null);
+            }
+
+            message.success('Data berhasil dihapus!');
+          } else {
+            message.error('Gagal menghapus data: ' + result.message);
+          }
+
+        } catch (error) {
+          console.error('Error deleting data:', error);
+          message.error('Terjadi kesalahan saat menghapus data!');
+        } finally {
+          setIsLoading(false);
+        }
+      },
+    });
+  };
+
   const columns = [
     {
       title: "Id",
@@ -380,13 +425,26 @@ const CetakMak = () => {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <Button
-          type="primary"
-          onClick={() => handleEdit(record)}
-          style={{ fontSize: "14px" }}
-        >
-          Edit
-        </Button>
+        <>
+          <Button
+            type="primary"
+            onClick={() => handleEdit(record)}
+            style={{ fontSize: "14px", marginRight: 8 }}
+          >
+            Edit
+          </Button>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(record);
+            }}
+            style={{ fontSize: "14px" }}
+          >
+            Hapus
+          </Button>
+        </>
       ),
     },
   ];
@@ -601,15 +659,29 @@ const CetakMak = () => {
           )}
         </>
       ) : (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <Title level={4}>
-            User '{userRole}' tidak memiliki akses untuk membuka menu ini!
-          </Title>
-          <div style={{ fontSize: "30px" }}>😞</div>
+        <div className="error-container" style={{ textAlign: "center", marginTop: "20px" }}>
+          <Alert
+            message="Akses Ditolak"
+            description={`User '${getRoleDisplayName(userRole)}' tidak memiliki akses untuk membuka menu ini!`}
+            type="error"
+            showIcon
+          />
         </div>
       )}
     </div>
   );
 };
+
+  const getRoleDisplayName = (role) => {
+    const knownRoles = {
+      collector: 'Collector',
+      marketing: 'Marketing AO',
+      adminKredit: 'Admin Kredit',
+      analisis: 'Analisis',
+      direksi: 'Direksi',
+      verifikator: 'Verifikator',
+    };
+    return knownRoles[role] || role.charAt(0).toUpperCase() + role.slice(1);
+  };
 
 export default CetakMak;

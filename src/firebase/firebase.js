@@ -1,6 +1,6 @@
 // src/firebase.js
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -18,7 +18,7 @@ const storage = getStorage(app);
 
 // ImageKit Config
 const IMAGEKIT_PUBLIC_KEY = '5AhqwfLNexuB';
-const IMAGEKIT_PRIVATE_KEY = 'private_5AhqwfLNexuB+St9QoDexd+y5hs=';
+// const IMAGEKIT_PRIVATE_KEY = 'private_5AhqwfLNexuB+St9QoDexd+y5hs=';
 
 export const uploadImageToImageKit = async (dataUrl, folder = 'collection') => {
   try {
@@ -76,4 +76,4 @@ export const uploadImageToFirebase = async (base64Data, folder = 'collection') =
   }
 };
 
-export { db, addDoc, collection, storage };
+export { db, addDoc, collection, storage, doc, deleteDoc };

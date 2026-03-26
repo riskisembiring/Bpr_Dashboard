@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Card, message, Typography, Select } from "antd";
+import { UserOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined, LockOutlined, SafetyOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/Register.css";
@@ -14,20 +15,28 @@ const Register = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      // Kirim data ke backend melalui API endpoint
       const response = await axios.post("https://api-nasnus.vercel.app/api/add-user", {
         username: values.username,
-        email: values.email,
         userRole: values.role,
         password: values.password,
+        email: values.email || null,
+        phone: values.phone || null,
+        fullName: values.fullName || null,
+        address: values.address || null,
       });
 
-      // Tampilkan pesan sukses dan redirect ke halaman login
-      message.success(response.data.message || "Pendaftaran berhasil!").then(() => {
-        navigate("/");
-      })
+      if (values.email) {
+        localStorage.setItem("temp_username", values.username);
+        localStorage.setItem("temp_email", values.email);
+        message.success("Pendaftaran berhasil! Verifikasi email OTP.").then(() => {
+          navigate("/verify-email-otp");
+        });
+      } else {
+        message.success(response.data.message || "Pendaftaran berhasil!").then(() => {
+          navigate("/");
+        });
+      }
     } catch (error) {
-      // Tampilkan pesan error jika terjadi kegagalan
       message.error(
         error.response?.data?.message || "Terjadi kesalahan saat mendaftar."
       );
@@ -38,9 +47,9 @@ const Register = () => {
 
   return (
     <div className="register-container">
-      <Card className="register-card" title="Register">
+      <Card className="register-card" title={<span>📝 Daftar Akun Baru</span>}>
         <Form name="register" onFinish={onFinish} layout="vertical">
-        <Form.Item
+          <Form.Item
             label="Posisi atau Jabatan"
             name="role"
             rules={[{ required: true, message: "Pilih Posisi atau Jabatan!" }]}
@@ -50,8 +59,8 @@ const Register = () => {
               <Option value="marketing">Marketing</Option>
               <Option value="adminKredit">Admin Kredit</Option>
               <Option value="analisis">Analisis</Option>
-              <Option value="direksi">Direksi</Option>
-              <Option value="verifikator">Verifikator</Option>
+              <Option value="direksi" disabled>Direksi</Option>
+              <Option value="verifikator" disabled>Verifikator</Option>
             </Select>
           </Form.Item>
           <Form.Item
@@ -59,24 +68,45 @@ const Register = () => {
             name="username"
             rules={[{ required: true, message: "Masukkan username Anda!" }]}
           >
-            <Input placeholder="Username" />
+            <Input prefix={<UserOutlined />} placeholder="Username" />
           </Form.Item>
-          {/* <Form.Item
+          <Form.Item
             label="Email"
             name="email"
-            rules={[{ required: true, message: "Masukkan email Anda!" }]}
+            rules={[{ required: true, type: 'email', message: "Masukkan email valid!" }]}
           >
-            <Input placeholder="Email" />
-          </Form.Item> */}
+            <Input prefix={<MailOutlined />} placeholder="Email" />
+          </Form.Item>
+          <Form.Item
+            label="Phone"
+            name="phone"
+            rules={[{required: true, message: "Masukkan nomor HP anda!"}]}
+          >
+            <Input prefix={<PhoneOutlined />} placeholder="Phone" />
+          </Form.Item>
+          <Form.Item
+            label="Full Name"
+            name="fullName"
+            rules={[{required: true, message: "Masukkan nama lengkap anda!"}]}
+          >
+            <Input prefix={<UserOutlined />} placeholder="Full Name" />
+          </Form.Item>
+          <Form.Item
+            label="Alamat"
+            name="address"
+            rules={[{required: true, message: "Masukkan alamat anda!"}]}
+          >
+            <Input prefix={<EnvironmentOutlined />} placeholder="Address" />
+          </Form.Item>
           <Form.Item
             label="Password"
             name="password"
             rules={[{ required: true, message: "Masukkan password Anda!" }]}
           >
-            <Input.Password placeholder="Password" />
+            <Input.Password prefix={<LockOutlined />} placeholder="Password" />
           </Form.Item>
           <Form.Item
-            label="Confirm Password"
+            label="Konfirmasi Password"
             name="confirmPassword"
             dependencies={["password"]}
             rules={[
@@ -91,7 +121,7 @@ const Register = () => {
               }),
             ]}
           >
-            <Input.Password placeholder="Konfirmasi Password" />
+            <Input.Password prefix={<SafetyOutlined />} placeholder="Konfirmasi Password" />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" block loading={loading}>
@@ -111,3 +141,4 @@ const Register = () => {
 };
 
 export default Register;
+
