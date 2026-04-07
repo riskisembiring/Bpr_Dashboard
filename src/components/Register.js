@@ -60,7 +60,7 @@ const Register = () => {
               <Option value="adminKredit">Admin Kredit</Option>
               <Option value="analisis">Analisis</Option>
               <Option value="direksi" disabled>Direksi</Option>
-              <Option value="verifikator" disabled>Verifikator</Option>
+              <Option value="verifikator">Verifikator</Option>
             </Select>
           </Form.Item>
           <Form.Item

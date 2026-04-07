@@ -71,7 +71,8 @@ const CetakMak = ({ userRole }) => {
     return (
       userRole === "marketing" ||
       userRole === "analisis" ||
-      userRole === "direksi"
+      userRole === "direksi" ||
+      userRole === "adminKredit"
     );
   };
 
