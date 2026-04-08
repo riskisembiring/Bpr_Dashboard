@@ -8,6 +8,7 @@ import {
 import { Table, Form, Input, Button, Space, Upload, message, Radio } from "antd";
 import axios from "axios";
 import { NumericFormat } from "react-number-format";
+import "../styles/Step3.css";
 
 const Step3 = ({ formData, setFormData }) => {
   const [isUploading, setIsUploading] = useState(false);
@@ -538,27 +539,31 @@ const Step3 = ({ formData, setFormData }) => {
         />
       </Form.Item>
 
-      <h4>Tabel Invoice Pembelian</h4>
-      <Table
-        columns={columns("tableInvoicePembelian")}
-        dataSource={isDisabled ? [] : data}
-        pagination={false}
-        bordered
-        style={{ marginBottom: "16px" }}
-        scroll={{ x: "max-content" }}
-        responsive
-      />
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => 
-            addRow("tableInvoicePembelian")
-        }
-        style={{ marginTop: "8px", marginBottom: "12px" }}
-        disabled={isDisabled}
-      >
-        Tambah Data
-      </Button>
+      <div className="step3-table-section">
+        <h4 className="step3-section-title">Tabel Invoice Pembelian</h4>
+        <Table
+          className="step3-table"
+          columns={columns("tableInvoicePembelian")}
+          dataSource={isDisabled ? [] : data}
+          pagination={false}
+          bordered
+          style={{ marginBottom: "16px" }}
+          scroll={{ x: "max-content" }}
+          responsive
+        />
+        <Button
+          className="step3-add-button"
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() =>
+              addRow("tableInvoicePembelian")
+          }
+          style={{ marginTop: "8px", marginBottom: "12px" }}
+          disabled={isDisabled}
+        >
+          Tambah Data
+        </Button>
+      </div>
 
       <Form.Item
         label="Note Invoice Pembelian"
@@ -591,45 +596,53 @@ const Step3 = ({ formData, setFormData }) => {
         />
       </Form.Item>
 
-      <h4>Tabel Bukti Transaksi Pembelian</h4>
-      <Table
-        columns={columns2("tableBuktiTransaksiPembelian")}
-        dataSource={isDisabled? [] : data3}
-        pagination={false}
-        bordered
-        style={{ marginBottom: "16px" }}
-        scroll={{ x: "max-content" }}
-        responsive
-      />
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => addRow2("tableBuktiTransaksiPembelian")}
-        style={{ marginTop: "8px", marginBottom: "12px" }}
-        disabled={isDisabled}
-      >
-        Tambah Data
-      </Button>
+      <div className="step3-table-section">
+        <h4 className="step3-section-title">Tabel Bukti Transaksi Pembelian</h4>
+        <Table
+          className="step3-table"
+          columns={columns2("tableBuktiTransaksiPembelian")}
+          dataSource={isDisabled? [] : data3}
+          pagination={false}
+          bordered
+          style={{ marginBottom: "16px" }}
+          scroll={{ x: "max-content" }}
+          responsive
+        />
+        <Button
+          className="step3-add-button"
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => addRow2("tableBuktiTransaksiPembelian")}
+          style={{ marginTop: "8px", marginBottom: "12px" }}
+          disabled={isDisabled}
+        >
+          Tambah Data
+        </Button>
+      </div>
 
-      <h4>Tabel Hasil Verifikasi Suplayer bahan baku</h4>
-      <Table
-        columns={columns3("tableHasilVerifikasiSupplier")}
-        dataSource={isDisabled? [] : data5}
-        pagination={false}
-        bordered
-        style={{ marginBottom: "16px" }}
-        scroll={{ x: "max-content" }}
-        responsive
-      />
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => addRow3("tableHasilVerifikasiSupplier")}
-        style={{ marginTop: "8px", marginBottom: "12px" }}
-        disabled={isDisabled}
-      >
-        Tambah Data
-      </Button>
+      <div className="step3-table-section">
+        <h4 className="step3-section-title">Tabel Hasil Verifikasi Suplayer bahan baku</h4>
+        <Table
+          className="step3-table"
+          columns={columns3("tableHasilVerifikasiSupplier")}
+          dataSource={isDisabled? [] : data5}
+          pagination={false}
+          bordered
+          style={{ marginBottom: "16px" }}
+          scroll={{ x: "max-content" }}
+          responsive
+        />
+        <Button
+          className="step3-add-button"
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => addRow3("tableHasilVerifikasiSupplier")}
+          style={{ marginTop: "8px", marginBottom: "12px" }}
+          disabled={isDisabled}
+        >
+          Tambah Data
+        </Button>
+      </div>
 
       <Form.Item
         label="Aspek Pemasaran/Distribusi"
@@ -702,8 +715,9 @@ const Step3 = ({ formData, setFormData }) => {
         />
       </Form.Item>
 
-      <h4>Foto Usaha</h4>
+      <h4 className="step3-section-title">Foto Usaha</h4>
       <Upload
+        className="step3-upload"
         customRequest={handleUpload}
         fileList={isDisabled ? [] : fileList}
         onRemove={handleRemove}
@@ -713,7 +727,7 @@ const Step3 = ({ formData, setFormData }) => {
         accept="image/*"
         disabled={isDisabled}
       >
-        <Button icon={isUploading ? <LoadingOutlined /> : <UploadOutlined />} disabled={isUploading || isDisabled}>
+        <Button className="step3-upload-button" icon={isUploading ? <LoadingOutlined /> : <UploadOutlined />} disabled={isUploading || isDisabled}>
           {isUploading ? "Uploading..." : "Upload Foto Usaha"}
         </Button>
       </Upload>

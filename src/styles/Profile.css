@@ -156,4 +156,19 @@
   .profile-hero { padding: 40px 20px; }
   .profile-avatar { width: 140px !important; height: 140px !important; }
   .info-grid, .stats-grid { grid-template-columns: 1fr; }
+  .update-form-card {
+    padding: 20px;
+  }
+  .update-button {
+    height: 44px !important;
+    font-size: 0.85rem !important;
+    padding: 0 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .update-button {
+    font-size: 0.78rem !important;
+    letter-spacing: 0;
+  }
 }

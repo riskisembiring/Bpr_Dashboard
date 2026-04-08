@@ -55,14 +55,30 @@
     border-right: none;
   }
 
-  .header-user-container {
-    display: flex;
-    align-items: center;        /* Vertikal center */
-    justify-content: center;     /* Horizontal center */
-    gap: 20px;                  /* Jarak antar tombol */
-  }
+.header-user-container {
+  display: flex;
+  align-items: center;        /* Vertikal center */
+  justify-content: center;     /* Horizontal center */
+  gap: 20px;                  /* Jarak antar tombol */
+  flex-wrap: wrap;
+}
 
-  @media (max-width: 768px) {
+.cetakmak-footer-actions .ant-form-item-control-input-content {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cetakmak-step-button {
+  min-width: 110px;
+  height: 40px;
+  font-size: 14px;
+  border-radius: 8px;
+  margin-left: 0 !important;
+}
+
+@media (max-width: 768px) {
     .ant-typography {
       font-size: 14px; /* Mengurangi ukuran font untuk tampilan mobile */
     }
@@ -80,9 +96,55 @@
     }
     .header-user-container {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 20px; /* Lebih kecil pada layar mobile */
+      justify-content: stretch;
+      align-items: stretch;
+      gap: 10px;
+      width: 100%;
+    }
+    .header-user-container .ant-btn {
+      flex: 1 1 calc(50% - 10px);
+      min-width: 140px;
+      height: 38px;
+      margin: 0 !important;
+    }
+    .ant-table-wrapper {
+      overflow-x: auto;
+    }
+    .ant-modal {
+      max-width: calc(100vw - 16px);
+      margin: 8px auto;
+    }
+    .ant-modal .ant-modal-content {
+      padding: 16px;
+    }
+    .ant-modal .ant-modal-body {
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+    }
+    .ant-form-item[style*="justify-content: right"] {
+      margin-bottom: 0;
+    }
+    .cetakmak-footer-actions .ant-form-item-control-input-content {
+      gap: 8px;
+      justify-content: stretch;
+    }
+    .cetakmak-step-button {
+      flex: 1 1 calc(50% - 8px);
+      min-width: 0;
+      height: 38px;
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+    .cetakmak-footer-actions .ant-form-item-control-input-content > .cetakmak-step-button:first-child {
+      flex: 1 1 100%;
+      width: 100%;
+      order: 1;
+    }
+    .cetakmak-footer-actions .ant-form-item-control-input-content > .cetakmak-step-button:nth-child(2) {
+      order: 2;
+    }
+    .cetakmak-footer-actions .ant-form-item-control-input-content > .cetakmak-step-button:nth-child(3) {
+      order: 3;
     }
   }
   

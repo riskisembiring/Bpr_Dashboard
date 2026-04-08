@@ -623,11 +623,14 @@ const CetakMak = ({ userRole }) => {
                 >
                   {renderFormStep()}
                   <Form.Item
+                    className="cetakmak-footer-actions"
                     style={{ display: "flex", justifyContent: "right" }}
                   >
                     {formStep === 1 ? (
                       <>
                         <Button
+                          className="cetakmak-step-button"
+                          type="primary"
                           onClick={() => {
                             clearData();
                           }}
@@ -636,6 +639,7 @@ const CetakMak = ({ userRole }) => {
                         </Button>
                         <Button
                           type="primary"
+                          className="cetakmak-step-button"
                           style={{ marginLeft: "10px" }}
                           onClick={handleNextStep}
                         >
@@ -651,6 +655,8 @@ const CetakMak = ({ userRole }) => {
                       formStep === 8 ? (
                       <>
                         <Button
+                          className="cetakmak-step-button"
+                          type="primary"
                           onClick={() => {
                             setFormStep(1);
                             clearData();
@@ -659,6 +665,8 @@ const CetakMak = ({ userRole }) => {
                           Cancel
                         </Button>
                         <Button
+                          className="cetakmak-step-button"
+                          type="primary"
                           style={{ marginLeft: "10px" }}
                           onClick={handleBackStep}
                         >
@@ -666,6 +674,7 @@ const CetakMak = ({ userRole }) => {
                         </Button>
                         <Button
                           type="primary"
+                          className="cetakmak-step-button"
                           style={{ marginLeft: "10px" }}
                           onClick={formStep === 8 ? handleSave : handleNextStep}
                         >
