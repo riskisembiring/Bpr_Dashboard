@@ -4,6 +4,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { handleExportToPDF } from "./PdfDebitur";
 import { handleExportToExcel } from "./ExcelDebitur";
+import { handleExportToWord } from "./WordDebitur";
 import Step1 from "./Step1";
 import Step2 from "./Step2";
 import Step3 from "./Step3";
@@ -544,6 +545,25 @@ const CetakMak = ({ userRole }) => {
                       }}
                     >
                       Export to Excel
+                    </Button>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        if (selectedRowKey) {
+                          const selectedRow = dataDebitur.find(
+                            (item) => item.id === selectedRowKey
+                          );
+                          handleExportToWord(selectedRow);
+                        } else {
+                          alert("Please select a row to export.");
+                        }
+                      }}
+                      style={{
+                        backgroundColor: "#1f4e79",
+                        borderColor: "#1f4e79",
+                      }}
+                    >
+                      Export to Word
                     </Button>
                   </div>
                 </div>
