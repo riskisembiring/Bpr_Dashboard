@@ -350,7 +350,7 @@ const Step1 = ({ form }) => {
             </Form.Item>
           </Card>
 
-          <Formv.Item label="Keterkaitan dengan BPR" name="keterkaitandgnBpr"
+          <Form.Item label="Keterkaitan dengan BPR" name="keterkaitandgnBpr"
           rules={[
             {
               required: true,
@@ -361,7 +361,7 @@ const Step1 = ({ form }) => {
               <Radio value="Terkait">Terkait</Radio>
               <Radio value="Tidak Terkait">Tidak Terkait</Radio>
             </Radio.Group>
-          </Formv.Item>
+          </Form.Item>
 
           <Form.Item label="Status Pembiayaan" name="statusPembiayaan" rules={[
             {
