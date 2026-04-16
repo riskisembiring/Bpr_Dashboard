@@ -5,10 +5,11 @@ import axios from "axios";
 
 const { Title } = Typography;
 
-const CameraCapture = forwardRef(({ handleFileChange, handleBase64 }, ref) => {
+const CameraCapture = forwardRef(({ handleFileChange, handleBase64, onUploadStatusChange }, ref) => {
   const [fileName, setFileName] = useState('CapturedImage.png');
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [image, setImage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -49,6 +50,9 @@ const captureImage = async () => {
   formData.append("folder", "bprNasnus");
 
   try {
+    setIsUploading(true);
+    onUploadStatusChange?.(true);
+
     // Use proxy - requests to /api/* will be forwarded to https://api-nasnus.vercel.app
     const response = await axios.post(
       "https://api-nasnus.vercel.app/api/upload",
@@ -78,6 +82,9 @@ const captureImage = async () => {
   } catch (error) {
     console.error("Upload error:", error.response?.data || error.message);
     message.error("Upload gagal: " + (error.response?.data?.message || error.message));
+  } finally {
+    setIsUploading(false);
+    onUploadStatusChange?.(false);
   }
 };
 
@@ -100,6 +107,10 @@ const captureImage = async () => {
     stopCamera,
     clearPreview,
     validatePhoto: () => {
+      if (isUploading) {
+        message.loading('Upload foto masih berjalan, tunggu sampai selesai.', 1.5);
+        return false;
+      }
       if (!isCameraActive) {
         // message.error('Kamera belum aktif, silakan nyalakan kamera terlebih dahulu!');
         return false;
@@ -129,7 +140,7 @@ const captureImage = async () => {
     <Button
       type="primary"
       onClick={startCamera}
-      disabled={isCameraActive}
+      disabled={isCameraActive || isUploading}
     >
       Mulai Kamera
     </Button>
@@ -156,14 +167,15 @@ const captureImage = async () => {
       <Button
         type="primary"
         onClick={captureImage}
-        disabled={!isCameraActive}
+        disabled={!isCameraActive || isUploading}
+        loading={isUploading}
       >
         Ambil Foto
       </Button>
       <Button
         type="danger"
         onClick={stopCamera}
-        disabled={!isCameraActive}
+        disabled={!isCameraActive || isUploading}
       >
         Stop Kamera
       </Button>

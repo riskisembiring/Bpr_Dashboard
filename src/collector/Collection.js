@@ -13,6 +13,54 @@ dayjs.extend(customParseFormat);
 const { Option } = Select;
 // const { Title } = Typography;
 
+const compareText = (left, right) =>
+  String(left ?? "").localeCompare(String(right ?? ""), "id", {
+    sensitivity: "base",
+  });
+
+const parseCollectionTimestamp = (record) => {
+  if (record?.updatedAt) {
+    const updatedAt = dayjs(record.updatedAt);
+    if (updatedAt.isValid()) {
+      return updatedAt;
+    }
+  }
+
+  if (record?.tanggal) {
+    const tanggal = dayjs(record.tanggal, "DD/MM/YYYY HH:mm:ss", true);
+    if (tanggal.isValid()) {
+      return tanggal;
+    }
+  }
+
+  if (record?.createdAt) {
+    const createdAt = dayjs(record.createdAt);
+    if (createdAt.isValid()) {
+      return createdAt;
+    }
+  }
+
+  return null;
+};
+
+const normalizeCollectionRecord = (record) => {
+  const latestTimestamp = parseCollectionTimestamp(record);
+
+  return {
+    ...record,
+    latestTimestamp: latestTimestamp?.valueOf() ?? Number.NEGATIVE_INFINITY,
+    tanggalDisplay: latestTimestamp?.isValid()
+      ? latestTimestamp.format("DD/MM/YYYY HH:mm:ss")
+      : "",
+  };
+};
+
+const sortCollectionData = (records) =>
+  [...records].sort((left, right) => right.latestTimestamp - left.latestTimestamp);
+
+const filterValidCollectionData = (records) =>
+  records.filter((record) => Number.isFinite(record.latestTimestamp));
+
 const Collection = ({ userRole }) => {
   const [data, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -31,6 +79,7 @@ const Collection = ({ userRole }) => {
   const [isModalImageVisible, setIsModalImageVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loadingKey, setLoadingKey] = useState(null);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
 
   const keteranganOptions = [
     "Pembayaran cicilan per bulan.",
@@ -71,9 +120,13 @@ const Collection = ({ userRole }) => {
           // Jika userRole bukan collector, tampilkan semua data
           filtered = result;
         }
-  
+
         // Menyimpan data dari API ke state
-        setData(filtered);
+        setData(
+          sortCollectionData(
+            filterValidCollectionData(filtered.map(normalizeCollectionRecord))
+          )
+        );
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -96,6 +149,7 @@ const Collection = ({ userRole }) => {
   };
 
   const handleNew = () => {
+    setIsPhotoUploading(false);
     resetFieldsVal();
     // form.resetFields();
     setIsEditing(false);
@@ -104,6 +158,7 @@ const Collection = ({ userRole }) => {
   };
 
   const handleEdit = (record) => {
+    setIsPhotoUploading(false);
     setIsEditing(true);
     setIsModalVisible(true);
     // setCurrentRecord(null);
@@ -124,6 +179,11 @@ const Collection = ({ userRole }) => {
   };
 
   const handleSave = async (values) => {
+    if (isPhotoUploading) {
+      message.warning("Upload foto masih berjalan. Tunggu sampai selesai.");
+      return;
+    }
+
     console.log('currentRecord', currentRecord)
     const updatedLocation = currentRecord?.location || locationRef.current?.getLocation();
     const namedLocation = currentRecord?.nameLoc || locationRef.current?.getNameLoc();
@@ -228,10 +288,14 @@ const Collection = ({ userRole }) => {
       // Update data lokal
       const updatedData = data.map((item) =>
         item.id === record.id
-          ? { ...item, status: value === "" ? "Belum di cek" : value }
+          ? normalizeCollectionRecord({
+              ...item,
+              status: value === "" ? "Belum di cek" : value,
+              updatedAt: new Date().toISOString(),
+            })
           : item
       );  
-      setData(updatedData);
+      setData(sortCollectionData(updatedData));
 
       // Kirim perubahan ke server menggunakan API
       await fetch(`https://api-nasnus.vercel.app/api/data/${record.id}`, {
@@ -283,7 +347,7 @@ const Collection = ({ userRole }) => {
 const handleCatatanChange = (record, value) => {
   console.log('value', value)
   const updatedData = data.map((item) =>
-    item.id === record.id ? { ...item, catatan: value } : item
+    item.id === record.id ? normalizeCollectionRecord({ ...item, catatan: value }) : item
   );
   setData(updatedData);
 };
@@ -292,9 +356,15 @@ const onclickSaveCatatan = async (record) => {
   setLoadingKey(record.id);
   try {
     const updatedData = data.map((item) =>
-      item.id === record.id ? { ...item, catatan: record.catatan } : item
+      item.id === record.id
+        ? normalizeCollectionRecord({
+            ...item,
+            catatan: record.catatan,
+            updatedAt: new Date().toISOString(),
+          })
+        : item
     );
-    setData(updatedData);
+    setData(sortCollectionData(updatedData));
 
     await fetch(`https://api-nasnus.vercel.app/api/data/${selectedId}`, {
       method: "PUT",
@@ -317,6 +387,10 @@ const onclickSaveCatatan = async (record) => {
 
 
 const handleCancel = async () => {
+  if (isPhotoUploading) {
+    return;
+  }
+
   try {
     form.resetFields();
     handleFileChange(null);
@@ -327,6 +401,7 @@ const handleCancel = async () => {
     if (locationRef.current) {
       await locationRef.current.resetLocation();
     }
+    setIsPhotoUploading(false);
     setIsModalVisible(false);
     // await form.validateFields();
   } catch (error) {
@@ -441,42 +516,38 @@ const handleCancel = async () => {
     },
     {
       title: "Tanggal & Waktu",
-      dataIndex: "tanggal",
+      dataIndex: "tanggalDisplay",
       key: "tanggal",
       defaultSortOrder: "descend", // Urutkan dari terbaru ke terlama
-      sorter: (a, b) => {
-        const dateA = dayjs(a.tanggal, "DD/MM/YYYY HH:mm:ss");
-        const dateB = dayjs(b.tanggal, "DD/MM/YYYY HH:mm:ss");   
-        return dateA.valueOf() - dateB.valueOf();
-      }
+      sorter: (a, b) => a.latestTimestamp - b.latestTimestamp,
     },   
     {
       title: "Nama User",
       dataIndex: "nameUser",
       key: "nameUser",
       // hidden: userRole === 'direksi' ? false : true,
-      sorter: (a, b) => a.nameUser.localeCompare(b.nameUser),
+      sorter: (a, b) => compareText(a.nameUser, b.nameUser),
       sortDirections: ["ascend", "descend"],
     },
     {
       title: "Nama Debitur",
       dataIndex: "namaDebitur",
       key: "namaDebitur",
-      sorter: (a, b) => a.namaDebitur.localeCompare(b.namaDebitur),
+      sorter: (a, b) => compareText(a.namaDebitur, b.namaDebitur),
       sortDirections: ["ascend", "descend"],
     },
     {
       title: "Aktifitas",
       dataIndex: "aktifitas",
       key: "aktifitas",
-      sorter: (a, b) => a.aktifitas.localeCompare(b.aktifitas),
+      sorter: (a, b) => compareText(a.aktifitas, b.aktifitas),
       sortDirections: ["ascend", "descend"],
     },
     {
       title: "Hasil",
       dataIndex: "hasil",
       key: "hasil",
-      sorter: (a, b) => a.hasil.localeCompare(b.hasil),
+      sorter: (a, b) => compareText(a.hasil, b.hasil),
       sortDirections: ["ascend", "descend"],
     },
     {
@@ -485,6 +556,9 @@ const handleCancel = async () => {
       key: "keterangan",
       width: 150,
       render: (text) => {
+        if (!text) {
+          return "-";
+        }
         return text.length > 100 ? (
           <>
             {text.substring(0, 100)}...
@@ -532,7 +606,7 @@ const handleCancel = async () => {
       title: "Alamat Debitur",
       dataIndex: "alamatDeb",
       key: "alamatDeb",
-      sorter: (a, b) => a.alamatDeb.localeCompare(b.alamatDeb),
+      sorter: (a, b) => compareText(a.alamatDeb, b.alamatDeb),
       sortDirections: ["ascend", "descend"],
     },
     {
@@ -789,16 +863,32 @@ const handleCancel = async () => {
             </Form.Item>
 
             {/* Camera Component */}
-            <CameraCapture ref={cameraRef} handleFileChange={handleFileChange} handleBase64={handleBase64} handleImageKitUrl={handleImageKitUrl} />
+            <CameraCapture
+              ref={cameraRef}
+              handleFileChange={handleFileChange}
+              handleBase64={handleBase64}
+              handleImageKitUrl={handleImageKitUrl}
+              onUploadStatusChange={setIsPhotoUploading}
+            />
 
             {/* Location Component */}
             <Location ref={locationRef} updateLocation={updateLocation} nameLocation={nameLocation} nama form={form}/>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit" onClick={handleCreateOrUpdate}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={handleCreateOrUpdate}
+                disabled={isPhotoUploading}
+                loading={isPhotoUploading}
+              >
                 {isEditing ? "Update" : "Create"}
               </Button>
-              <Button onClick={handleCancel} style={{ marginLeft: "10px" }}>
+              <Button
+                onClick={handleCancel}
+                style={{ marginLeft: "10px" }}
+                disabled={isPhotoUploading}
+              >
                 Cancel
               </Button>
               <Button onClick={cek} style={{ marginLeft: "10px", display: 'none' }}>
